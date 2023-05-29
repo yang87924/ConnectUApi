@@ -1,0 +1,24 @@
+
+#spring:
+#  datasource:
+#    druid:
+#      driver-class-name: com.mysql.cj.jdbc.Driver
+#      url: jdbc:mysql://localhost:3306/iii?serverTimezone=UTC
+#      username: root
+#      password: root
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://mydbinstance2.cmcjn8qqcxqk.ap-northeast-1.rds.amazonaws.com:3306/connectU?serverTimezone=UTC
+      username: admin
+      password: GBb4ddyE1mfrBFGQA5sc
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+server:
+  port: 80
