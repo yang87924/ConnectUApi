@@ -1,19 +1,19 @@
 package com.connectu.connectuapi.controller;
 
-import com.connectu.connectuapi.service.IUserService;
+import com.connectu.connectuapi.service.IThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users")
-public class UserController {
+@RequestMapping("/threads")
+public class ThreadController {
     @Autowired
-    private IUserService userService;
-    @PostMapping("/addFakeUsers")
+    private IThreadService threadService;
+    @PostMapping("/addFakeThread")
     public String addFakeUsers() {
-        userService.addFakeUsers(20);
-        return "Fake users added successfully!";
+        threadService.addFakeThread(10);
+        return "Fake Thread added successfully!";
     }
 }

@@ -3,6 +3,8 @@ package com.connectu.connectuapi.dao.impl;
 import com.github.javafaker.Faker;
 import lombok.Data;
 
+import java.util.Locale;
+
 @Data
 public class User {
     private Integer userId;
@@ -10,7 +12,7 @@ public class User {
     private String password;
     private String userName;
     public static User createFakeUser() {
-        Faker faker = new Faker();
+        Faker faker = new Faker(new Locale("zh-CN"));
         User user = new User();
         String username = faker.internet().password();
         user.setEmail(faker.internet().emailAddress(username));
