@@ -79,27 +79,6 @@
             <artifactId>javafaker</artifactId>
             <version>1.0.0</version>
         </dependency>
-<!--        opencc-->
-
-        <!--    Apache Commons Text-->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>1.10.0</version>
-        </dependency>
-<!--        HanLP-->
-        <dependency>
-            <groupId>com.huaban</groupId>
-            <artifactId>jieba-analysis</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.13.1</version>
-        </dependency>
-
-
     </dependencies>
 
 
