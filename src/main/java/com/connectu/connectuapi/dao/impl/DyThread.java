@@ -1,9 +1,10 @@
 package com.connectu.connectuapi.dao.impl;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 @Data
-public class Thread  {
+@TableName("dyThread")
+public class DyThread {
     private Integer threadId;
-    private Integer categoryId;
     private Integer userId ;
     private String title;
     private String content;

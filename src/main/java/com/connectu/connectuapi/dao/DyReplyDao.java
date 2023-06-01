@@ -1,7 +1,7 @@
 package com.connectu.connectuapi.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.connectu.connectuapi.dao.impl.Category;
+import com.connectu.connectuapi.dao.impl.DyReply;
 import org.apache.ibatis.annotations.Mapper;
 @Mapper
-public interface CategoryDao extends BaseMapper<Category> {
+public interface DyReplyDao extends BaseMapper<DyReply> {
 }

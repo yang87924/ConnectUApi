@@ -13,6 +13,9 @@ spring:
       url: jdbc:mysql://mydbinstance2.cmcjn8qqcxqk.ap-northeast-1.rds.amazonaws.com:3306/connectU?serverTimezone=UTC
       username: admin
       password: GBb4ddyE1mfrBFGQA5sc
+#    transaction:
+#      # 配置事务管理器
+#      platform: org.springframework.jdbc.datasource.DataSourceTransactionManager
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false

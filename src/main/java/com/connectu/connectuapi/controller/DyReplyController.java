@@ -1,17 +1,17 @@
 package com.connectu.connectuapi.controller;
-import com.connectu.connectuapi.service.IUserService;
+import com.connectu.connectuapi.service.IDyReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 @RestController
-@RequestMapping("/users")
-public class UserController {
+@RequestMapping("/DyReply")
+public class DyReplyController {
     @Autowired
-    private IUserService userService;
-    @PostMapping("/addFakeUser")
-    public String addFakeUsers() {
-        userService.addFakeUsers(10);
-        return "Fake users added successfully!";
+    private IDyReplyService dyReplyService;
+    @PostMapping("/addFakeDyReply")
+    public String addFakeDyThreads() {
+        dyReplyService.addFakeDyReply(100);
+        return "Fake DyReply added successfully!";
     }
 }
