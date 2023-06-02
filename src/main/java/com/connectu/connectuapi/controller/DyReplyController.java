@@ -9,9 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 public class DyReplyController {
     @Autowired
     private IDyReplyService dyReplyService;
-    @PostMapping("/addFakeDyReply")
-    public String addFakeDyThreads() {
-        dyReplyService.addFakeDyReply(100);
-        return "Fake DyReply added successfully!";
-    }
+
 }

@@ -9,9 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReplyController {
     @Autowired
     private IReplyService replyService;
-    @PostMapping("/addFakeReply")
-    public String addFakeReply() {
-        replyService.addFakeReply(100);
-        return "Fake Reply added successfully!";
-    }
+
 }

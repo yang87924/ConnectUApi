@@ -9,9 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 public class DyThreadController {
     @Autowired
     private IDyThreadService dyThreadService;
-    @PostMapping("/addFakeDyThread")
-    public String addFakeDyThreads() {
-        dyThreadService.addFakeDyThread(100);
-        return "Fake DyThreads added successfully!";
-    }
+
 }

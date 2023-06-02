@@ -9,9 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 public class ThreadController {
     @Autowired
     private IThreadService threadService;
-    @PostMapping("/addFakeThread")
-    public String addFakeThread() {
-        threadService.addFakeThread(100);
-        return "Fake Thread added successfully!";
-    }
+
 }
