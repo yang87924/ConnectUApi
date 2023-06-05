@@ -2,6 +2,7 @@ package com.connectu.connectuapi;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.connectu.connectuapi.controller.Result;
 import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
@@ -30,6 +31,10 @@ class ConnectUApiApplicationTests {
     @Test
     void threadPageTest() {
         threadService.selectPage(1,5);
+    }
+    @Test
+    void Test() {
+        System.out.println(new Result(1111, null, "yoyoyo"));
     }
 
 }

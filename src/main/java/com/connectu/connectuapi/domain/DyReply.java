@@ -1,4 +1,4 @@
-package com.connectu.connectuapi.dao.impl;
+package com.connectu.connectuapi.domain;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
