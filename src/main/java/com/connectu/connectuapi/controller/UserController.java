@@ -11,15 +11,18 @@ import java.util.List;
 public class UserController {
     @Autowired
     private IUserService userService;
+    @PostMapping
     public Result save(User user){
         boolean flag = userService.save(user);
         return new Result(flag?Code.SAVE_OK: Code.SAVE_ERR, flag);
     }
+
     @DeleteMapping("/{id}")
     public Result deleteById(@PathVariable Integer id){
         boolean flag = userService.removeById(id);
         return new Result(flag?Code.DELETE_OK: Code.DELETE_ERR, flag);
     }
+    @PutMapping
     public Result updateById(User user){
         boolean flag = userService.updateById(user);
         return new Result(flag?Code.UPDATE_OK: Code.UPDATE_ERR, flag);
