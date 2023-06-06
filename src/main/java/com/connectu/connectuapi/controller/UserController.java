@@ -1,7 +1,10 @@
 package com.connectu.connectuapi.controller;
-import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.connectu.connectuapi.domain.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +18,7 @@ public class UserController {
     public String addFakeUsers() {
         userService.addFakeUsers(100);
         return "Fake users added successfully!";
+    }
     @PostMapping
     public Result save(User user){
         boolean flag = userService.save(user);
