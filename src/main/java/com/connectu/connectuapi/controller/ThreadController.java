@@ -11,7 +11,7 @@ public class ThreadController {
     private IThreadService threadService;
     @PostMapping("/addFakeThread")
     public String addFakeThread() {
-        threadService.addFakeThread(100);
+        threadService.addFakeThread(50);
         return "Fake Thread added successfully!";
     }
 }

@@ -11,7 +11,7 @@ public class DyReplyController {
     private IDyReplyService dyReplyService;
     @PostMapping("/addFakeDyReply")
     public String addFakeDyThreads() {
-        dyReplyService.addFakeDyReply(100);
+        dyReplyService.addFakeDyReply(50);
         return "Fake DyReply added successfully!";
     }
 }

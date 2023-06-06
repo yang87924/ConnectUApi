@@ -11,7 +11,7 @@ public class UserController {
     private IUserService userService;
     @PostMapping("/addFakeUser")
     public String addFakeUsers() {
-        userService.addFakeUsers(10);
+        userService.addFakeUsers(100);
         return "Fake users added successfully!";
     }
 }

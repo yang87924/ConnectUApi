@@ -11,7 +11,7 @@ public class ReplyController {
     private IReplyService replyService;
     @PostMapping("/addFakeReply")
     public String addFakeReply() {
-        replyService.addFakeReply(100);
+        replyService.addFakeReply(50);
         return "Fake Reply added successfully!";
     }
 }

@@ -11,7 +11,7 @@ public class DyThreadController {
     private IDyThreadService dyThreadService;
     @PostMapping("/addFakeDyThread")
     public String addFakeDyThreads() {
-        dyThreadService.addFakeDyThread(100);
+        dyThreadService.addFakeDyThread(50);
         return "Fake DyThreads added successfully!";
     }
 }
