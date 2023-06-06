@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.connectu.connectuapi.controller.Result;
 import com.connectu.connectuapi.dao.UserDao;
+import com.connectu.connectuapi.dao.UserInfoDao;
 import com.connectu.connectuapi.service.IThreadService;
+import com.connectu.connectuapi.service.IUserInfoService;
 import com.connectu.connectuapi.service.IUserService;
 import com.connectu.connectuapi.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -16,8 +18,11 @@ class ConnectUApiApplicationTests {
     @Autowired
     private IUserService userService;
     @Autowired
+    private IUserInfoService userInfoService;
+    @Autowired
     private IThreadService threadService;
-//    private UserDao userDao;
+    @Autowired
+    private UserInfoDao userInfoDao;
     @Test
     void userTest() {
         userService.list(null);
