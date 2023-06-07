@@ -3,6 +3,8 @@ package com.connectu.connectuapi.controller;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.User;
+import com.connectu.connectuapi.exception.PasswordNotMatchException;
+import com.connectu.connectuapi.exception.UserNotFoundException;
 import com.connectu.connectuapi.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,11 @@ public class UserController {
         boolean flag = userService.save(user);
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"用戶創建成功":"用戶創建失敗");
     }
+    @PostMapping ("/login")
+    public Result getAllUserInfo(@RequestBody User user) {
+        User flag = userService.login(user.getEmail(), user.getPassword());
+        return new Result(Code.GET_OK, flag, "登入成功");
+    }
 
     @DeleteMapping("/{id}")
     public Result deleteById(@PathVariable Integer id) {
@@ -36,6 +43,9 @@ public class UserController {
 
     @GetMapping("/{id}")
     public Result getUserById(@PathVariable Integer id) {
+        if(id==1) {
+            throw new PasswordNotMatchException();
+        }
         User user = userService.getById(id);
         Integer code = user != null ? Code.GET_OK : Code.GET_ERR;
         String msg = user != null ? "用戶資料取得成功" : "查無此用戶";
@@ -52,9 +62,5 @@ public class UserController {
     }
 
 
-    @GetMapping("/login")
-    public Result getAllUserInfo(@RequestBody User user) {
-        User flag = userService.login(user.getEmail(), user.getPassword());
-        return new Result(Code.GET_OK, flag, "登入成功");
-    }
+
 }

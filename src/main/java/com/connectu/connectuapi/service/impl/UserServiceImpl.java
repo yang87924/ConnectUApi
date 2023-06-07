@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.domain.User;
+import com.connectu.connectuapi.exception.PasswordNotMatchException;
 import com.connectu.connectuapi.exception.ServiceException;
+import com.connectu.connectuapi.exception.UserNotFoundException;
 import com.connectu.connectuapi.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,11 +28,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
         qw.lambda().eq(User::getEmail, account).or().eq(User::getUserName, account);
         List<User> result = userDao.selectList(qw);
         if (result==null||result.isEmpty()) {
-            throw new ServiceException(Code.BUSINESS_ERR, "查無此用戶");
+            throw new UserNotFoundException();
         } else if (result.get(0).getPassword().equals(password)) {
             return result.get(0);
         } else {
-            throw new ServiceException(Code.BUSINESS_ERR, "登入失敗");
+            throw new PasswordNotMatchException();
         }
     }
 

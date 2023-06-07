@@ -2,6 +2,7 @@ package com.connectu.connectuapi;
 
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.UserDao;
+import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class ConnectUApiApplicationTests {
     }
     @Test
     void loginTest(){
-        userService.login("于思源", "kd2j88gaxqallhh");
+        userService.login("于思源", "kd2j88gaxqalh");
     }
 
 }
