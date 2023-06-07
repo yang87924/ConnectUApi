@@ -1,7 +1,7 @@
-package com.connectu.connectuapi.controller;
+package com.connectu.connectuapi.controller.util;
 
 
-import com.connectu.connectuapi.exception.BusinessException;
+import com.connectu.connectuapi.exception.ServiceException;
 import com.connectu.connectuapi.exception.SystemException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,8 +18,8 @@ public class ProjectExceptionAdvice {
         return new Result(ex.getCode(), null, ex.getMessage());
     }
 
-    @ExceptionHandler(BusinessException.class)
-    public Result doBusinessException(BusinessException ex){
+    @ExceptionHandler(ServiceException.class)
+    public Result doBusinessException(ServiceException ex){
         return new Result(ex.getCode(),null,ex.getMessage());
     }
 

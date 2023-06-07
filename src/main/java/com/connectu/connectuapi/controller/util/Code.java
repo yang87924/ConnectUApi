@@ -1,4 +1,4 @@
-package com.connectu.connectuapi.controller;
+package com.connectu.connectuapi.controller.util;
 
 public class Code {
     public static final Integer SAVE_OK = 20011;

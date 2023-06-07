@@ -1,14 +1,9 @@
 package com.connectu.connectuapi;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.connectu.connectuapi.controller.Result;
+import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.UserDao;
-import com.connectu.connectuapi.dao.UserInfoDao;
 import com.connectu.connectuapi.service.IThreadService;
-import com.connectu.connectuapi.service.IUserInfoService;
 import com.connectu.connectuapi.service.IUserService;
-import com.connectu.connectuapi.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,11 +13,9 @@ class ConnectUApiApplicationTests {
     @Autowired
     private IUserService userService;
     @Autowired
-    private IUserInfoService userInfoService;
-    @Autowired
     private IThreadService threadService;
     @Autowired
-    private UserInfoDao userInfoDao;
+    private UserDao userDao;
     @Test
     void userTest() {
         userService.list(null);
@@ -40,6 +33,10 @@ class ConnectUApiApplicationTests {
     @Test
     void Test() {
         System.out.println(new Result(1111, null, "yoyoyo"));
+    }
+    @Test
+    void loginTest(){
+        userService.login("于思源", "kd2j88gaxqallhh");
     }
 
 }

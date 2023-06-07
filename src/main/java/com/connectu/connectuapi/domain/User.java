@@ -6,8 +6,12 @@ import lombok.Data;
 public class User  {
     @TableId
     private Integer userId;
-    private String 	email;
-    @TableField(select = false)
+    private String email;
+//    @TableField(select = false)
     private String password;
     private String userName;
+    private String level;
+    private byte[] avatar;
+    private String profile;
+    private String point;
 }
