@@ -1,10 +1,12 @@
 package com.connectu.connectuapi.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.domain.User;
+import com.connectu.connectuapi.exception.ColumnIsNullException;
 import com.connectu.connectuapi.exception.PasswordNotMatchException;
 import com.connectu.connectuapi.exception.ServiceException;
 import com.connectu.connectuapi.exception.UserNotFoundException;
@@ -36,8 +38,20 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
         }
     }
 
-    public boolean createAccount(User newUser){
-
+    @Override
+    public boolean createAccount(User newUser) {
+        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(User::getEmail, newUser.getEmail());
+        List<User> result = userDao.selectList(lqw);
+        if(newUser.getUserName()==null) {
+            throw new ColumnIsNullException();
+        }
+        if(newUser.getEmail()==null) {
+            throw new ColumnIsNullException();
+        }
+        if(newUser.getPassword()==null) {
+            throw new ColumnIsNullException();
+        }
 
         return false;
     }

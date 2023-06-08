@@ -4,4 +4,5 @@ import com.connectu.connectuapi.domain.User;
 
 public interface IUserService extends IService<User> {
     User login(String account, String password);
+    public boolean createAccount(User newUser);
 }
