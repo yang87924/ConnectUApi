@@ -27,9 +27,16 @@ public class Code {
     public static final Integer USER_NOT_FOUND = 50004;
     public static final Integer PASSWORD_NOT_MATCH = 50005;
 
-    //
-    public static final Integer FILE_UPLOAD_ERROR = 50006;
-    public static final Integer COLUMN_IS_NULL = 50007;
+
+
+    //註冊帳號失敗
+    public static final Integer COLUMN_IS_NULL = 50006;
+    public static final Integer EMAIL_IS_DUPLICATE = 50007;
+    public static final Integer EMAIL_NOT_FORMAT = 50008;
+    public static final Integer PASSWORD_NOT_FORMAT = 50009;
+
+    //檔案上傳失敗
+    public static final Integer FILE_UPLOAD_ERROR = 50012;
 
 
 

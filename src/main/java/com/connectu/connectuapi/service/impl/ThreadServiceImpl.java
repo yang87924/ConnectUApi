@@ -1,6 +1,5 @@
 package com.connectu.connectuapi.service.impl;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.dao.ThreadDao;
 import com.connectu.connectuapi.domain.Thread;
@@ -31,9 +30,6 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread> implements
         thread.setCreatedAt(getSystemTime());
         return thread;
     }
-    public void selectPage(Integer page, Integer amount){
-        IPage pageImpl = new Page(page, amount);
-        threadDao.selectPage(pageImpl, null);
-    }
+
 
 }
