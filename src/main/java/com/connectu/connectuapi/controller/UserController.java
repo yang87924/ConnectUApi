@@ -22,7 +22,6 @@ public class UserController {
 //創建用戶--------------------------------------------------------------
     @PostMapping
     public Result save(@RequestBody User user) {
-        System.out.println(user);
         boolean flag = userService.save(user);
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"用戶創建成功":"用戶創建失敗");
     }
@@ -30,8 +29,8 @@ public class UserController {
 
 //登入--------------------------------------------------------------
     @PostMapping ("/login")
-    public Result getAllUserInfo(String account, String password) {
-        User flag = userService.login(account, password);
+    public Result getAllUserInfo(@RequestBody User user) {
+        User flag = userService.login(user.getEmail(), user.getPassword());
         return new Result(Code.LOGIN_OK, flag, "登入成功");
     }
 

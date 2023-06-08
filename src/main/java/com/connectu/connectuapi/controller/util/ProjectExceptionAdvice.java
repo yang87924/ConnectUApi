@@ -34,6 +34,15 @@ public class ProjectExceptionAdvice {
         } else if (ex instanceof ColumnIsNullException) {
             result.setCode(Code.COLUMN_IS_NULL);
             result.setMsg("欄位不可為空");
+        } else if (ex instanceof EmailFormNotMatchException) {
+            result.setCode(Code.EMAIL_NOT_FORMAT);
+            result.setMsg("信箱格式錯誤");
+        } else if (ex instanceof EmailDuplicateException) {
+            result.setCode(Code.EMAIL_IS_DUPLICATE);
+            result.setMsg("信箱重複");
+        } else if (ex instanceof PasswordFormNotMatchException) {
+            result.setCode(Code.PASSWORD_NOT_FORMAT);
+            result.setMsg("密碼格式錯誤");
         }
         return result;
     }
