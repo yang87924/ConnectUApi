@@ -28,8 +28,6 @@ public class UserController {
         boolean flag = userService.save(user);
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"用戶創建成功":"用戶創建失敗");
     }
-
-
 //登入--------------------------------------------------------------
     @PostMapping ("/login")
     public Result getAllUserInfo(@RequestBody User user) {
