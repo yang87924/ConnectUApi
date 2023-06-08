@@ -1,15 +1,19 @@
 package com.connectu.connectuapi.exception;
 
-public class BusinessException extends RuntimeException{
+public class ServiceException extends RuntimeException{
     private Integer code;
     private String message;
 
-    public BusinessException(Integer code, String message) {
+    public ServiceException() {
+
+    }
+
+    public ServiceException(Integer code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public BusinessException(Integer code, String message, Throwable cause) {
+    public ServiceException(Integer code, String message, Throwable cause) {
         super(cause);
         this.code = code;
         this.message = message;

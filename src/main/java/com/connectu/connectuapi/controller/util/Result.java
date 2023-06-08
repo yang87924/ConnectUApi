@@ -1,4 +1,4 @@
-package com.connectu.connectuapi.controller;
+package com.connectu.connectuapi.controller.util;
 
 import com.connectu.connectuapi.domain.User;
 import lombok.Data;

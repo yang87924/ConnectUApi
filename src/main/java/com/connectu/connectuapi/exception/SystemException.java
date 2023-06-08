@@ -1,10 +1,5 @@
 package com.connectu.connectuapi.exception;
 
-import com.connectu.connectuapi.controller.Code;
-import com.connectu.connectuapi.controller.Result;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 
 public class SystemException extends RuntimeException{
     private Integer code;

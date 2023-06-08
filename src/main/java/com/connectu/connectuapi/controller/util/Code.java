@@ -1,4 +1,4 @@
-package com.connectu.connectuapi.controller;
+package com.connectu.connectuapi.controller.util;
 
 public class Code {
     public static final Integer SAVE_OK = 20011;
@@ -12,5 +12,7 @@ public class Code {
     public static final Integer UNKOWN_ERR = 50000;
     public static final Integer SYSTEM_ERR = 50001;
     public static final Integer BUSINESS_ERR = 50002;
+    public static final Integer USER_NOT_FOUND = 50003;
+    public static final Integer PASSWORD_NOT_MATCH = 50004;
 
 }
