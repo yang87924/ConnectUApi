@@ -28,4 +28,9 @@ public class DyThreadServiceImpl extends ServiceImpl<DyThreadDao, DyThread> impl
         dythread.setCreatedAt(getSystemTime());
         return dythread;
     }
+
+    @Override
+    public boolean save(DyThread dyThread) {
+        return super.save(dyThread);
+    }
 }
