@@ -3,17 +3,10 @@ package com.connectu.connectuapi.controller;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.User;
-import com.connectu.connectuapi.exception.PasswordNotMatchException;
-import com.connectu.connectuapi.exception.UserNotFoundException;
 import com.connectu.connectuapi.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.connectu.connectuapi.domain.User;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -39,8 +32,8 @@ public class UserController {
 
 //登入--------------------------------------------------------------
     @PostMapping ("/login")
-    public Result getAllUserInfo(String account, String password) {
-        User flag = userService.login(account, password);
+    public Result getAllUserInfo(@RequestBody User user) {
+        User flag = userService.login(user.getEmail(), user.getPassword());
         return new Result(Code.LOGIN_OK, flag, "登入成功");
     }
 
