@@ -7,4 +7,5 @@ public interface IUserService extends IService<User> {
     User login(String account, String password);
     void addFakeUsers(int count);
     public boolean createAccount(User newUser);
+
 }

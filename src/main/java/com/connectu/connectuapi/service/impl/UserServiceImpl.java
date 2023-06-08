@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.domain.User;
+import com.connectu.connectuapi.exception.*;
 import com.connectu.connectuapi.exception.ColumnIsNullException;
 import com.connectu.connectuapi.exception.PasswordNotMatchException;
 import com.connectu.connectuapi.exception.UserNotFoundException;
@@ -41,7 +42,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
     @Override
     public User login(String account, String password) {
         QueryWrapper<User> qw = new QueryWrapper<>();
-        qw.lambda().eq(User::getEmail, account).or().eq(User::getUserName, account);
+        qw.lambda().eq(User::getEmail, account);
         List<User> result = userDao.selectList(qw);
         if (result==null||result.isEmpty()) {
             throw new UserNotFoundException();
@@ -52,23 +53,26 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
         }
     }
 
+
     @Override
-    public boolean createAccount(User newUser) {
+    public boolean save(User newUser) {
         LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
         lqw.eq(User::getEmail, newUser.getEmail());
         List<User> result = userDao.selectList(lqw);
-        if(newUser.getUserName()==null) {
+        if(newUser.getUserName()==null||newUser.getEmail()==null||newUser.getPassword()==null
+        ||newUser.getUserName().isEmpty()||newUser.getEmail().isEmpty()||newUser.getPassword().isEmpty()) {
             throw new ColumnIsNullException();
         }
-        if(newUser.getEmail()==null) {
-            throw new ColumnIsNullException();
+        if(!newUser.getEmail().contains("@")){
+            throw new EmailFormNotMatchException();
         }
-        if(newUser.getPassword()==null) {
-            throw new ColumnIsNullException();
+        if(!result.isEmpty()){
+            System.out.println(result);
+            throw new EmailDuplicateException();
         }
-
-        return false;
+        if(newUser.getPassword().length()<6||newUser.getPassword().length()>15){
+            throw new PasswordFormNotMatchException();
+        }
+        return super.save(newUser);
     }
-
-
 }

@@ -24,7 +24,6 @@ public class UserController {
 //創建用戶--------------------------------------------------------------
     @PostMapping
     public Result save(@RequestBody User user) {
-        System.out.println(user);
         boolean flag = userService.save(user);
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"用戶創建成功":"用戶創建失敗");
     }
