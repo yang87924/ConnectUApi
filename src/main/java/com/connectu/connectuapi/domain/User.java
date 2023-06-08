@@ -11,7 +11,7 @@ public class User  {
     private String password;
     private String userName;
     private String level;
-    private byte[] avatar;
+    private String avatar;
     private String profile;
     private String point;
 }
