@@ -3,13 +3,9 @@ package com.connectu.connectuapi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.connectu.connectuapi.controller.Code;
-import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.domain.User;
-import com.connectu.connectuapi.exception.BusinessException;
 import com.connectu.connectuapi.exception.PasswordNotMatchException;
-import com.connectu.connectuapi.exception.ServiceException;
 import com.connectu.connectuapi.exception.UserNotFoundException;
 import com.connectu.connectuapi.service.IUserService;
 import com.github.javafaker.Faker;
@@ -17,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
-import java.util.Locale;
 import java.util.List;
+import java.util.Locale;
 
 @Transactional
 @Service
