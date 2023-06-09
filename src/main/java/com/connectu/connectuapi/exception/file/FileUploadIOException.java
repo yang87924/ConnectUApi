@@ -1,24 +1,15 @@
 package com.connectu.connectuapi.exception.file;
 
-/** 上传文件时读写异常 */
+
 public class FileUploadIOException extends FileUploadException {
     public FileUploadIOException() {
-        super();
     }
 
-    public FileUploadIOException(String message) {
-        super(message);
+    public FileUploadIOException(Integer code, String message) {
+        super(code, message);
     }
 
-    public FileUploadIOException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FileUploadIOException(Throwable cause) {
-        super(cause);
-    }
-
-    protected FileUploadIOException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public FileUploadIOException(Integer code, String message, Throwable cause) {
+        super(code, message, cause);
     }
 }

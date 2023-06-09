@@ -1,24 +1,39 @@
 package com.connectu.connectuapi.exception.file;
 
-/** 文件上传相关异常的基类 */
+
 public class FileUploadException extends RuntimeException {
+    private Integer code;
+    private String message;
+
     public FileUploadException() {
-        super();
+
     }
 
-    public FileUploadException(String message) {
-        super(message);
+    public FileUploadException(Integer code, String message) {
+        this.code = code;
+        this.message = message;
     }
 
-    public FileUploadException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FileUploadException(Throwable cause) {
+    public FileUploadException(Integer code, String message, Throwable cause) {
         super(cause);
+        this.code = code;
+        this.message = message;
     }
 
-    protected FileUploadException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

@@ -2,6 +2,7 @@ package com.connectu.connectuapi.controller.util;
 
 
 import com.connectu.connectuapi.exception.*;
+import com.connectu.connectuapi.exception.file.*;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -28,9 +29,6 @@ public class ProjectExceptionAdvice {
         } else if (ex instanceof PasswordNotMatchException) {
             result.setCode(Code.PASSWORD_NOT_MATCH);
             result.setMsg("密碼錯誤");
-        } else if (ex instanceof FileUploadException) {
-            result.setCode(Code.FILE_UPLOAD_ERROR);
-            result.setMsg("文件上傳失敗");
         } else if (ex instanceof ColumnIsNullException) {
             result.setCode(Code.COLUMN_IS_NULL);
             result.setMsg("欄位不可為空");
@@ -43,6 +41,21 @@ public class ProjectExceptionAdvice {
         } else if (ex instanceof PasswordFormNotMatchException) {
             result.setCode(Code.PASSWORD_NOT_FORMAT);
             result.setMsg("密碼格式錯誤");
+        } else if (ex instanceof FileEmptyException) {
+            result.setCode(Code.FILE_IS_EMPTY);
+            result.setMsg("上傳的頭像文件不允許為空");
+        } else if (ex instanceof FileSizeException) {
+            result.setCode(Code.FILE_SIZE_ERR);
+            result.setMsg("不允許上傳超過10MB的頭像文件");
+        } else if (ex instanceof FileStateException) {
+            result.setCode(Code.FILE_STATE_ERR);
+            result.setMsg("文件狀態異常，可能文件已被移動或刪除");
+        } else if (ex instanceof FileTypeException) {
+            result.setCode(Code.FILE_TYPE_ERR);
+            result.setMsg("不支援使用該類型的文件作為頭像");
+        } else if (ex instanceof FileUploadIOException) {
+            result.setCode(Code.FILE_UPLOAD_IO_ERR);
+            result.setMsg("上傳文件時讀寫錯誤，請稍後重新嘗試");
         }
         return result;
     }

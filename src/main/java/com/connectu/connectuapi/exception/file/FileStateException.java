@@ -3,22 +3,13 @@ package com.connectu.connectuapi.exception.file;
 /** 上传的文件状态异常 */
 public class FileStateException extends FileUploadException {
     public FileStateException() {
-        super();
     }
 
-    public FileStateException(String message) {
-        super(message);
+    public FileStateException(Integer code, String message) {
+        super(code, message);
     }
 
-    public FileStateException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FileStateException(Throwable cause) {
-        super(cause);
-    }
-
-    protected FileStateException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public FileStateException(Integer code, String message, Throwable cause) {
+        super(code, message, cause);
     }
 }
