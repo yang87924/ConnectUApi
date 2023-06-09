@@ -40,9 +40,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
         return user;
     }
     @Override
-    public User login(String account, String password) {
+    public User login(String email, String password) {
         QueryWrapper<User> qw = new QueryWrapper<>();
-        qw.lambda().eq(User::getEmail, account);
+        qw.lambda().eq(User::getEmail, email);
         List<User> result = userDao.selectList(qw);
         if (result==null||result.isEmpty()) {
             throw new UserNotFoundException();
