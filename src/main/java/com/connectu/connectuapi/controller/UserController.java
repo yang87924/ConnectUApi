@@ -35,12 +35,12 @@ public class UserController extends BaseController {
     }
 
 
-//創建用戶--------------------------------------------------------------
+//新增用戶--------------------------------------------------------------
     @PostMapping
-    @ApiOperation("創建用戶")
+    @ApiOperation("新增用戶")
     public Result save(@RequestBody User user) {
         boolean flag = userService.save(user);
-        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"用戶創建成功":"用戶創建失敗");
+        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"用戶新增成功":"用戶新增失敗");
     }
 //登入--------------------------------------------------------------
     @PostMapping ("/login")
@@ -104,7 +104,7 @@ public class UserController extends BaseController {
 
 //更新用戶頭像--------------------------------------------------------------
 
-    public static final int AVATAR_MAX_SIZE = 5 * 1024 * 1024;
+    public static final int AVATAR_MAX_SIZE = 10 * 1024 * 1024;
 
     public static final List<String> AVATAR_TYPES = new ArrayList<>();
 

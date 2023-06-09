@@ -9,7 +9,7 @@ import lombok.Data;
 @TableName("dyThread")
 public class DyThread {
     @TableId
-    private Integer threadId;
+    private Integer dyThreadId ;
     private Integer userId ;
     private String title;
     private String content;

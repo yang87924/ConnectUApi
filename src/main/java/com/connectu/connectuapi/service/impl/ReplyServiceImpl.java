@@ -1,17 +1,21 @@
 package com.connectu.connectuapi.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.dao.ReplyDao;
 import com.connectu.connectuapi.domain.Reply;
+import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.service.IReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
+import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 
 @Service
 public class ReplyServiceImpl extends ServiceImpl<ReplyDao, Reply> implements IReplyService {
@@ -36,5 +40,16 @@ public class ReplyServiceImpl extends ServiceImpl<ReplyDao, Reply> implements IR
         Reply.setCreatedAt(formattedDate);
         return Reply;
     }
+    @Override
+    public boolean save(Reply reply) {
+        reply.setCreatedAt(getSystemTime());
 
+        return super.save(reply);
+    }
+    public List<Reply> getThreadReplyById(int id) {
+        LambdaQueryWrapper<Reply> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Reply::getThreadId, id);
+        List<Reply> result = replyDao.selectList(lqw);
+        return result;
+    }
 }
