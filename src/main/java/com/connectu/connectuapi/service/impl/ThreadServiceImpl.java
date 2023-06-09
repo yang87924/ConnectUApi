@@ -22,6 +22,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread> implements
     private ThreadDao threadDao;
     @Autowired
     private ReplyDao replyDao;
+
     @Override
     public void addFakeThread(int count) {
         for (int i = 0; i < count; i++) {
@@ -41,6 +42,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread> implements
     @Override
     public boolean save(Thread thread) {
         thread.setCreatedAt(getSystemTime());
+
         return super.save(thread);
     }
     @Override

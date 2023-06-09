@@ -8,7 +8,7 @@ public class Code {
     public static final Integer UPDATE_OK = 20031;
     public static final Integer GET_OK = 20041;
     public static final Integer LOGIN_OK = 20051;
-    public static final Integer USER_CREATE_OK = 20061;
+    public static final Integer UPLOAD_OK = 20061;
 
 
 
@@ -36,7 +36,12 @@ public class Code {
     public static final Integer PASSWORD_NOT_FORMAT = 50009;
 
     //檔案上傳失敗
-    public static final Integer FILE_UPLOAD_ERROR = 50012;
+    public static final Integer FILE_IS_EMPTY = 50012;
+    public static final Integer FILE_SIZE_ERR = 50013;
+    public static final Integer FILE_STATE_ERR = 50014;
+    public static final Integer FILE_TYPE_ERR = 50015;
+    public static final Integer FILE_UPLOAD_IO_ERR = 50016;
+
 
 
 

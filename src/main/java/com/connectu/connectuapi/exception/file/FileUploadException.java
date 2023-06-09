@@ -1,8 +1,10 @@
-package com.connectu.connectuapi.exception;
+package com.connectu.connectuapi.exception.file;
 
-public class FileUploadException extends RuntimeException{
+
+public class FileUploadException extends RuntimeException {
     private Integer code;
     private String message;
+
     public FileUploadException() {
 
     }
