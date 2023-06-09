@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ProjectExceptionAdvice {
     @ExceptionHandler(Exception.class)
     public Result doException(Exception ex){
-
         return new Result(Code.UNKOWN_ERR,null,"伺服器忙碌中");
     }
 
@@ -43,16 +42,16 @@ public class ProjectExceptionAdvice {
             result.setMsg("密碼格式錯誤");
         } else if (ex instanceof FileEmptyException) {
             result.setCode(Code.FILE_IS_EMPTY);
-            result.setMsg("上傳的頭像文件不允許為空");
+            result.setMsg("上傳的文件不允許為空");
         } else if (ex instanceof FileSizeException) {
             result.setCode(Code.FILE_SIZE_ERR);
-            result.setMsg("不允許上傳超過10MB的頭像文件");
+            result.setMsg("不允許上傳超過10MB的文件");
         } else if (ex instanceof FileStateException) {
             result.setCode(Code.FILE_STATE_ERR);
             result.setMsg("文件狀態異常，可能文件已被移動或刪除");
         } else if (ex instanceof FileTypeException) {
             result.setCode(Code.FILE_TYPE_ERR);
-            result.setMsg("不支援使用該類型的文件作為頭像");
+            result.setMsg("不支援使用該類型的文件");
         } else if (ex instanceof FileUploadIOException) {
             result.setCode(Code.FILE_UPLOAD_IO_ERR);
             result.setMsg("上傳文件時讀寫錯誤，請稍後重新嘗試");

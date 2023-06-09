@@ -45,7 +45,7 @@ public class UserController extends BaseController {
 //登入--------------------------------------------------------------
     @PostMapping ("/login")
     @ApiOperation("登入")
-    public Result getAllUserInfo(@RequestBody User user, HttpSession session) {
+    public Result login(@RequestBody User user, HttpSession session) {
         User loginUser = userService.login(user.getEmail(), user.getPassword());
         session.setAttribute("userId", loginUser.getUserId());
         session.setAttribute("userName", loginUser.getUserName());
@@ -131,7 +131,6 @@ public class UserController extends BaseController {
         }
 
         String parent = session.getServletContext().getRealPath("upload");
-        System.out.println(parent);
 
         File dir = new File(parent);
         if (!dir.exists()) {
@@ -157,13 +156,13 @@ public class UserController extends BaseController {
 
 
         String avatar = parent + "\\" + filename;
-        System.out.println(avatar);
 
         User loginUser = userService.getById(getUserIdFromSession(session));
-        loginUser.setAvatar(avatar);
+        String revisedPath = avatar.replace("\\", "/");
+        loginUser.setAvatar(revisedPath);
         userService.updateById(loginUser);
 
-        return new Result(Code.SAVE_OK, avatar, "大頭貼存取成功");
+        return new Result(Code.SAVE_OK, revisedPath, "頭像存取成功");
     }
 
 
