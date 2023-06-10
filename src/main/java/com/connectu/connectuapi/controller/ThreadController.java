@@ -45,9 +45,10 @@ public class ThreadController extends BaseController{
     //新增論壇文章
     @PostMapping
     @ApiOperation("新增論壇文章")
-    public Result save(@RequestBody Thread thread) {
-        //System.out.println(thread);
-        boolean flag = threadService.save(thread);
+    public Result save(@RequestBody Thread thread ,HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId"); // 將類型從 String 修改為 Integer
+        ///System.out.println(userId);
+        boolean flag = threadService.saveThread(thread,userId);
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章新增成功":"論壇文章新增失敗");
     }
     //查詢所有文章
@@ -86,5 +87,17 @@ public class ThreadController extends BaseController{
         AVATAR_TYPES.add("image/bmp");
         AVATAR_TYPES.add("image/gif");
     }
+//更新用戶頭像--------------------------------------------------------------
+    @PostMapping("/upload")
+    @ApiOperation("更改用戶頭像")
+    public Result changeAvatar(@RequestParam("file") MultipartFile file, HttpSession session) {
+        String a=upload(file,session);
+        System.out.println(a);
+//        User loginUser = userService.getById(getUserIdFromSession(session));
+//        String revisedPath = avatar.replace("\\", "/");
+//        loginUser.setAvatar(revisedPath);
+//        userService.updateById(loginUser);
 
+        return new Result(Code.SAVE_OK, "revisedPath", "頭像存取成功");
+    }
 }
