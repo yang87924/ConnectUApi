@@ -37,14 +37,6 @@ public class DyThreadServiceImpl extends ServiceImpl<DyThreadDao, DyThread> impl
 
         return super.save(dyThread);
     }
-    public List<DyThread> getUserDyThreadById(int id) {
-        LambdaQueryWrapper<DyThread> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(DyThread::getUserId, id);
-        List<DyThread> result = dythreadDao.selectList(lqw);
-        return result;
-    }
-
-
     public static DyThread createFakeDyThread(int count) {
         DyThread dythread = new DyThread();
         dythread.setUserId((int) (Math.random() * count) + 1);

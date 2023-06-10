@@ -10,6 +10,5 @@ import java.util.List;
 
 public interface IDyThreadService extends IService<DyThread> {
     void addFakeDyThread(int count);
-    List<DyThread> getUserDyThreadById(int id);
 
 }

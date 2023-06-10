@@ -6,6 +6,7 @@ import com.connectu.connectuapi.domain.Reply;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.service.IReplyService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,10 +28,11 @@ public class ReplyController {
         return "Fake Reply added successfully!";
     }
     //取得論壇文章的所有留言
-    @GetMapping("/{id}")
-    @ApiOperation("取得使用者的所有論壇文章")
-    public Result getUserThread(@PathVariable Integer id) {
-        List<Reply> reply = replyService.getThreadReplyById(id);
+    @GetMapping("/{Threadid}")
+    @ApiImplicitParam(name = "Threadid", value = "論壇文章id")
+    @ApiOperation("取得論壇文章的所有流言")
+    public Result getUserThread(@PathVariable Integer Threadid) {
+        List<Reply> reply = replyService.getThreadReplyById(Threadid);
         Integer code = reply != null ? Code.GET_OK : Code.GET_ERR;
         String msg = reply != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, reply, msg);

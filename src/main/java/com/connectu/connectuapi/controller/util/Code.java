@@ -1,5 +1,8 @@
 package com.connectu.connectuapi.controller.util;
 
+import lombok.Data;
+
+
 public class Code {
 
     //成功
