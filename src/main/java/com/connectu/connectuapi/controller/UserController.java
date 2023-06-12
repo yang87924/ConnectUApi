@@ -63,7 +63,7 @@ public class UserController extends BaseController {
     //修改用戶--------------------------------------------------------------
     @PutMapping
     @ApiOperation("修改用戶")
-    public Result updateById(User user, MultipartFile file, HttpSession session) {
+    public Result updateById(User user, @RequestParam("avatarFile") MultipartFile file, HttpSession session) {
         if(!file.isEmpty()) {
             user.setAvatar(upload(file, session));
         }
