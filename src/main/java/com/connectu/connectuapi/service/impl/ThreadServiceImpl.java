@@ -60,7 +60,12 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         return thread;
     }
 
-
+    public List<Thread> getUserThreadById(int id) {
+        LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Thread::getUserId, id);
+        List<Thread> result = threadDao.selectList(lqw);
+        return result;
+    }
 
     @Override
     public boolean removeById(Serializable id) {

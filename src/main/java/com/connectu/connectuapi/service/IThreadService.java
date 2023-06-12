@@ -10,6 +10,8 @@ import java.util.List;
 public interface IThreadService extends IService<Thread> {
     void addFakeThread(int count);
     Integer getLastThreadById();
+    List<Thread> getUserThreadById(int id);
+
 
     //Boolean putThreadById(Thread thread,Integer getThreadId,Integer getUserId,String fileUrl);
 //    Boolean putThreadById(Thread thread);

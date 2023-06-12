@@ -104,4 +104,13 @@ public class ThreadController extends BaseController{
         String msg = thread != null ? "最後一筆資料取得成功" : "查無資料";
         return new Result(code, thread, msg);
     }
+    //取得使用者的所有文章
+    @GetMapping("/{id}")
+    @ApiOperation("取得使用者的所有論壇文章")
+    public Result getUserThread(@PathVariable Integer id) {
+        List<Thread> thread = threadService.getUserThreadById(id);
+        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
+        return new Result(code, thread, msg);
+    }
 }

@@ -58,4 +58,10 @@ public class DyThreadServiceImpl extends ServiceImpl<DyThreadDao, DyThread> impl
     }
 
 
+    public List<DyThread> getUserDyThreadById(int id) {
+        LambdaQueryWrapper<DyThread> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(DyThread::getUserId, id);
+        List<DyThread> result = dythreadDao.selectList(lqw);
+        return result;
+    }
 }

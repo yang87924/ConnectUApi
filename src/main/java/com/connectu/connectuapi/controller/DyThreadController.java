@@ -43,7 +43,15 @@ public class DyThreadController {
         String msg = dythread != null ? "所有動態文章資料成功" : "查無動態文章資料";
         return new Result(code, dythread, msg);
     }
-
+    //取得使用者的所有文章
+    @GetMapping("/{id}")
+    @ApiOperation("取得使用者的所有動態文章")
+    public Result getUserThread(@PathVariable Integer id) {
+        List<DyThread> dythread = dyThreadService.getUserDyThreadById(id);
+        Integer code = dythread != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = dythread != null ? "查詢使用者動態文章資料成功" : "查無動態文章資料";
+        return new Result(code, dythread, msg);
+    }
     //修改文章
     @PutMapping
     @ApiOperation("修改動態文章")
