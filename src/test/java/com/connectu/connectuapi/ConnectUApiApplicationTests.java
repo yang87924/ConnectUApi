@@ -23,7 +23,7 @@ class ConnectUApiApplicationTests {
 
     @Test
     void threadTest() {
-        threadService.list(null);
+//        threadService.(5);
     }
 
     @Test

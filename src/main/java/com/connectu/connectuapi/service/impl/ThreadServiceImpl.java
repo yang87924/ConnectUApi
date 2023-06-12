@@ -1,12 +1,16 @@
 package com.connectu.connectuapi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.controller.BaseController;
 import com.connectu.connectuapi.dao.ReplyDao;
 import com.connectu.connectuapi.dao.ThreadDao;
 import com.connectu.connectuapi.domain.Reply;
 import com.connectu.connectuapi.domain.Thread;
+import com.connectu.connectuapi.domain.User;
+import com.connectu.connectuapi.exception.PasswordNotMatchException;
+import com.connectu.connectuapi.exception.UserNotFoundException;
 import com.connectu.connectuapi.service.IThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,19 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
             threadDao.insert(thread);
         }
     }
+
+    @Override
+    public Integer getLastThreadById() {
+        Integer lastThreadId = (Integer) threadDao.selectObjs(
+                new QueryWrapper<Thread>()
+                        .select("threadId")
+                        .orderByDesc("threadId")
+                        .last("limit 1"))
+                .get(0);
+        return lastThreadId + 1;
+
+    }
+
     public static Thread createFakeThread(int count) {
         Thread thread = new Thread();
         thread.setCategoryId((int) (Math.random() * 13) + 1);
@@ -44,8 +61,9 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     }
 
 
-    public boolean saveThread(Thread thread, Integer userId) {
+    public boolean saveThread(Thread thread, Integer userId,String fileUrl) {
         System.out.println(userId);
+        thread.setPicture(fileUrl);
 
         thread.setUserId(userId);
         thread.setCreatedAt(getSystemTime());
@@ -63,4 +81,13 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         return super.removeById(id);
     }
 
+
+    public Boolean putThreadById(Thread thread, Integer getUserId, Integer getThreadId,String fileUrl) {
+        thread.setThreadId(getThreadId);
+        //thread.setUserId(getUserId);
+        thread.setPicture(fileUrl);
+//        System.out.println(getThreadId);
+//        System.out.println(getUserId);
+        return super.updateById(thread);
+    }
 }

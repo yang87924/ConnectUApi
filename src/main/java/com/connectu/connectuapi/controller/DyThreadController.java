@@ -22,7 +22,7 @@ public class DyThreadController {
     private IDyThreadService dyThreadService;
     //假資料
     @ApiIgnore    // 忽略这个api
-    @PostMapping("/addFakeDyThread")
+   // @PostMapping("/addFakeDyThread")
     public String addFakeDyThreads() {
         dyThreadService.addFakeDyThread(50);
         return "Fake DyThreads added successfully!";

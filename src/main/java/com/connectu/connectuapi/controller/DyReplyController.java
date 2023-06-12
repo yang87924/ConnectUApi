@@ -23,7 +23,7 @@ public class DyReplyController {
     //假資料
 
     @ApiIgnore    // 忽略这个api
-    @PostMapping("/addFakeDyReply")
+   // @PostMapping("/addFakeDyReply")
     public String addFakeDyThreads() {
         dyReplyService.addFakeDyReply(50);
         return "Fake DyReply added successfully!";

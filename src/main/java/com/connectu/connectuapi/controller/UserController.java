@@ -27,7 +27,7 @@ public class UserController extends BaseController {
     private IUserService userService;
     //假資料
 
-    @PostMapping("/addFakeUser")
+   // @PostMapping("/addFakeUser")
     @ApiIgnore    // 忽略这个api
     public String addFakeUsers() {
         userService.addFakeUsers(100);
