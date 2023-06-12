@@ -75,4 +75,7 @@ public class BaseController {
     protected final String getEmailFromSession(HttpSession session) {
         return session.getAttribute("email").toString();
     }
+    protected final String getPicturePathFromSession(HttpSession session) {
+        return session.getAttribute("picPath").toString();
+    }
 }

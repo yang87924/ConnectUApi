@@ -43,18 +43,18 @@ public class ThreadController extends BaseController{
         return "Fake Thread added successfully!";
     }
     //新增論壇文章
+//    @PostMapping
+//    @ApiOperation("新增論壇文章")
+//    public Result save(@RequestBody Thread thread, HttpSession session) {
+//        thread.setPicture(getPicturePathFromSession(session));
+//        boolean flag = threadService.save(thread);
+//        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章新增成功":"論壇文章新增失敗");
+//    }
     @PostMapping
     @ApiOperation("新增論壇文章")
-    public Result save(Thread thread , @Nullable @RequestParam("file") MultipartFile file, HttpSession session) {
-
-        Integer getThreadId = threadService.getLastThreadById();
-        //session.setAttribute("threadId", getThreadId);
-        Integer userId = (Integer) session.getAttribute("userId");
-        String fileUrl = null;;
-        if(file != null && !file.isEmpty()) {
-            fileUrl = upload(file,session);
-        }
-        boolean flag = threadService.saveThread(thread,userId,fileUrl);
+    public Result save(Thread thread, @RequestParam(value="picture", required=false) MultipartFile file, HttpSession session) {
+        thread.setPicture(upload(file, session));
+        boolean flag = threadService.save(thread);
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章新增成功":"論壇文章新增失敗");
     }
     //查詢所有文章
@@ -62,7 +62,6 @@ public class ThreadController extends BaseController{
     @ApiOperation("查詢所有論壇文章")
     public Result getAllThread() {
         List<Thread> thread = threadService.list(null);
-        System.out.println(thread);
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
@@ -70,31 +69,24 @@ public class ThreadController extends BaseController{
     //修改文章
     @PutMapping
     @ApiOperation("修改論壇文章")
-    public Result updateById(@RequestBody Thread thread) {
-//        Integer getUserId = (Integer) session.getAttribute("userId");
-//        Integer getThreadId = (Integer) session.getAttribute("threadId");
-//        String fileUrl = null;;
-//        if(file != null && !file.isEmpty()) {
-//            fileUrl = upload(file,session);
-//        }
-        //boolean flag = threadService.putThreadById(thread, getUserId, getThreadId,fileUrl);
+    public Result updateById(Thread thread, @RequestParam(value="picture", required=false) MultipartFile file, HttpSession session) {
+        thread.setPicture(upload(file, session));
         boolean flag = threadService.updateById(thread);
-        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "論壇文章更新成功" : "論壇文章更新失敗");
+        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章新增成功":"論壇文章新增失敗");
     }
     //刪除文章
-    @ApiImplicitParam(name = "Threadid", value = "論壇文章id")
-    @DeleteMapping("/{Threadid}")
+    @ApiImplicitParam(name = "threadId", value = "論壇文章id")
+    @DeleteMapping("/{threadId}")
     @ApiOperation("刪除論壇文章")
-    public Result deleteById(@PathVariable Integer Threadid) {
-        boolean flag = threadService.removeById(Threadid);
+    public Result deleteById(@PathVariable Integer threadId) {
+        boolean flag = threadService.removeById(threadId);
         return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ?"論壇文章刪除成功":"論壇文章刪除失敗");
     }
     //查詢單筆論壇
-    @GetMapping("/{id}")
+    @GetMapping("/{threadId}")
     @ApiOperation("查詢單筆論壇文章")
-    public Result getUserById(@PathVariable Integer id, HttpSession session) {
-        Thread thread = threadService.getById(id);
-        session.setAttribute("threadId", thread.getThreadId()); // 修改這一行
+    public Result getUserById(@PathVariable Integer threadId) {
+        Thread thread = threadService.getById(threadId);
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "論壇文章資料取得成功" : "查無資料";
         return new Result(code, thread, msg);
