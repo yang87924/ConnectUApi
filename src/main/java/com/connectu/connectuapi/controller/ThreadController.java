@@ -55,7 +55,7 @@ public class ThreadController extends BaseController{
     @PostMapping
     @ApiOperation("新增論壇文章")
     public Result save(Thread thread, MultipartFile file, HttpSession session) {
-        thread.setUserId(getUserIdFromSession(session));
+
         if(!file.isEmpty()) {
             thread.setPicture(upload(file, session));
         }
