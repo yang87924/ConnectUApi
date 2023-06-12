@@ -11,7 +11,7 @@ public class Code {
     public static final Integer UPDATE_OK = 20031;
     public static final Integer GET_OK = 20041;
     public static final Integer LOGIN_OK = 20051;
-    public static final Integer UPLOAD_OK = 20061;
+    public static final Integer INVALIDATE_OK = 20061;
 
 
 

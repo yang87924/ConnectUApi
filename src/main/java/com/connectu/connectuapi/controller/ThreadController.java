@@ -75,7 +75,7 @@ public class ThreadController extends BaseController{
     //修改文章
     @PutMapping
     @ApiOperation("修改論壇文章")
-    public Result updateById(Thread thread, MultipartFile file, HttpSession session) {
+    public Result updateById(Thread thread, @RequestParam("pictureFile") MultipartFile file, HttpSession session) {
         if(!file.isEmpty()) {
             thread.setPicture(upload(file, session));
         }

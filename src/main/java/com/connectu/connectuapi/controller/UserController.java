@@ -49,6 +49,13 @@ public class UserController extends BaseController {
         session.setAttribute("email", loginUser.getEmail());
         return new Result(Code.LOGIN_OK, loginUser, "登入成功");
     }
+    //清除Session---------------------------------------------------------------
+    @PostMapping("/invalidate")
+    @ApiOperation("清除Session")
+    public Result invalidate(HttpSession session) {
+        session.invalidate();
+        return new Result(Code.INVALIDATE_OK, null, "清除Session成功");
+    }
 
 
     //刪除用戶--------------------------------------------------------------
@@ -63,7 +70,7 @@ public class UserController extends BaseController {
     //修改用戶--------------------------------------------------------------
     @PutMapping
     @ApiOperation("修改用戶")
-    public Result updateById(User user, MultipartFile file, HttpSession session) {
+    public Result updateById(User user, @RequestParam("avatarFile") MultipartFile file, HttpSession session) {
         if(!file.isEmpty()) {
             user.setAvatar(upload(file, session));
         }
