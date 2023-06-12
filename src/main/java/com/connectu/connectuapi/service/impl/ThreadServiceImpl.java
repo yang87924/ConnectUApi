@@ -62,7 +62,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
 
 
     public boolean saveThread(Thread thread, Integer userId,String fileUrl) {
-        System.out.println(userId);
+       // System.out.println(userId);
         thread.setPicture(fileUrl);
 
         thread.setUserId(userId);
@@ -82,12 +82,21 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     }
 
 
-    public Boolean putThreadById(Thread thread, Integer getUserId, Integer getThreadId,String fileUrl) {
-        thread.setThreadId(getThreadId);
-        //thread.setUserId(getUserId);
-        thread.setPicture(fileUrl);
-//        System.out.println(getThreadId);
-//        System.out.println(getUserId);
+    public Boolean putThreadById(Thread thread) {
+        System.out.println(thread.getTitle());
+        System.out.println(thread.getContent());
+        System.out.println(thread.getCategoryId());
+        System.out.println(thread.getUserId());
+        System.out.println(thread.getThreadId());
+        thread.setTitle(thread.getTitle());
+        thread.setContent(thread.getContent());
+        thread.setCategoryId(thread.getCategoryId());
+ //       thread.setThreadId(thread.getThreadId());
+//        thread.setUserId(thread.getUserId());
+        //System.out.println(getSystemTime());
+       // thread.setPicture(fileUrl);
+       // System.out.println(getThreadId);
+      //  System.out.println(getUserId);
         return super.updateById(thread);
     }
 }

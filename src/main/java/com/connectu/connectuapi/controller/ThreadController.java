@@ -34,8 +34,6 @@ import java.util.UUID;
 public class ThreadController extends BaseController{
     @Autowired
     private IThreadService threadService;
-    @Autowired
-    private IReplyService replyService;
 
     //假資料
     @ApiIgnore    // 忽略这个api
@@ -72,14 +70,15 @@ public class ThreadController extends BaseController{
     //修改文章
     @PutMapping
     @ApiOperation("修改論壇文章")
-    public Result updateById( Thread thread, @Nullable @RequestParam("file") MultipartFile file, HttpSession session) {
-        Integer getUserId = (Integer) session.getAttribute("userId");
-        Integer getThreadId = (Integer) session.getAttribute("threadId");
-        String fileUrl = null;;
-        if(file != null && !file.isEmpty()) {
-            fileUrl = upload(file,session);
-        }
-        boolean flag = threadService.putThreadById(thread, getUserId, getThreadId,fileUrl);
+    public Result updateById(@RequestBody Thread thread) {
+//        Integer getUserId = (Integer) session.getAttribute("userId");
+//        Integer getThreadId = (Integer) session.getAttribute("threadId");
+//        String fileUrl = null;;
+//        if(file != null && !file.isEmpty()) {
+//            fileUrl = upload(file,session);
+//        }
+        //boolean flag = threadService.putThreadById(thread, getUserId, getThreadId,fileUrl);
+        boolean flag = threadService.updateById(thread);
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "論壇文章更新成功" : "論壇文章更新失敗");
     }
     //刪除文章
