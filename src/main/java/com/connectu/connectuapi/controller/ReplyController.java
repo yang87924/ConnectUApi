@@ -22,7 +22,7 @@ public class ReplyController {
     private IReplyService replyService;
     //假資料
     @ApiIgnore    // 忽略这个api
-   // @PostMapping("/addFakeReply")
+    @PostMapping("/addFakeReply")
     public String addFakeReply() {
         replyService.addFakeReply(50);
         return "Fake Reply added successfully!";

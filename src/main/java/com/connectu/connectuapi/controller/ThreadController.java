@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
+
 @Api(tags ="論壇")
 @RestController
 @RequestMapping("/threads")
@@ -37,7 +39,7 @@ public class ThreadController extends BaseController{
 
     //假資料
     @ApiIgnore    // 忽略这个api
-   // @PostMapping("/addFakeThread")
+    @PostMapping("/addFakeThread")
     public String addFakeThread() {
         threadService.addFakeThread(50);
         return "Fake Thread added successfully!";
@@ -53,7 +55,7 @@ public class ThreadController extends BaseController{
     @PostMapping
     @ApiOperation("新增論壇文章")
     public Result save(Thread thread, MultipartFile file, HttpSession session) {
-
+        thread.setUserId(getUserIdFromSession(session));
         if(!file.isEmpty()) {
             thread.setPicture(upload(file, session));
         }
@@ -78,7 +80,7 @@ public class ThreadController extends BaseController{
             thread.setPicture(upload(file, session));
         }
         boolean flag = threadService.updateById(thread);
-        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章新增成功":"論壇文章新增失敗");
+        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章修改成功":"論壇文章修改失敗");
     }
     //刪除文章
     @ApiImplicitParam(name = "threadId", value = "論壇文章id")
@@ -109,7 +111,7 @@ public class ThreadController extends BaseController{
         return new Result(code, thread, msg);
     }
     //取得使用者的所有文章
-    @GetMapping("/{id}")
+    @GetMapping("user/{id}")
     @ApiOperation("取得使用者的所有論壇文章")
     public Result getUserThread(@PathVariable Integer id) {
         List<Thread> thread = threadService.getUserThreadById(id);

@@ -52,6 +52,13 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
 
     }
 
+    @Override
+    public boolean save(Thread thread) {
+
+        thread.setCreatedAt(getSystemTime());
+        return super.save(thread);
+    }
+
     public static Thread createFakeThread(int count) {
         Thread thread = new Thread();
         thread.setCategoryId((int) (Math.random() * 13) + 1);
@@ -59,6 +66,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         thread.setTitle(generateFakeArticle(10));
         thread.setContent(generateFakeArticle(100));
         thread.setCreatedAt(getSystemTime());
+        thread.setPicture("C:/Users/User/AppData/Local/Temp/tomcat-docbase.80.10138220504103279093/upload/95cf287d-00f7-4c44-aa49-a37eaa374270.png");
         return thread;
     }
 
