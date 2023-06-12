@@ -69,7 +69,9 @@ public class UserController extends BaseController {
     @PutMapping
     @ApiOperation("修改用戶")
     public Result updateById(User user, @RequestParam(value = "avatar", required = false) MultipartFile file, HttpSession session) {
-        user.setAvatar(upload(file, session));
+        if(!file.isEmpty()) {
+            user.setAvatar(upload(file, session));
+        }
         boolean flag = userService.updateById(user);
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "用戶資料更新成功" : "用戶資料更新失敗");
     }

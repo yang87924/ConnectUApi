@@ -70,7 +70,9 @@ public class ThreadController extends BaseController{
     @PutMapping
     @ApiOperation("修改論壇文章")
     public Result updateById(Thread thread, @RequestParam(value="picture", required=false) MultipartFile file, HttpSession session) {
-        thread.setPicture(upload(file, session));
+        if(!file.isEmpty()) {
+            thread.setPicture(upload(file, session));
+        }
         boolean flag = threadService.updateById(thread);
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章新增成功":"論壇文章新增失敗");
     }
