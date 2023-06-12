@@ -34,6 +34,7 @@ springfox:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+
 ##==============================================================
   #熱部屬配置
   devtools:

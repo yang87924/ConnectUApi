@@ -14,6 +14,7 @@ import com.connectu.connectuapi.exception.UserNotFoundException;
 import com.connectu.connectuapi.service.IThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
@@ -23,6 +24,7 @@ import java.util.List;
 import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
 import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 
+@Transactional
 @Service
 public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implements IThreadService  {
     @Autowired
