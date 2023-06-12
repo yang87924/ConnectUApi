@@ -52,8 +52,12 @@ public class ThreadController extends BaseController{
 //    }
     @PostMapping
     @ApiOperation("新增論壇文章")
-    public Result save(Thread thread, @RequestParam(value="picture", required=false) MultipartFile file, HttpSession session) {
-        thread.setPicture(upload(file, session));
+    public Result save(Thread thread, MultipartFile file, HttpSession session) {
+
+        if(!file.isEmpty()) {
+            thread.setPicture(upload(file, session));
+        }
+
         boolean flag = threadService.save(thread);
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章新增成功":"論壇文章新增失敗");
     }
@@ -69,7 +73,7 @@ public class ThreadController extends BaseController{
     //修改文章
     @PutMapping
     @ApiOperation("修改論壇文章")
-    public Result updateById(Thread thread, @RequestParam(value="picture", required=false) MultipartFile file, HttpSession session) {
+    public Result updateById(Thread thread, MultipartFile file, HttpSession session) {
         if(!file.isEmpty()) {
             thread.setPicture(upload(file, session));
         }

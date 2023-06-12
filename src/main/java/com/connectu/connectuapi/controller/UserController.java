@@ -3,7 +3,6 @@ package com.connectu.connectuapi.controller;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.User;
-import com.connectu.connectuapi.exception.file.*;
 import com.connectu.connectuapi.service.IUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,11 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Api(tags = "使用者")
 @RestController
@@ -68,10 +63,11 @@ public class UserController extends BaseController {
     //修改用戶--------------------------------------------------------------
     @PutMapping
     @ApiOperation("修改用戶")
-    public Result updateById(User user, @RequestParam(value = "avatar", required = false) MultipartFile file, HttpSession session) {
+    public Result updateById(User user, MultipartFile file, HttpSession session) {
         if(!file.isEmpty()) {
             user.setAvatar(upload(file, session));
         }
+
         boolean flag = userService.updateById(user);
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "用戶資料更新成功" : "用戶資料更新失敗");
     }
