@@ -73,8 +73,7 @@ public class UserController extends BaseController {
             user.setAvatar(upload(file, session));
         }
 
-        User temp = userService.getById(user.getUserId());
-        boolean flag = userService.updateById(temp);
+        boolean flag = userService.updateById(user);
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "用戶資料更新成功" : "用戶資料更新失敗");
     }
 
