@@ -22,12 +22,12 @@ public class DyReplyController {
     private IDyReplyService dyReplyService;
     //假資料
 
-    @ApiIgnore    // 忽略这个api
-   // @PostMapping("/addFakeDyReply")
-    public String addFakeDyThreads() {
-        dyReplyService.addFakeDyReply(50);
-        return "Fake DyReply added successfully!";
-    }
+//    @ApiIgnore    // 忽略这个api
+//   // @PostMapping("/addFakeDyReply")
+//    public String addFakeDyThreads() {
+//        dyReplyService.addFakeDyReply(50);
+//        return "Fake DyReply added successfully!";
+//    }
     //取得動態文章的所有留言
     @GetMapping("/{DyThreadid}")
     @ApiImplicitParam(name = "DyThreadid", value = "動態文章id")

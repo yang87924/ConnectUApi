@@ -37,12 +37,12 @@ public class ThreadController extends BaseController{
     @Autowired
     private IThreadService threadService;
     //假資料
-    @ApiIgnore    // 忽略这个api
-    @PostMapping("/addFakeThread")
-    public String addFakeThread() {
-        threadService.addFakeThread(50);
-        return "Fake Thread added successfully!";
-    }
+//    @ApiIgnore    // 忽略这个api
+//    @PostMapping("/addFakeThread")
+//    public String addFakeThread() {
+//        threadService.addFakeThread(50);
+//        return "Fake Thread added successfully!";
+//    }
 
     @PostMapping
     @ApiOperation("新增論壇文章")
@@ -109,10 +109,10 @@ public class ThreadController extends BaseController{
         return new Result(code, thread, msg);
     }
     //取得使用者的所有文章
-    @GetMapping("user/{id}")
+    @GetMapping("user/{UsetId}")
     @ApiOperation("取得使用者的所有論壇文章")
-    public Result getUserThread(@PathVariable Integer id) {
-        List<Thread> thread = threadService.getUserThreadById(id);
+    public Result getUserThread(@PathVariable Integer UsetId) {
+        List<Thread> thread = threadService.getUserThreadById(UsetId);
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
@@ -120,8 +120,8 @@ public class ThreadController extends BaseController{
     @GetMapping("/search")
     @ApiOperation("關鍵字搜尋")
     public Result searchThreadsByKeyword(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String categoryName) {
+            @RequestParam String keyword,
+            @RequestParam String categoryName) {
         List<Thread> search = null;
         if (keyword != null && !keyword.isEmpty() && categoryName != null && !categoryName.isEmpty()) {
             search = threadService.searchThreadsByKeyword(keyword, categoryName);

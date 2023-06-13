@@ -21,12 +21,12 @@ public class ReplyController {
     @Autowired
     private IReplyService replyService;
     //假資料
-    @ApiIgnore    // 忽略这个api
-    @PostMapping("/addFakeReply")
-    public String addFakeReply() {
-        replyService.addFakeReply(50);
-        return "Fake Reply added successfully!";
-    }
+//    @ApiIgnore    // 忽略这个api
+//    @PostMapping("/addFakeReply")
+//    public String addFakeReply() {
+//        replyService.addFakeReply(50);
+//        return "Fake Reply added successfully!";
+//    }
     //取得論壇文章的所有留言
     @GetMapping("/{Threadid}")
     @ApiImplicitParam(name = "Threadid", value = "論壇文章id")

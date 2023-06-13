@@ -21,12 +21,12 @@ public class DyThreadController {
     @Autowired
     private IDyThreadService dyThreadService;
     //假資料
-    @ApiIgnore    // 忽略这个api
-   // @PostMapping("/addFakeDyThread")
-    public String addFakeDyThreads() {
-        dyThreadService.addFakeDyThread(50);
-        return "Fake DyThreads added successfully!";
-    }
+//    @ApiIgnore    // 忽略这个api
+//    @PostMapping("/addFakeDyThread")
+//    public String addFakeDyThreads() {
+//        dyThreadService.addFakeDyThread(50);
+//        return "Fake DyThreads added successfully!";
+//    }
     @PostMapping
     @ApiOperation("新增動態文章")
     public Result save(@RequestBody DyThread dyThread) {

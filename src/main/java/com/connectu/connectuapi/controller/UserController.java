@@ -29,12 +29,12 @@ public class UserController extends BaseController {
 
     //假資料
 
-    @PostMapping("/addFakeUser")
-    @ApiIgnore    // 忽略这个api
-    public String addFakeUsers() {
-        userService.addFakeUsers(100);
-        return "Fake users added successfully!";
-    }
+//    @PostMapping("/addFakeUser")
+//    @ApiIgnore    // 忽略这个api
+//    public String addFakeUsers() {
+//        userService.addFakeUsers(100);
+//        return "Fake users added successfully!";
+//    }
 
 
     //創建用戶--------------------------------------------------------------
