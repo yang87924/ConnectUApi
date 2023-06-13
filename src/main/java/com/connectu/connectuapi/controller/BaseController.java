@@ -1,14 +1,20 @@
 package com.connectu.connectuapi.controller;
 
 import com.connectu.connectuapi.exception.file.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+
 
 public class BaseController {
 
@@ -92,4 +98,23 @@ public class BaseController {
     protected final String getPicturePathFromSession(HttpSession session) {
         return session.getAttribute("picPath").toString();
     }
+
+    public JsonNode parseJSON(String token){
+        String[] parts = token.split("\\.", 0);
+
+
+        byte[] bytes = Base64.getUrlDecoder().decode(parts[1]);
+        String decodedString = new String(bytes, StandardCharsets.UTF_8);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode;
+
+        try {
+            jsonNode = objectMapper.readTree(decodedString);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        return jsonNode;
+    }
+
 }

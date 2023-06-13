@@ -44,14 +44,7 @@ public class ThreadController extends BaseController{
         threadService.addFakeThread(50);
         return "Fake Thread added successfully!";
     }
-    //新增論壇文章
-//    @PostMapping
-//    @ApiOperation("新增論壇文章")
-//    public Result save(@RequestBody Thread thread, HttpSession session) {
-//        thread.setPicture(getPicturePathFromSession(session));
-//        boolean flag = threadService.save(thread);
-//        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章新增成功":"論壇文章新增失敗");
-//    }
+
     @PostMapping
     @ApiOperation("新增論壇文章")
     public Result save(Thread thread, List<MultipartFile> files, HttpSession session) {
