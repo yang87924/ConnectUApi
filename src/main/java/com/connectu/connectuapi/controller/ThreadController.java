@@ -94,18 +94,17 @@ public class ThreadController extends BaseController{
     @GetMapping("/{threadId}")
     @ApiOperation("查詢單筆論壇文章")
     public Result getUserById(@PathVariable Integer threadId) {
-        Thread thread = threadService.getById(threadId);
+        Thread thread = threadService.getThreadWithCategoryName(threadId);
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "論壇文章資料取得成功" : "查無資料";
         return new Result(code, thread, msg);
     }
-    //查詢單筆論壇
+    //查詢最後一筆論壇文章
     @GetMapping("last")
     @ApiOperation("查詢最後一筆論壇文章")
     public Result getUserlastById() {
         Integer getThreadId = threadService.getLastThreadById();
-        //System.out.println(getThreadId);
-        Thread thread = threadService.getById(getThreadId-1);
+        Thread thread = threadService.getThreadWithCategoryName(getThreadId - 1);
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "最後一筆資料取得成功" : "查無資料";
         return new Result(code, thread, msg);

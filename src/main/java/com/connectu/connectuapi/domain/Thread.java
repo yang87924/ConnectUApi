@@ -1,5 +1,6 @@
 package com.connectu.connectuapi.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,10 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.persistence.Column;
-
 @Schema
 @Data
-//@JsonIgnoreProperties({"threadId", "userId", "createdAt", "picture"})
 @ApiModel(description = "論壇文章")
 public class Thread  {
     @TableId
@@ -29,5 +28,10 @@ public class Thread  {
     private String createdAt;
     @ApiModelProperty(value = "圖片")
     private String picture;
-
+    @TableField(exist = false)
+    @ApiModelProperty(value = "分類名稱")
+    private String categoryName;
+//    @TableField(exist = false)
+//    @ApiModelProperty(value = "分類信息")
+//    private Category category;
 }

@@ -11,7 +11,7 @@ public interface IThreadService extends IService<Thread> {
     void addFakeThread(int count);
     Integer getLastThreadById();
     List<Thread> getUserThreadById(int id);
-
+    Thread getThreadWithCategoryName(Integer threadId);
 
     //Boolean putThreadById(Thread thread,Integer getThreadId,Integer getUserId,String fileUrl);
 //    Boolean putThreadById(Thread thread);

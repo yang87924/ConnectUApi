@@ -1,11 +1,14 @@
 package com.connectu.connectuapi.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.controller.BaseController;
+import com.connectu.connectuapi.dao.CategoryDao;
 import com.connectu.connectuapi.dao.ReplyDao;
 import com.connectu.connectuapi.dao.ThreadDao;
+import com.connectu.connectuapi.domain.Category;
 import com.connectu.connectuapi.domain.Reply;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
@@ -23,7 +26,6 @@ import java.util.List;
 
 import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
 import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
-
 @Transactional
 @Service
 public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implements IThreadService  {
@@ -31,6 +33,8 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     private ThreadDao threadDao;
     @Autowired
     private ReplyDao replyDao;
+    @Autowired
+    private CategoryDao categoryDao;
 
     @Override
     public void addFakeThread(int count) {
@@ -43,15 +47,25 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     @Override
     public Integer getLastThreadById() {
         Integer lastThreadId = (Integer) threadDao.selectObjs(
-                new QueryWrapper<Thread>()
-                        .select("threadId")
-                        .orderByDesc("threadId")
-                        .last("limit 1"))
+                        new QueryWrapper<Thread>()
+                                .select("threadId")
+                                .orderByDesc("threadId")
+                                .last("limit 1"))
                 .get(0);
         return lastThreadId + 1;
 
     }
-
+    @Override
+    public Thread getThreadWithCategoryName(Integer threadId) {
+        Thread thread = this.getById(threadId);
+        if (thread != null) {
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            if (category != null) {
+                thread.setCategoryName(category.getCategoryName());
+            }
+        }
+        return thread;
+    }
     @Override
     public boolean save(Thread thread) {
 
@@ -69,12 +83,29 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         thread.setPicture("C:/Users/User/AppData/Local/Temp/tomcat-docbase.80.10138220504103279093/upload/95cf287d-00f7-4c44-aa49-a37eaa374270.png");
         return thread;
     }
-
     public List<Thread> getUserThreadById(int id) {
         LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Thread::getUserId, id);
         List<Thread> result = threadDao.selectList(lqw);
+        // 為每個 thread 設置 categoryName
+        for (Thread thread : result) {
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            if (category != null) {
+                thread.setCategoryName(category.getCategoryName());
+            }
+        }
         return result;
+    }
+    @Override
+    public List<Thread> list(Wrapper<Thread> queryWrapper) {
+        List<Thread> threads = super.list(queryWrapper);
+        for (Thread thread : threads) {
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            if (category != null) {
+                thread.setCategoryName(category.getCategoryName());
+            }
+        }
+        return threads;
     }
 
     @Override
@@ -82,11 +113,13 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         LambdaQueryWrapper<Reply> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Reply::getThreadId, id);
         List<Reply> result = replyDao.selectList(lqw);
+
         for (Reply reply : result) {
             replyDao.deleteById(reply.getReplyId()) ;
         }
         return super.removeById(id);
     }
+
 
 
 }
