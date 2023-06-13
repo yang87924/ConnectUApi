@@ -70,9 +70,14 @@ public class UserController extends BaseController {
     //修改用戶--------------------------------------------------------------
     @PutMapping
     @ApiOperation("修改用戶")
-    public Result updateById(User user, @RequestParam("avatarFile") MultipartFile file, HttpSession session) {
-        if(!file.isEmpty()) {
-            user.setAvatar(upload(file, session));
+    public Result updateById(User user, List<MultipartFile> files, HttpSession session) {
+        if(!(files.get(0).isEmpty())) {
+            String paths="";
+            for (String path : upload(files, session)) {
+                paths += path + "|";
+            }
+            user.setAvatar(paths.substring(0,paths.length()-1));
+
         }
 
         boolean flag = userService.updateById(user);

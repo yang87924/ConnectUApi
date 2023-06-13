@@ -22,49 +22,62 @@ public class BaseController {
         AVATAR_TYPES.add("image/bmp");
         AVATAR_TYPES.add("image/gif");
     }
+
     public final Integer getUserIdFromSession(HttpSession session) {
         return Integer.valueOf(session.getAttribute("userId").toString());
     }
-    public String upload(MultipartFile file, HttpSession session){
-        if (file.isEmpty()) {
+
+    public List<String> upload(List<MultipartFile> files, HttpSession session) {
+        if (files == null || files.isEmpty()) {
             throw new FileEmptyException();
         }
-        if (file.getSize() > AVATAR_MAX_SIZE) {
-            throw new FileSizeException();
+
+        List<String> pathList = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+
+
+            if (file.isEmpty()) {
+                throw new FileEmptyException();
+            }
+            if (file.getSize() > AVATAR_MAX_SIZE) {
+                throw new FileSizeException();
+            }
+            String contentType = file.getContentType();
+            if (!AVATAR_TYPES.contains(contentType)) {
+                throw new FileTypeException();
+            }
+
+            String parent = session.getServletContext().getRealPath("upload");
+
+            File dir = new File(parent);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            String suffix = "";
+            String originalFilename = file.getOriginalFilename();
+            int beginIndex = originalFilename.lastIndexOf(".");
+            if (beginIndex > 0) {
+                suffix = originalFilename.substring(beginIndex);
+            }
+            String filename = UUID.randomUUID().toString() + suffix;
+
+            File dest = new File(dir, filename);
+            try {
+                file.transferTo(dest);
+            } catch (IllegalStateException e) {
+                throw new FileStateException();
+            } catch (IOException e) {
+                throw new FileUploadIOException();
+            }
+
+            String avatar = parent + "\\" + filename;
+            String revisedPath = avatar.replace("\\", "/");
+            pathList.add(revisedPath);
+
         }
-        String contentType = file.getContentType();
-        if (!AVATAR_TYPES.contains(contentType)) {
-            throw new FileTypeException();
-        }
-
-        String parent = session.getServletContext().getRealPath("upload");
-
-        File dir = new File(parent);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        String suffix = "";
-        String originalFilename = file.getOriginalFilename();
-        int beginIndex = originalFilename.lastIndexOf(".");
-        if (beginIndex > 0) {
-            suffix = originalFilename.substring(beginIndex);
-        }
-        String filename = UUID.randomUUID().toString() + suffix;
-
-        File dest = new File(dir, filename);
-        try {
-            file.transferTo(dest);
-        } catch (IllegalStateException e) {
-            throw new FileStateException();
-        } catch (IOException e) {
-            throw new FileUploadIOException();
-        }
-
-
-        String avatar = parent + "\\" + filename;
-        String revisedPath = avatar.replace("\\", "/");
-        return revisedPath;
+        return pathList;
     }
 
 
@@ -75,6 +88,7 @@ public class BaseController {
     protected final String getEmailFromSession(HttpSession session) {
         return session.getAttribute("email").toString();
     }
+
     protected final String getPicturePathFromSession(HttpSession session) {
         return session.getAttribute("picPath").toString();
     }

@@ -54,10 +54,15 @@ public class ThreadController extends BaseController{
 //    }
     @PostMapping
     @ApiOperation("新增論壇文章")
-    public Result save(Thread thread, MultipartFile file, HttpSession session) {
+    public Result save(Thread thread, List<MultipartFile> files, HttpSession session) {
 
-        if(!file.isEmpty()) {
-            thread.setPicture(upload(file, session));
+        if(!(files.get(0).isEmpty())) {
+            String paths="";
+            for (String path : upload(files, session)) {
+                paths += path + "|";
+            }
+            thread.setPicture(paths.substring(0,paths.length()-1));
+
         }
 
         boolean flag = threadService.save(thread);
@@ -75,9 +80,13 @@ public class ThreadController extends BaseController{
     //修改文章
     @PutMapping
     @ApiOperation("修改論壇文章")
-    public Result updateById(Thread thread, @RequestParam("pictureFile") MultipartFile file, HttpSession session) {
-        if(!file.isEmpty()) {
-            thread.setPicture(upload(file, session));
+    public Result updateById(Thread thread, List<MultipartFile> files, HttpSession session) {
+        if(!(files.get(0).isEmpty())) {
+            String paths="";
+            for (String path : upload(files, session)) {
+                paths += path + "|";
+            }
+            thread.setPicture(paths.substring(0,paths.length()-1));
         }
         boolean flag = threadService.updateById(thread);
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章修改成功":"論壇文章修改失敗");
