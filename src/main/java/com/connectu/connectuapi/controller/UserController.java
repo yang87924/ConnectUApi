@@ -4,6 +4,7 @@ import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IUserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,12 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Api(tags = "使用者")
 @RestController
@@ -39,6 +45,19 @@ public class UserController extends BaseController {
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "用戶創建成功" : "用戶創建失敗");
     }
 
+    @PostMapping("/google")
+    @ApiOperation("創建用戶")
+    public void saveByGoogle(@RequestParam("credential") String token) {
+        User user = new User();
+        user.setUserName(parseJSON(token).get("name").asText());
+        user.setEmail(parseJSON(token).get("email").asText());
+        user.setAvatar(parseJSON(token).get("picture").asText());
+        user.setPassword("google");
+        System.out.println(user);
+        userService.save(user);
+    }
+
+
     //登入--------------------------------------------------------------
     @PostMapping("/login")
     @ApiOperation("登入")
@@ -49,6 +68,7 @@ public class UserController extends BaseController {
         session.setAttribute("email", loginUser.getEmail());
         return new Result(Code.LOGIN_OK, loginUser, "登入成功");
     }
+
     //清除Session---------------------------------------------------------------
     @PostMapping("/invalidate")
     @ApiOperation("清除Session")
@@ -71,12 +91,12 @@ public class UserController extends BaseController {
     @PutMapping
     @ApiOperation("修改用戶")
     public Result updateById(User user, List<MultipartFile> files, HttpSession session) {
-        if(!(files.get(0).isEmpty())) {
-            String paths="";
+        if (!(files.get(0).isEmpty())) {
+            String paths = "";
             for (String path : upload(files, session)) {
                 paths += path + "|";
             }
-            user.setAvatar(paths.substring(0,paths.length()-1));
+            user.setAvatar(paths.substring(0, paths.length() - 1));
 
         }
 
@@ -104,7 +124,6 @@ public class UserController extends BaseController {
         String msg = users != null ? "所有用戶資料取得成功" : "查無用戶資料";
         return new Result(code, users, msg);
     }
-
 
 
 }
