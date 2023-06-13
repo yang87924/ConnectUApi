@@ -36,7 +36,6 @@ import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 public class ThreadController extends BaseController{
     @Autowired
     private IThreadService threadService;
-
     //假資料
     @ApiIgnore    // 忽略这个api
     @PostMapping("/addFakeThread")
@@ -48,16 +47,13 @@ public class ThreadController extends BaseController{
     @PostMapping
     @ApiOperation("新增論壇文章")
     public Result save(Thread thread, List<MultipartFile> files, HttpSession session) {
-
         if(!(files.get(0).isEmpty())) {
             String paths="";
             for (String path : upload(files, session)) {
                 paths += path + "|";
             }
             thread.setPicture(paths.substring(0,paths.length()-1));
-
         }
-
         boolean flag = threadService.save(thread);
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章新增成功":"論壇文章新增失敗");
     }
@@ -120,5 +116,18 @@ public class ThreadController extends BaseController{
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
+    }
+    @GetMapping("/search")
+    @ApiOperation("關鍵字搜尋")
+    public Result searchThreadsByKeyword(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String categoryName) {
+        List<Thread> search = null;
+        if (keyword != null && !keyword.isEmpty() && categoryName != null && !categoryName.isEmpty()) {
+            search = threadService.searchThreadsByKeyword(keyword, categoryName);
+        }
+        Integer code = search != null && !search.isEmpty() ? Code.GET_OK : Code.GET_ERR;
+        String msg = search != null && !search.isEmpty() ? "搜尋文章資料成功" : "搜尋文章資料失敗!請重新輸入關鍵字";
+        return new Result(code, search, msg);
     }
 }

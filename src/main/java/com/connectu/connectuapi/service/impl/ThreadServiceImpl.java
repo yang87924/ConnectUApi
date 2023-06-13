@@ -22,7 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
 import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
@@ -119,7 +121,37 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         }
         return super.removeById(id);
     }
+    @Override
+    public List<Thread> searchThreadsByKeyword(String keyword, String categoryName) {
+        LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
+        if (keyword != null && !keyword.isEmpty() && categoryName != null && !categoryName.isEmpty()) {
+            lqw.and(threadLqw -> threadLqw.like(Thread::getTitle, keyword)
+                    .or()
+                    .like(Thread::getContent, keyword));
 
+            // 根据 categoryName 查询 categoryId
+            LambdaQueryWrapper<Category> categoryLqw = new LambdaQueryWrapper<>();
+            categoryLqw.like(Category::getCategoryName, categoryName);
+            List<Category> categories = categoryDao.selectList(categoryLqw);
+            if (!categories.isEmpty()) {
+                List<Integer> categoryIds = categories.stream()
+                        .map(Category::getCategoryId)
+                        .collect(Collectors.toList());
+                lqw.and(threadLqw -> threadLqw.in(Thread::getCategoryId, categoryIds));
+            }
 
+            List<Thread> result = threadDao.selectList(lqw);
+            // 为每个 thread 设置 categoryName
+            for (Thread thread : result) {
+                Category category = categoryDao.selectById(thread.getCategoryId());
+                if (category != null) {
+                    thread.setCategoryName(category.getCategoryName());
+                }
+            }
+            return result;
+        } else {
+            return new ArrayList<>();
+        }
+    }
 
 }
