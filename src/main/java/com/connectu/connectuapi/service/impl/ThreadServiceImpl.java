@@ -85,7 +85,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         thread.setPicture("C:/Users/User/AppData/Local/Temp/tomcat-docbase.80.10138220504103279093/upload/95cf287d-00f7-4c44-aa49-a37eaa374270.png");
         return thread;
     }
-    public List<Thread> getUserThreadById(int id) {
+    public List<Thread> getUserThread(int id) {
         LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Thread::getUserId, id);
         List<Thread> result = threadDao.selectList(lqw);

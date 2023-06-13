@@ -9,6 +9,8 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+import javax.servlet.http.HttpSession;
+
 /**
  * swagger配置
  */
@@ -21,12 +23,12 @@ public class SwaggerConfig {
     public Docket createRestApi() {
         return new Docket(DocumentationType.OAS_30)
                 .apiInfo(apiInfo())
-                // 是否开启
-                .enable(swaggerEnabled)//true
+                .enable(swaggerEnabled)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.connectu.connectuapi.controller"))
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .ignoredParameterTypes(HttpSession.class);
     }
 
     private ApiInfo apiInfo() {

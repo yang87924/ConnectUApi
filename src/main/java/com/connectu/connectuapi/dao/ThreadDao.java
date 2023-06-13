@@ -8,6 +8,4 @@ import java.util.List;
 
 @Mapper
 public interface ThreadDao extends BaseMapper<Thread> {
-    @Select("SELECT t.*, c.categoryName FROM thread t JOIN category c ON t.categoryId = c.categoryId")
-    List<Thread> selectAllWithCategoryName();
 }

@@ -31,7 +31,4 @@ public class Thread  {
     @TableField(exist = false)
     @ApiModelProperty(value = "分類名稱")
     private String categoryName;
-//    @TableField(exist = false)
-//    @ApiModelProperty(value = "分類信息")
-//    private Category category;
 }

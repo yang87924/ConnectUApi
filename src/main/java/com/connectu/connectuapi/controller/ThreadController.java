@@ -10,12 +10,14 @@ import com.connectu.connectuapi.service.IThreadService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.models.auth.In;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,19 +45,46 @@ public class ThreadController extends BaseController{
 //        threadService.addFakeThread(50);
 //        return "Fake Thread added successfully!";
 //    }
-
+//    @PostMapping
+//    @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public Result save(
+//            @ApiParam(value = "論壇文章標題", required = true) @RequestPart String title,
+//            @ApiParam(value = "論壇文章內容", required = true) @RequestPart String content,
+//            @ApiParam(value = "檔案列表", required = false) @RequestPart(required = false) List<MultipartFile> files,
+//            @ApiParam(value = "分類名稱", required = true) @RequestPart Integer categoryId,
+//            HttpSession session) {
+//        Thread thread = new Thread();
+//        thread.setUserId(getUserIdFromSession(session));
+//        thread.setTitle(title);
+//        thread.setContent(content);
+//        thread.setCategoryId(categoryId);
+//        if (!(files == null || files.isEmpty() || files.get(0).isEmpty())) {
+//            String paths = "";
+//            for (String path : upload(files, session)) {
+//                paths += path + "|";
+//            }
+//            thread.setPicture(paths.substring(0, paths.length() - 1));
+//        }
+//        boolean flag = threadService.save(thread);
+//        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
+//    }
     @PostMapping
-    @ApiOperation("新增論壇文章")
-    public Result save(Thread thread, List<MultipartFile> files, HttpSession session) {
-        if(!(files.get(0).isEmpty())) {
-            String paths="";
+    @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Result save(
+            @ApiParam("論壇文章") Thread thread,
+            @ApiParam(value = "檔案列表", required = false)
+            @RequestPart(required = false) List<MultipartFile> files,
+            HttpSession session) {
+        thread.setUserId(getUserIdFromSession(session));
+        if (!(files == null || files.isEmpty() || files.get(0).isEmpty())) {
+            String paths = "";
             for (String path : upload(files, session)) {
                 paths += path + "|";
             }
-            thread.setPicture(paths.substring(0,paths.length()-1));
+            thread.setPicture(paths.substring(0, paths.length() - 1));
         }
         boolean flag = threadService.save(thread);
-        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章新增成功":"論壇文章新增失敗");
+        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
     }
     //查詢所有文章
     @GetMapping
@@ -70,7 +99,10 @@ public class ThreadController extends BaseController{
     //修改文章
     @PutMapping
     @ApiOperation("修改論壇文章")
-    public Result updateById(Thread thread, List<MultipartFile> files, HttpSession session) {
+    public Result updateById(@ApiParam("論壇文章") Thread thread,
+                             @ApiParam(value = "檔案列表", required = false)
+                             @RequestParam(required = false) List<MultipartFile> files,
+                             HttpSession session) {
         if(!(files.get(0).isEmpty())) {
             String paths="";
             for (String path : upload(files, session)) {
@@ -82,7 +114,7 @@ public class ThreadController extends BaseController{
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章修改成功":"論壇文章修改失敗");
     }
     //刪除文章
-    @ApiImplicitParam(name = "threadId", value = "論壇文章id")
+    @ApiImplicitParam(name = "threadId", value = "論壇文章Id")
     @DeleteMapping("/{threadId}")
     @ApiOperation("刪除論壇文章")
     public Result deleteById(@PathVariable Integer threadId) {
@@ -90,6 +122,7 @@ public class ThreadController extends BaseController{
         return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ?"論壇文章刪除成功":"論壇文章刪除失敗");
     }
     //查詢單筆論壇
+    @ApiImplicitParam(name = "threadId", value = "論壇文章Id")
     @GetMapping("/{threadId}")
     @ApiOperation("查詢單筆論壇文章")
     public Result getUserById(@PathVariable Integer threadId) {
@@ -109,10 +142,11 @@ public class ThreadController extends BaseController{
         return new Result(code, thread, msg);
     }
     //取得使用者的所有文章
-    @GetMapping("user/{UsetId}")
+    @GetMapping("/userThread")
     @ApiOperation("取得使用者的所有論壇文章")
-    public Result getUserThread(@PathVariable Integer UsetId) {
-        List<Thread> thread = threadService.getUserThreadById(UsetId);
+    public Result getUserThread(HttpSession session) {
+        Integer userId=getUserIdFromSession(session);
+        List<Thread> thread = threadService.getUserThread(userId);
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
@@ -120,8 +154,8 @@ public class ThreadController extends BaseController{
     @GetMapping("/search")
     @ApiOperation("關鍵字搜尋")
     public Result searchThreadsByKeyword(
-            @RequestParam String keyword,
-            @RequestParam String categoryName) {
+            @ApiParam("關鍵字")@RequestParam String keyword,
+            @ApiParam("分類名稱") @RequestParam String categoryName) {
         List<Thread> search = null;
         if (keyword != null && !keyword.isEmpty() && categoryName != null && !categoryName.isEmpty()) {
             search = threadService.searchThreadsByKeyword(keyword, categoryName);
