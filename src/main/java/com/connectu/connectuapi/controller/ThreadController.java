@@ -67,11 +67,12 @@ public class ThreadController extends BaseController{
     @GetMapping
     @ApiOperation("查詢所有論壇文章")
     public Result getAllThread() {
-        List<Thread> thread = threadService.list(null);
+        List<Thread> thread = threadService.list();
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
     }
+
     //修改文章
     @PutMapping
     @ApiOperation("修改論壇文章")

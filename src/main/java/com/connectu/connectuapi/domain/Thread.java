@@ -1,5 +1,6 @@
 package com.connectu.connectuapi.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,5 +30,6 @@ public class Thread  {
     private String createdAt;
     @ApiModelProperty(value = "圖片")
     private String picture;
-
+    @ApiModelProperty(value = "分類名稱")
+    private String categoryName;
 }

@@ -12,7 +12,4 @@ public interface IThreadService extends IService<Thread> {
     Integer getLastThreadById();
     List<Thread> getUserThreadById(int id);
 
-
-    //Boolean putThreadById(Thread thread,Integer getThreadId,Integer getUserId,String fileUrl);
-//    Boolean putThreadById(Thread thread);
 }

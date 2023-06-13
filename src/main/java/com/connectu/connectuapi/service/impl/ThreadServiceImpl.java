@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.controller.BaseController;
+import com.connectu.connectuapi.dao.CategoryDao;
 import com.connectu.connectuapi.dao.ReplyDao;
 import com.connectu.connectuapi.dao.ThreadDao;
+import com.connectu.connectuapi.domain.Category;
 import com.connectu.connectuapi.domain.Reply;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
@@ -31,6 +33,8 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     private ThreadDao threadDao;
     @Autowired
     private ReplyDao replyDao;
+    @Autowired
+    private CategoryDao categoryDao;
 
     @Override
     public void addFakeThread(int count) {
@@ -69,13 +73,17 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         thread.setPicture("C:/Users/User/AppData/Local/Temp/tomcat-docbase.80.10138220504103279093/upload/95cf287d-00f7-4c44-aa49-a37eaa374270.png");
         return thread;
     }
-
+    @Override
+    public List<Thread> list() {
+        return threadDao.selectAllWithCategoryName();
+    }
     public List<Thread> getUserThreadById(int id) {
         LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Thread::getUserId, id);
         List<Thread> result = threadDao.selectList(lqw);
         return result;
     }
+
 
     @Override
     public boolean removeById(Serializable id) {
@@ -87,6 +95,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         }
         return super.removeById(id);
     }
+
 
 
 }
