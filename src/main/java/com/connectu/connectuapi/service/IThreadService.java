@@ -12,6 +12,7 @@ public interface IThreadService extends IService<Thread> {
     Integer getLastThreadById();
     List<Thread> getUserThread(int id);
     Thread getThreadWithCategoryName(Integer threadId);
+    boolean saveThread(Integer categoryId,Integer userId,String title, String content,  String picture) ;
     List<Thread> searchThreadsByKeyword(String keyword, String categoryName);
     //Boolean putThreadById(Thread thread,Integer getThreadId,Integer getUserId,String fileUrl);
 //    Boolean putThreadById(Thread thread);

@@ -45,19 +45,31 @@ public class ThreadController extends BaseController{
 //        threadService.addFakeThread(50);
 //        return "Fake Thread added successfully!";
 //    }
+    @PostMapping
+    @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Result save(@ApiParam(value = "文章標題", required = true) @RequestParam String title,
+                         @ApiParam(value = "文章內容", required = true) @RequestParam String content,
+                         @ApiParam(value = "文章分類 ID", required = true) @RequestParam Integer categoryId,
+                         @ApiParam(value = "檔案", required = false)
+                         @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                         HttpSession session) {
+        Integer userId=getUserIdFromSession(session);
+        String picture=null;
+        if (files != null && !files.isEmpty()) {
+            List<String> paths = upload(files, session);
+            picture = String.join("|", paths);
+        }
+        boolean flag = threadService.saveThread(categoryId,userId,title,content,picture);
+        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
+    }
 //    @PostMapping
 //    @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    public Result save(
-//            @ApiParam(value = "論壇文章標題", required = true) @RequestPart String title,
-//            @ApiParam(value = "論壇文章內容", required = true) @RequestPart String content,
-//            @ApiParam(value = "檔案列表", required = false) @RequestPart(required = false) List<MultipartFile> files,
-//            @ApiParam(value = "分類名稱", required = true) @RequestPart Integer categoryId,
+//            @ApiParam("論壇文章") Thread thread,
+//            @ApiParam(value = "檔案列表", required = false)
+//            @RequestPart(required = false) List<MultipartFile> files,
 //            HttpSession session) {
-//        Thread thread = new Thread();
 //        thread.setUserId(getUserIdFromSession(session));
-//        thread.setTitle(title);
-//        thread.setContent(content);
-//        thread.setCategoryId(categoryId);
 //        if (!(files == null || files.isEmpty() || files.get(0).isEmpty())) {
 //            String paths = "";
 //            for (String path : upload(files, session)) {
@@ -68,24 +80,6 @@ public class ThreadController extends BaseController{
 //        boolean flag = threadService.save(thread);
 //        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
 //    }
-    @PostMapping
-    @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Result save(
-            @ApiParam("論壇文章") Thread thread,
-            @ApiParam(value = "檔案列表", required = false)
-            @RequestPart(required = false) List<MultipartFile> files,
-            HttpSession session) {
-        thread.setUserId(getUserIdFromSession(session));
-        if (!(files == null || files.isEmpty() || files.get(0).isEmpty())) {
-            String paths = "";
-            for (String path : upload(files, session)) {
-                paths += path + "|";
-            }
-            thread.setPicture(paths.substring(0, paths.length() - 1));
-        }
-        boolean flag = threadService.save(thread);
-        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
-    }
     //查詢所有文章
     @GetMapping
     @ApiOperation("查詢所有論壇文章")

@@ -68,12 +68,24 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         }
         return thread;
     }
-    @Override
-    public boolean save(Thread thread) {
 
+    @Override
+    public boolean saveThread(Integer categoryId,Integer userId,String title, String content,  String picture) {
+        Thread thread=new Thread();
+        thread.setTitle(title);
+        thread.setContent(content);
+        thread.setPicture(picture);
+        thread.setCategoryId(categoryId);
         thread.setCreatedAt(getSystemTime());
+        thread.setUserId(userId);
         return super.save(thread);
     }
+//    @Override
+//    public boolean save(Thread thread) {
+//
+//        thread.setCreatedAt(getSystemTime());
+//        return super.save(thread);
+//    }
 
     public static Thread createFakeThread(int count) {
         Thread thread = new Thread();
