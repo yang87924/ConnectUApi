@@ -99,22 +99,6 @@ public class BaseController {
         return session.getAttribute("picPath").toString();
     }
 
-    public JsonNode parseJSON(String token){
-        String[] parts = token.split("\\.", 0);
 
-
-        byte[] bytes = Base64.getUrlDecoder().decode(parts[1]);
-        String decodedString = new String(bytes, StandardCharsets.UTF_8);
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode;
-
-        try {
-            jsonNode = objectMapper.readTree(decodedString);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        return jsonNode;
-    }
 
 }
