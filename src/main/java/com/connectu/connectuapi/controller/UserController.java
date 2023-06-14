@@ -4,7 +4,6 @@ import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IUserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Api(tags = "使用者")
 @RestController
@@ -46,15 +40,25 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/google")
-    @ApiOperation("創建用戶")
-    public void saveByGoogle(@RequestParam("credential") String token) {
-        User user = new User();
-        user.setUserName(parseJSON(token).get("name").asText());
-        user.setEmail(parseJSON(token).get("email").asText());
-        user.setAvatar(parseJSON(token).get("picture").asText());
-        user.setPassword("google");
-        System.out.println(user);
-        userService.save(user);
+    @ApiOperation("google登入")
+    public Result saveByGoogle(@RequestParam("credential") String token, HttpSession session) {
+        User loginUser = userService.loginByGoogle(token);
+        if (loginUser.getUserId() == null) {
+            boolean flag = userService.save(loginUser);
+            if (!flag) {
+                return new Result(Code.SAVE_ERR, flag, "用戶創建失敗");
+            }
+            loginUser = userService.selectGoogleUserByEmail(loginUser.getEmail());
+            System.out.println(loginUser);
+        }
+        session.setAttribute("userId", loginUser.getUserId());
+        session.setAttribute("userName", loginUser.getUserName());
+        session.setAttribute("email", loginUser.getEmail());
+
+        System.out.println(session.getAttribute("userId"));
+        System.out.println(session.getAttribute("userName"));
+        System.out.println(session.getAttribute("email"));
+        return new Result(Code.LOGIN_OK, loginUser, "登入成功");
     }
 
 
@@ -62,6 +66,7 @@ public class UserController extends BaseController {
     @PostMapping("/login")
     @ApiOperation("登入")
     public Result login(@RequestBody User user, HttpSession session) {
+
         User loginUser = userService.login(user.getEmail(), user.getPassword());
         session.setAttribute("userId", loginUser.getUserId());
         session.setAttribute("userName", loginUser.getUserName());

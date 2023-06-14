@@ -25,6 +25,9 @@ public class ProjectExceptionAdvice {
         if(ex instanceof UserNotFoundException){
             result.setCode(Code.USER_NOT_FOUND);
             result.setMsg("查無此用戶");
+        } else if (ex instanceof UserIsGoogleException) {
+            result.setCode(Code.USER_IS_GOOGLE);
+            result.setMsg("請使用GOOGLE登入");
         } else if (ex instanceof PasswordNotMatchException) {
             result.setCode(Code.PASSWORD_NOT_MATCH);
             result.setMsg("密碼錯誤");

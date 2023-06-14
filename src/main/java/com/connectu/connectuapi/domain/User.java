@@ -16,4 +16,5 @@ public class User  {
     private String avatar;
     private String profile;
     private String point;
+    private String isGoogle;
 }

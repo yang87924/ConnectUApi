@@ -27,23 +27,24 @@ public class Code {
 
 
     //登入異常
-    public static final Integer USER_NOT_FOUND = 50004;
-    public static final Integer PASSWORD_NOT_MATCH = 50005;
+    public static final Integer USER_IS_GOOGLE = 50011;
+    public static final Integer USER_NOT_FOUND = 50012;
+    public static final Integer PASSWORD_NOT_MATCH = 50013;
 
 
 
     //註冊帳號失敗
-    public static final Integer COLUMN_IS_NULL = 50006;
-    public static final Integer EMAIL_IS_DUPLICATE = 50007;
-    public static final Integer EMAIL_NOT_FORMAT = 50008;
-    public static final Integer PASSWORD_NOT_FORMAT = 50009;
+    public static final Integer COLUMN_IS_NULL = 50021;
+    public static final Integer EMAIL_IS_DUPLICATE = 50022;
+    public static final Integer EMAIL_NOT_FORMAT = 50023;
+    public static final Integer PASSWORD_NOT_FORMAT = 50024;
 
     //檔案上傳失敗
-    public static final Integer FILE_IS_EMPTY = 50012;
-    public static final Integer FILE_SIZE_ERR = 50013;
-    public static final Integer FILE_STATE_ERR = 50014;
-    public static final Integer FILE_TYPE_ERR = 50015;
-    public static final Integer FILE_UPLOAD_IO_ERR = 50016;
+    public static final Integer FILE_IS_EMPTY = 50031;
+    public static final Integer FILE_SIZE_ERR = 50032;
+    public static final Integer FILE_STATE_ERR = 50033;
+    public static final Integer FILE_TYPE_ERR = 50034;
+    public static final Integer FILE_UPLOAD_IO_ERR = 50035;
 
 
 
