@@ -90,6 +90,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         thread.setUserId(userId);
         thread.setCreatedAt(getSystemTime());
         return super.save(thread);
+
     }
 //    @Override
 //    public boolean save(Thread thread) {
