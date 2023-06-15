@@ -65,6 +65,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
                 throw new PasswordNotMatchException();
             }
         } else {
+            if(result.size()<2){
+                throw new UserIsGoogleException();
+            }
             if (result.get(1).getIsGoogle().equals("0")) {
                 if (result.get(1).getPassword().equals(password)) {
                     return result.get(1);
