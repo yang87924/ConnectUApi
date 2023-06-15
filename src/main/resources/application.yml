@@ -10,9 +10,9 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://mydbinstance2.cmcjn8qqcxqk.ap-northeast-1.rds.amazonaws.com:3306/connectU?serverTimezone=UTC
-      username: admin
-      password: GBb4ddyE1mfrBFGQA5sc
+      url:
+      username:
+      password:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
