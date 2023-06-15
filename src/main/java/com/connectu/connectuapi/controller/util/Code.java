@@ -12,6 +12,7 @@ public class Code {
     public static final Integer GET_OK = 20041;
     public static final Integer LOGIN_OK = 20051;
     public static final Integer INVALIDATE_OK = 20061;
+    public static final Integer CHAT_OK = 20071;
 
 
 

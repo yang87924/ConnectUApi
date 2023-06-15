@@ -130,5 +130,10 @@ public class UserController extends BaseController {
         return new Result(code, users, msg);
     }
 
+    @GetMapping("/getUserId")
+    public Integer getUserId(HttpSession session){
+        return getUserIdFromSession(session);
+    }
+
 
 }

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,6 +9,7 @@
     <title>Test</title>
 </head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <body>
 <div id="g_id_onload" data-client_id="699569603913-tatuu7bhl3rntun7m5qt75olhivifnvl.apps.googleusercontent.com"
      data-callback="handleCallback" data-auto_prompt="false"></div>
@@ -32,6 +35,23 @@
             }
         });
     }
+
+
+</script>
+
+<!--WebSocket-->
+<script>
+    let ws = new WebSocket("ws://localhost/chat");
+    ws.onopen = function () {
+
+    }
+    ws.onclose = function () {
+
+    }
+    ws.onmessage = function (event) {
+
+    }
+
 </script>
 
 </html>
