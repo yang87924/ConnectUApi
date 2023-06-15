@@ -10,9 +10,9 @@ import com.connectu.connectuapi.dao.ThreadDao;
 import com.connectu.connectuapi.domain.Category;
 import com.connectu.connectuapi.domain.Reply;
 import com.connectu.connectuapi.domain.Thread;
-import com.connectu.connectuapi.exception.thread.ThreadColumnIsNullException;
+import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 
-import com.connectu.connectuapi.exception.thread.UserNotLoginException;
+import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.service.IThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

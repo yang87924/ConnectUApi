@@ -4,6 +4,7 @@ import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
+import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.exception.file.*;
 import com.connectu.connectuapi.service.IReplyService;
 import com.connectu.connectuapi.service.IThreadService;
@@ -53,6 +54,10 @@ public class ThreadController extends BaseController{
                          @ApiParam(value = "檔案", required = false)
                          @RequestPart(value = "files", required = false) List<MultipartFile> files,
                          HttpSession session) {
+
+        if(session.getAttribute("")==null){
+            throw new UserNotLoginException();
+        }
         Integer userId=getUserIdFromSession(session);
         String picture=null;
         if (files != null && !files.isEmpty()) {

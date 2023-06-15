@@ -3,6 +3,7 @@ package com.connectu.connectuapi.controller.util;
 
 import com.connectu.connectuapi.exception.*;
 import com.connectu.connectuapi.exception.file.*;
+import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -58,6 +59,12 @@ public class ProjectExceptionAdvice {
         } else if (ex instanceof FileUploadIOException) {
             result.setCode(Code.FILE_UPLOAD_IO_ERR);
             result.setMsg("上傳文件時讀寫錯誤，請稍後重新嘗試");
+        } else if (ex instanceof ThreadColumnIsNullException) {
+            result.setCode(Code.THREAD_COLUMN_IS_NULL);
+            result.setMsg("文章資訊未輸入");
+        } else if (ex instanceof UserNotLoginException) {
+            result.setCode(Code.USER_NOT_LOGIN);
+            result.setMsg("請登入後再新增文章");
         }
         return result;
     }
