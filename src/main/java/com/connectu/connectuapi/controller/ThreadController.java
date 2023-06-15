@@ -89,7 +89,34 @@ public class ThreadController extends BaseController{
         String msg = thread != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
     }
-
+//    //修改文章
+//    @PutMapping
+//    @ApiOperation("修改論壇文章")
+//    public Result updateById(@ApiParam(value = "論壇文章ID", required = true) @RequestParam Long threadId,
+//                             @ApiParam(value = "論壇文章標題", required = false) @RequestParam(required = false) String title,
+//                             @ApiParam(value = "論壇文章內容", required = false) @RequestParam(required = false) String content,
+//                             @RequestPart(value = "files", required = false) List<MultipartFile> files,
+//                             HttpSession session) {
+//        Thread thread = threadService.getById(threadId);
+//        if (thread == null) {
+//            return new Result(Code.DATA_NOT_FOUND, false, "論壇文章不存在");
+//        }
+//        if (title != null) {
+//            thread.setTitle(title);
+//        }
+//        if (content != null) {
+//            thread.setContent(content);
+//        }
+//        if (!(files == null || files.isEmpty())) {
+//            String paths="";
+//            for (String path : upload(files, session)) {
+//                paths += path + "|";
+//            }
+//            thread.setPicture(paths.substring(0,paths.length()-1));
+//        }
+//        boolean flag = threadService.updateById(thread);
+//        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ?"論壇文章修改成功":"論壇文章修改失敗");
+//    }
     //修改文章
     @PutMapping
     @ApiOperation("修改論壇文章")

@@ -4,23 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.connectu.connectuapi.controller.BaseController;
 import com.connectu.connectuapi.dao.CategoryDao;
 import com.connectu.connectuapi.dao.ReplyDao;
 import com.connectu.connectuapi.dao.ThreadDao;
 import com.connectu.connectuapi.domain.Category;
 import com.connectu.connectuapi.domain.Reply;
 import com.connectu.connectuapi.domain.Thread;
-import com.connectu.connectuapi.domain.User;
-import com.connectu.connectuapi.exception.PasswordNotMatchException;
-import com.connectu.connectuapi.exception.UserNotFoundException;
+import com.connectu.connectuapi.exception.thread.ThreadColumnIsNullException;
+
+import com.connectu.connectuapi.exception.thread.UserNotLoginException;
 import com.connectu.connectuapi.service.IThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +54,12 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         return lastThreadId + 1;
 
     }
+
+    @Override
+    public boolean updateById(Thread entity) {
+        return super.updateById(entity);
+    }
+
     @Override
     public Thread getThreadWithCategoryName(Integer threadId) {
         Thread thread = this.getById(threadId);
@@ -71,13 +74,21 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
 
     @Override
     public boolean saveThread(Integer categoryId,Integer userId,String title, String content,  String picture) {
-        Thread thread=new Thread();
+        if(categoryId==null
+                ||title==null||title.isEmpty()
+                ||content==null||content.isEmpty()){
+            throw new ThreadColumnIsNullException();
+        } else if (userId==null) {
+            throw new UserNotLoginException();
+        }
+        Thread thread = new Thread();
         thread.setTitle(title);
         thread.setContent(content);
         thread.setPicture(picture);
         thread.setCategoryId(categoryId);
         thread.setCreatedAt(getSystemTime());
         thread.setUserId(userId);
+        thread.setCreatedAt(getSystemTime());
         return super.save(thread);
     }
 //    @Override

@@ -38,6 +38,9 @@ public class Code {
     public static final Integer EMAIL_IS_DUPLICATE = 50022;
     public static final Integer EMAIL_NOT_FORMAT = 50023;
     public static final Integer PASSWORD_NOT_FORMAT = 50024;
+    //文章新增失敗
+    public static final Integer THREAD_COLUMN_IS_NULL = 50025;
+    public static final Integer USER_NOT_LOGIN = 50025;
 
     //檔案上傳失敗
     public static final Integer FILE_IS_EMPTY = 50031;
@@ -45,6 +48,8 @@ public class Code {
     public static final Integer FILE_STATE_ERR = 50033;
     public static final Integer FILE_TYPE_ERR = 50034;
     public static final Integer FILE_UPLOAD_IO_ERR = 50035;
+
+
 
 
 
