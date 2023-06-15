@@ -36,6 +36,7 @@ import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 @Api(tags ="論壇")
 @RestController
 @RequestMapping("/threads")
+@CrossOrigin(origins = "*")
 public class ThreadController extends BaseController{
     @Autowired
     private IThreadService threadService;

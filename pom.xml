@@ -114,6 +114,13 @@
             <optional>true</optional> <!-- 可选 -->
         </dependency>
 
+        <!-- jasypt 敏感数据加密，如：数据库密码，阿里云短信服务等-->
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>3.0.4</version>
+        </dependency>
+
 
     </dependencies>
 

@@ -17,6 +17,7 @@ import java.util.List;
 @Api(tags ="動態文章")
 @RestController
 @RequestMapping("/DyThreads")
+@CrossOrigin(origins = "*")
 public class DyThreadController {
     @Autowired
     private IDyThreadService dyThreadService;

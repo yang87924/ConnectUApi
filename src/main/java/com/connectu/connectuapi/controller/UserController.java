@@ -17,6 +17,7 @@ import java.util.List;
 @Api(tags = "使用者")
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "*")
 public class UserController extends BaseController {
     @Autowired
     private IUserService userService;

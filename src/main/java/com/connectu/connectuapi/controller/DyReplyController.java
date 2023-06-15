@@ -17,6 +17,7 @@ import java.util.List;
 @Api(tags ="動態文章留言")
 @RestController
 @RequestMapping("/DyReply")
+@CrossOrigin(origins = "*")
 public class DyReplyController {
     @Autowired
     private IDyReplyService dyReplyService;

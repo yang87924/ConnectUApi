@@ -17,6 +17,7 @@ import java.util.List;
 @Api(tags ="論壇留言")
 @RestController
 @RequestMapping("/Replys")
+@CrossOrigin(origins = "*")
 public class ReplyController {
     @Autowired
     private IReplyService replyService;

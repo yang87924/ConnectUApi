@@ -4,10 +4,9 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://mydbinstance2.cmcjn8qqcxqk.ap-northeast-1.rds.amazonaws.com:3306/connectU?serverTimezone=UTC
-      username: admin
-      password: GBb4ddyE1mfrBFGQA5sc
-
+      url: ENC(EpVGHnI72EOLNsH1xVYFrVmydzewfWf7h+cJXJFa7hFZbvu3wgY6QlWBKTkbI9d8lsGvqbs5ivgA5Yn/GGpV2j8vTKYrFPRLgXwhMVd+f0U7D6ZoZKrqO5iSXO8ZD84wxRtQoCjUP8ZmDNTW8Rwb5VyiFizohlcKv7TN3Snqtxs+a6H6ce2G3zu/4+dVNtNe)
+      username: ENC(oeuu4ruGs8bI1MNZuf7eQE4YvTYpMUufHpBKTJreR8qx0Hh5idsNi7qAZbGFXPyd)
+      password: ENC(7Eru93RaSZkxxxCTaFXx9kPcphszdhocR/37O6Zxkc5/7frtzkp2L/9Tuj4BbFKTQutVVzt6hbhx9B2x2WBvAw==)
   # ========================================================================
   #Swagger配置
   # 启动报错需要修改以下mvc配置 Failed to start bean 'documentationPluginsBootstrapper'
@@ -49,20 +48,3 @@ springfox:
     cache: false
 
   # ========================================================================
-
-#    transaction:
-#      # 配置事务管理器
-#      platform: org.springframework.jdbc.datasource.DataSourceTransactionManager
-  # ========================================================================
-#spring:
-#  datasource:
-#    druid:
-#      driver-class-name: com.mysql.cj.jdbc.Driver
-#      url: jdbc:mysql://localhost:3306/iii?serverTimezone=UTC
-#      username: root
-#      password: root
-  # ========================================================================
-
-
-
-
