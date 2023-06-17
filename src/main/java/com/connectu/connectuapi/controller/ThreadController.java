@@ -56,7 +56,7 @@ public class ThreadController extends BaseController{
                          @RequestPart(value = "files", required = false) List<MultipartFile> files,
                          HttpSession session) {
 
-        if(session.getAttribute("")==null){
+        if(session.getAttribute("userId")==null){
             throw new UserNotLoginException();
         }
         Integer userId=getUserIdFromSession(session);
