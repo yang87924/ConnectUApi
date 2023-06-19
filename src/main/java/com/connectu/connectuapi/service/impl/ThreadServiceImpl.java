@@ -182,7 +182,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
 
     @Override
     public void love(Thread thread) {
-        Integer love = thread.getLove() + 1;
+        Integer love = thread.getLove() +1;
         thread.setLove(love);
     }
 
@@ -197,5 +197,13 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         return null;
     }
 
-
+    @Override
+    public void toggleLove(Thread thread) {
+        Integer love = thread.getLove();
+        if (love % 2 == 0) {
+            thread.setLove(love + 1);
+        } else {
+            thread.setLove(love - 1);
+        }
+    }
 }

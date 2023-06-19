@@ -169,19 +169,28 @@ public class ThreadController extends BaseController{
         Thread thread = threadService.getById(threadId);
         threadService.cancelLove(thread);
         boolean flag = threadService.updateById(thread);
-        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章取消按讚成功":"論壇文章取消按讚失敗");
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章點讚成功":"論壇文章點讚失敗");
+    }
+    @PutMapping("/toggleLove/{threadId}")
+    @ApiOperation("切換按讚")
+    public Result toggleLove(@PathVariable Integer threadId) {
+        Thread thread = threadService.getById(threadId);
+        threadService.toggleLove(thread);
+        boolean flag = threadService.updateById(thread);
+        String message = (thread.getLove() % 2 == 0) ? "論壇文章取消按讚成功" : "論壇文章點讚成功";
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, message);
     }
     @PutMapping("/loveRandom")
     @ApiOperation("按讚亂數")
     public void loveRandom(){
         Set<Integer> idSet = new HashSet<>();
-        while(idSet.size() < 176){
-            idSet.add((int) (Math.random() * 176) + 1);
+        while(idSet.size() < 182){
+            idSet.add((int) (Math.random() * 182) + 1);
         }
         for (Integer id : idSet){
             Thread thread = threadService.getById(id);
             if(thread != null){
-                Integer love = (int) (Math.random() * 300) + 1;
+                Integer love = (int) (Math.random() * 1000) + 1;
                 thread.setLove(love);
                 boolean flag = threadService.updateById(thread);
             }

@@ -18,4 +18,5 @@ public interface IThreadService extends IService<Thread> {
     void love(Thread thread);
     void cancelLove(Thread thread);
     Set<Integer> idSet(Integer num);
+    void toggleLove(Thread thread);
 }
