@@ -9,6 +9,4 @@ public interface IUserService extends IService<User> {
     User selectGoogleUserByEmail(String email);
     User loginByGoogle(String token);
     void addFakeUsers(int count);
-
-
 }

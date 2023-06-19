@@ -14,6 +14,6 @@ public class DyThread {
     private String title;
     private String content;
     private String createdAt;
-    private Object picture;
+    private String picture;
 
 }

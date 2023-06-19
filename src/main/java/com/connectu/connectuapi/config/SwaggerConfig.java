@@ -22,13 +22,21 @@ public class SwaggerConfig {
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.OAS_30)
-                .apiInfo(apiInfo())
-                .enable(swaggerEnabled)
+//                .apiInfo(apiInfo())
+//                .enable(swaggerEnabled)
+//                .select()
+//                .apis(RequestHandlerSelectors.basePackage("com.connectu.connectuapi.controller"))
+//                .paths(PathSelectors.any())
+//                .build()
+//                .ignoredParameterTypes(HttpSession.class);
+        //--------------------------------------------
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.connectu.connectuapi.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.connectu.connectuapi.controller")) // 指定API控制器所在的包
                 .paths(PathSelectors.any())
                 .build()
-                .ignoredParameterTypes(HttpSession.class);
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false);
+
     }
 
     private ApiInfo apiInfo() {
