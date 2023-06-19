@@ -4,10 +4,12 @@ import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
+import com.connectu.connectuapi.domain.UserThreadLove;
 import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.exception.file.*;
 import com.connectu.connectuapi.service.IReplyService;
 import com.connectu.connectuapi.service.IThreadService;
+import com.connectu.connectuapi.service.IUserThreadLoveService;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -40,12 +42,67 @@ import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 public class ThreadController extends BaseController{
     @Autowired
     private IThreadService threadService;
-    //假資料
-//    @ApiIgnore    // 忽略这个api
-//    @PostMapping("/addFakeThread")
-//    public String addFakeThread() {
-//        threadService.addFakeThread(50);
-//        return "Fake Thread added successfully!";
+    @Autowired
+    private IUserThreadLoveService userThreadLoveService;
+
+    @PutMapping("/love/{threadId}")
+    @ApiOperation("按讚")
+    public Result love(@PathVariable Integer threadId){
+        Thread thread = threadService.getById(threadId);
+        threadService.love(thread);
+        boolean flag = threadService.updateById(thread);
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章點讚成功":"論壇文章點讚失敗");
+    }
+    @PutMapping("/cancelLove/{threadId}")
+    @ApiOperation("按讚")
+    public Result cancelLove(@PathVariable Integer threadId){
+        Thread thread = threadService.getById(threadId);
+        threadService.cancelLove(thread);
+        boolean flag = threadService.updateById(thread);
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章點讚成功":"論壇文章點讚失敗");
+    }
+    @PutMapping("/toggleUserLove/{threadId}")
+    @ApiOperation("切換使用者按讚")
+    public Result toggleUserLove(@PathVariable Integer threadId, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            throw new UserNotLoginException();
+        }
+        Integer userId = (Integer) session.getAttribute("userId");
+        int userLoveStatus = userThreadLoveService.toggleLove(userId, threadId);
+        // 取得當前文章的按讚數
+        Thread thread = threadService.getById(threadId);
+        int loveCount = thread.getLove();
+        // 根據按讚狀態回傳不同的訊息
+        String message = userThreadLoveService.getLoveMessage(userLoveStatus);
+        return new Result(Code.UPDATE_OK, thread , message);
+    }
+//    @PutMapping("/toggleUserLove/{threadId}")
+//    @ApiOperation("切換使用者按讚")
+//    public Result toggleUserLove(@PathVariable Integer threadId, HttpSession session) {
+//        if (session.getAttribute("userId") == null) {
+//            throw new UserNotLoginException();
+//        }
+//        Integer userId = (Integer) session.getAttribute("userId");
+//        userThreadLoveService.toggleLove(userId, threadId);
+//        // 取得當前文章的按讚數
+//        Thread thread = threadService.getById(threadId);
+//        int loveCount = thread.getLove();
+//        // 回傳love值有多少
+//        Map<String, Integer> resultMap = new HashMap<>();
+//        resultMap.put("love", loveCount);
+//        // 根據按讚狀態回傳不同的訊息
+//        String message = userThreadLoveService.getLoveMessage(threadId);
+//        return new Result(Code.UPDATE_OK, thread, message);
+//    }
+    //---------------------------------------------
+//    @PutMapping("/toggleLove/{threadId}")
+//    @ApiOperation("切換按讚")
+//    public Result toggleLove(@PathVariable Integer threadId) {
+//        Thread thread = threadService.getById(threadId);
+//        threadService.toggleLove(thread);
+//        boolean flag = threadService.updateById(thread);
+//        String message = (thread.getLove() % 2 == 0) ? "論壇文章取消按讚成功" : "論壇文章點讚成功";
+//        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, message);
 //    }
     @PostMapping
     @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -94,6 +151,19 @@ public class ThreadController extends BaseController{
         boolean flag = threadService.updateById(thread);
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章修改成功":"論壇文章修改失敗");
     }
+
+    //取得使用者的所有文章
+    @GetMapping("/userThread")
+    @ApiOperation("取得使用者的所有論壇文章")
+    public Result getUserThread(HttpSession session) {
+        Integer userId=getUserIdFromSession(session);
+        List<Thread> thread = threadService.getUserThread(userId);
+        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
+        return new Result(code, thread, msg);
+    }
+
+
     //查詢所有文章
     @GetMapping
     @ApiOperation("查詢所有論壇文章")
@@ -132,16 +202,6 @@ public class ThreadController extends BaseController{
         String msg = thread != null ? "最後一筆資料取得成功" : "查無資料";
         return new Result(code, thread, msg);
     }
-    //取得使用者的所有文章
-    @GetMapping("/userThread")
-    @ApiOperation("取得使用者的所有論壇文章")
-    public Result getUserThread(HttpSession session) {
-        Integer userId=getUserIdFromSession(session);
-        List<Thread> thread = threadService.getUserThread(userId);
-        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
-        return new Result(code, thread, msg);
-    }
     @GetMapping("/search")
     @ApiOperation("關鍵字搜尋")
     public Result searchThreadsByKeyword(
@@ -154,31 +214,6 @@ public class ThreadController extends BaseController{
         Integer code = search != null && !search.isEmpty() ? Code.GET_OK : Code.GET_ERR;
         String msg = search != null && !search.isEmpty() ? "搜尋文章資料成功" : "搜尋文章資料失敗!請重新輸入關鍵字";
         return new Result(code, search, msg);
-    }
-    @PutMapping("/love/{threadId}")
-    @ApiOperation("按讚")
-    public Result love(@PathVariable Integer threadId){
-        Thread thread = threadService.getById(threadId);
-        threadService.love(thread);
-        boolean flag = threadService.updateById(thread);
-        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章點讚成功":"論壇文章點讚失敗");
-    }
-    @PutMapping("/cancelLove/{threadId}")
-    @ApiOperation("按讚")
-    public Result cancelLove(@PathVariable Integer threadId){
-        Thread thread = threadService.getById(threadId);
-        threadService.cancelLove(thread);
-        boolean flag = threadService.updateById(thread);
-        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章點讚成功":"論壇文章點讚失敗");
-    }
-    @PutMapping("/toggleLove/{threadId}")
-    @ApiOperation("切換按讚")
-    public Result toggleLove(@PathVariable Integer threadId) {
-        Thread thread = threadService.getById(threadId);
-        threadService.toggleLove(thread);
-        boolean flag = threadService.updateById(thread);
-        String message = (thread.getLove() % 2 == 0) ? "論壇文章取消按讚成功" : "論壇文章點讚成功";
-        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, message);
     }
     @PutMapping("/loveRandom")
     @ApiOperation("按讚亂數")
@@ -196,5 +231,12 @@ public class ThreadController extends BaseController{
             }
         }
     }
+    //假資料
+//    @ApiIgnore    // 忽略这个api
+//    @PostMapping("/addFakeThread")
+//    public String addFakeThread() {
+//        threadService.addFakeThread(50);
+//        return "Fake Thread added successfully!";
+//    }
 
 }
