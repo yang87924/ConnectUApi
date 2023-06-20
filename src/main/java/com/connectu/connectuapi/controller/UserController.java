@@ -17,7 +17,6 @@ import java.util.List;
 @Api(tags = "使用者")
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = "*")
 public class UserController extends BaseController {
     @Autowired
     private IUserService userService;
@@ -63,17 +62,6 @@ public class UserController extends BaseController {
     }
 
 
-    //登入--------------------------------------------------------------
-    @PostMapping("/login")
-    @ApiOperation("登入")
-    public Result login(@RequestBody User user, HttpSession session) {
-
-        User loginUser = userService.login(user.getEmail(), user.getPassword());
-        session.setAttribute("userId", loginUser.getUserId());
-        session.setAttribute("userName", loginUser.getUserName());
-        session.setAttribute("email", loginUser.getEmail());
-        return new Result(Code.LOGIN_OK, loginUser, "登入成功");
-    }
 
     //清除Session---------------------------------------------------------------
     @PostMapping("/invalidate")
@@ -131,9 +119,48 @@ public class UserController extends BaseController {
         return new Result(code, users, msg);
     }
 
-    @GetMapping("/getUserId")
-    public Integer getUserId(HttpSession session){
-        return getUserIdFromSession(session);
+    @PostMapping("/getUserId")
+    public void getUserId(HttpSession session){
+        System.out.println(session.getId());
+        System.out.println(session.getAttribute("userId"));
+    }
+
+//登入--------------------------------------------------------------
+    @PostMapping("/login")
+    @ApiOperation("登入")
+    public Result login(@RequestBody User user, HttpSession session) {
+
+        User loginUser = userService.login(user.getEmail(), user.getPassword());
+        session.setAttribute("userId", loginUser.getUserId());
+        session.setAttribute("userName", loginUser.getUserName());
+        session.setAttribute("email", loginUser.getEmail());
+
+
+        return new Result(Code.LOGIN_OK, loginUser, "登入成功");
+    }
+
+
+
+    //Ithema
+    @GetMapping("/login")
+    public Result loginChat(User user, HttpSession session) {
+        Result result = new Result();
+        if(user != null && "123".equals(user.getPassword())) {
+            result.setData(true);
+            result.setCode(Code.LOGIN_OK);
+            //将数据存储到session对象中
+            session.setAttribute("userName",user.getUserName());
+        } else {
+            result.setData(false);
+            result.setMsg("登陆失败");
+        }
+        return result;
+    }
+
+    @GetMapping("/getUserName")
+    public String getUserName(HttpSession session) {
+        String userName = (String) session.getAttribute("userName");
+        return userName;
     }
 
 
