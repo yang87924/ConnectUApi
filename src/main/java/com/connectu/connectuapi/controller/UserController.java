@@ -141,22 +141,6 @@ public class UserController extends BaseController {
 
 
 
-    //Ithema
-    @GetMapping("/login")
-    public Result loginChat(User user, HttpSession session) {
-        Result result = new Result();
-        if(user != null && "123".equals(user.getPassword())) {
-            result.setData(true);
-            result.setCode(Code.LOGIN_OK);
-            //将数据存储到session对象中
-            session.setAttribute("userName",user.getUserName());
-        } else {
-            result.setData(false);
-            result.setMsg("登陆失败");
-        }
-        return result;
-    }
-
     @GetMapping("/getUserName")
     public String getUserName(HttpSession session) {
         String userName = (String) session.getAttribute("userName");
