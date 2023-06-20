@@ -5,6 +5,7 @@ import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Category;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.service.ICategoryService;
+import com.connectu.connectuapi.service.impl.CategoryServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private ICategoryService categoryService;
+
     @GetMapping
     @ApiOperation("主題列表")
     public Result getAll(){

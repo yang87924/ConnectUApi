@@ -10,8 +10,12 @@ import com.connectu.connectuapi.service.IDyReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
+
 @Service
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, Category> implements ICategoryService {
     @Autowired
     private DyReplyDao dyReplyDao;
+
+
 }

@@ -141,6 +141,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         }
         return super.removeById(id);
     }
+
     @Override
     public List<Thread> searchThreadsByKeyword(String keyword, String categoryName) {
         LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();

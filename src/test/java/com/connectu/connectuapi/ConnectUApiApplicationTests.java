@@ -3,6 +3,7 @@ package com.connectu.connectuapi;
 import com.baomidou.mybatisplus.core.toolkit.AES;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.UserDao;
+import com.connectu.connectuapi.dao.UserThreadLoveDao;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
 import org.jasypt.encryption.StringEncryptor;
@@ -19,6 +20,8 @@ class ConnectUApiApplicationTests {
     @Autowired
     private UserDao userDao;
     @Autowired
+    private UserThreadLoveDao userThreadLoveDao;
+    @Autowired
     private StringEncryptor stringEncryptor;
     @Test
     void userTest() {
@@ -27,7 +30,7 @@ class ConnectUApiApplicationTests {
 
     @Test
     void threadTest() {
-//        threadService.(5);
+        userThreadLoveDao.selectList(null);
     }
 
     @Test

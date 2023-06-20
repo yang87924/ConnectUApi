@@ -9,7 +9,7 @@ import lombok.Data;
 @TableName("userThreadLove")
 public class UserThreadLove {
     @TableId
-    private Integer id;
+    private Integer userThreadLoveId;
     private Integer userId;
     private Integer threadId;
     private Integer loveStatus;

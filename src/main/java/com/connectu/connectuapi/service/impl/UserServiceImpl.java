@@ -35,6 +35,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
     }
 
 
+
+
     public static User createFakeUser() {
         Faker faker = new Faker(new Locale("zh-CN"));
         User user = new User();

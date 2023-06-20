@@ -42,7 +42,6 @@ public class DyThreadServiceImpl extends ServiceImpl<DyThreadDao, DyThread> impl
     @Override
     public boolean save(DyThread dyThread) {
         dyThread.setCreatedAt(getSystemTime());
-
         return super.save(dyThread);
     }
     public static DyThread createFakeDyThread(int count) {

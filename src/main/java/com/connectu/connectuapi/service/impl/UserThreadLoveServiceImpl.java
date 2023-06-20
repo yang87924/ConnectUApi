@@ -20,9 +20,9 @@ public class UserThreadLoveServiceImpl extends ServiceImpl<UserThreadLoveDao, Us
     private IThreadService threadService;
     @Override
     public int toggleLove(Integer userId, Integer threadId) {
-        // 查找用戶對文章的按讚記錄
+        // 查找用戶對文章的按讚記錄，包括邏輯刪除的記錄
         QueryWrapper<UserThreadLove> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId", userId).eq("threadId", threadId);
+        queryWrapper.eq("userId", userId).eq("threadId", threadId).eq("deleted", 1);
         UserThreadLove userThreadLove = userThreadLoveDao.selectOne(queryWrapper);
         // 如果找不到記錄，創建一個新的按讚記錄
         if (userThreadLove == null) {
@@ -42,7 +42,7 @@ public class UserThreadLoveServiceImpl extends ServiceImpl<UserThreadLoveDao, Us
             thread.setLove(thread.getLove() + 1);
         } else {
             thread.setLove(thread.getLove() - 1);
-            userThreadLoveDao.deleteById(userThreadLove.getId()); // 刪除按讚記錄
+            userThreadLoveDao.deleteById(userThreadLove.getUserThreadLoveId()); // 刪除按讚記錄
         }
         threadService.updateById(thread);
         // 返回當前用戶的按讚狀態
