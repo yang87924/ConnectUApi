@@ -8,6 +8,7 @@ import com.connectu.connectuapi.service.IDyThreadService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -67,5 +68,17 @@ public class DyThreadController {
     public Result deleteById(@PathVariable Integer DyThreadid) {
         boolean flag = dyThreadService.removeById(DyThreadid);
         return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ?"動態文章刪除成功":"動態文章刪除失敗");
+    }
+    @GetMapping("/search")
+    @ApiOperation("關鍵字搜尋")
+    public Result searchDyThreadsByKeyword(
+            @ApiParam("關鍵字")@RequestParam String keyword) {
+        List<DyThread> search = null;
+        if (keyword != null && !keyword.isEmpty() ) {
+            search = dyThreadService.searchDyThreadsByKeyword(keyword);
+        }
+        Integer code = search != null && !search.isEmpty() ? Code.GET_OK : Code.GET_ERR;
+        String msg = search != null && !search.isEmpty() ? "搜尋文章資料成功" : "搜尋文章資料失敗!請重新輸入關鍵字";
+        return new Result(code, search, msg);
     }
 }

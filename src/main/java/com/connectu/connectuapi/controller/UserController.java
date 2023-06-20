@@ -44,6 +44,7 @@ public class UserController extends BaseController {
     @ApiOperation("google登入")
     public Result saveByGoogle(@RequestParam("credential") String token, HttpSession session) {
         User loginUser = userService.loginByGoogle(token);
+        System.out.println(loginUser.getUserId());
         if (loginUser.getUserId() == null) {
             boolean flag = userService.save(loginUser);
             if (!flag) {

@@ -3,9 +3,10 @@ package com.connectu.connectuapi;
 import com.baomidou.mybatisplus.core.toolkit.AES;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.UserDao;
+import com.connectu.connectuapi.dao.UserThreadLoveDao;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
-
+import org.jasypt.encryption.StringEncryptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,8 +19,10 @@ class ConnectUApiApplicationTests {
     private IThreadService threadService;
     @Autowired
     private UserDao userDao;
-//    @Autowired
-//    private StringEncryptor stringEncryptor;
+    @Autowired
+    private UserThreadLoveDao userThreadLoveDao;
+    @Autowired
+    private StringEncryptor stringEncryptor;
     @Test
     void userTest() {
         userService.list(null);
@@ -27,7 +30,7 @@ class ConnectUApiApplicationTests {
 
     @Test
     void threadTest() {
-//        threadService.(5);
+        userThreadLoveDao.selectList(null);
     }
 
     @Test
@@ -55,7 +58,7 @@ class ConnectUApiApplicationTests {
 //        String password="GBb4ddyE1mfrBFGQA5sc";
 //        System.out.println("ENC("+stringEncryptor.encrypt(password)+")");
         //解密方法
-     //   System.out.println(stringEncryptor.decrypt("oeuu4ruGs8bI1MNZuf7eQE4YvTYpMUufHpBKTJreR8qx0Hh5idsNi7qAZbGFXPyd"));
+        System.out.println(stringEncryptor.decrypt("oeuu4ruGs8bI1MNZuf7eQE4YvTYpMUufHpBKTJreR8qx0Hh5idsNi7qAZbGFXPyd"));
 
     }
 

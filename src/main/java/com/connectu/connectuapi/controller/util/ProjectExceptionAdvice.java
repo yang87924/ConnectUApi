@@ -64,7 +64,7 @@ public class ProjectExceptionAdvice {
             result.setMsg("文章資訊未輸入");
         } else if (ex instanceof UserNotLoginException) {
             result.setCode(Code.USER_NOT_LOGIN);
-            result.setMsg("請登入後再新增文章");
+            result.setMsg("請登入後再進行操作");
         }
         return result;
     }

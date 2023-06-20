@@ -32,9 +32,16 @@ public class DyThreadServiceImpl extends ServiceImpl<DyThreadDao, DyThread> impl
     }
 
     @Override
+    public List<DyThread> searchDyThreadsByKeyword(String keyword) {
+        LambdaQueryWrapper<DyThread> lqw = new LambdaQueryWrapper<>();
+        lqw.like(DyThread::getTitle, keyword).or().like(DyThread::getContent, keyword);
+        List<DyThread> result = dythreadDao.selectList(lqw);
+        return result;
+    }
+
+    @Override
     public boolean save(DyThread dyThread) {
         dyThread.setCreatedAt(getSystemTime());
-
         return super.save(dyThread);
     }
     public static DyThread createFakeDyThread(int count) {
@@ -64,4 +71,5 @@ public class DyThreadServiceImpl extends ServiceImpl<DyThreadDao, DyThread> impl
         List<DyThread> result = dythreadDao.selectList(lqw);
         return result;
     }
+
 }
