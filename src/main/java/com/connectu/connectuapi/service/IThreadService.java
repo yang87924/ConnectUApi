@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Set;
 
 public interface IThreadService extends IService<Thread> {
     void addFakeThread(int count);
@@ -14,6 +15,8 @@ public interface IThreadService extends IService<Thread> {
     Thread getThreadWithCategoryName(Integer threadId);
     boolean saveThread(Integer categoryId,Integer userId,String title, String content,  String picture) ;
     List<Thread> searchThreadsByKeyword(String keyword, String categoryName);
-    //Boolean putThreadById(Thread thread,Integer getThreadId,Integer getUserId,String fileUrl);
-//    Boolean putThreadById(Thread thread);
+    void love(Thread thread);
+    void cancelLove(Thread thread);
+    Set<Integer> idSet(Integer num);
+    void toggleLove(Thread thread);
 }

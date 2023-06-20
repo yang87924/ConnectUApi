@@ -10,5 +10,4 @@ public interface IUserService extends IService<User> {
     User loginByGoogle(String token);
     void addFakeUsers(int count);
 
-
 }
