@@ -1,5 +1,6 @@
 package com.connectu.connectuapi.service;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,6 @@ public interface IThreadService extends IService<Thread> {
     List<Thread> searchThreadsByKeyword(String keyword, String categoryName);
     void love(Thread thread);
     void cancelLove(Thread thread);
-    Set<Integer> idSet(Integer num);
     void toggleLove(Thread thread);
+    Result searchThreads(String keyword, String categoryName);
 }
