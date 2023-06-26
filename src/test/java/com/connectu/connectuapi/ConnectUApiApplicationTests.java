@@ -21,8 +21,8 @@ class ConnectUApiApplicationTests {
 
     @Autowired
     private UserThreadLoveDao userThreadLoveDao;
-    @Autowired
-    private StringEncryptor stringEncryptor;
+//    @Autowired
+//    private StringEncryptor stringEncryptor;
     @Test
     void userTest() {
         userService.list(null);
