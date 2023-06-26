@@ -5,6 +5,7 @@ import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.domain.UserThreadLove;
+import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.exception.file.*;
 import com.connectu.connectuapi.service.IReplyService;
@@ -38,29 +39,79 @@ import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 @Api(tags ="論壇")
 @RestController
 @RequestMapping("/threads")
-@CrossOrigin(origins = "*")
+
 public class ThreadController extends BaseController{
     @Autowired
     private IThreadService threadService;
     @Autowired
     private IUserThreadLoveService userThreadLoveService;
+    //新增文章--------------------------------------------------------------
+    @PostMapping
+    @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Result save(  Thread thread,@ApiParam(value = "文章標題", required = true) @RequestParam String title,
+                         @ApiParam(value = "文章內容", required = true) @RequestParam String content,
+                         @ApiParam(value = "文章分類 ID", required = true) @RequestParam Integer categoryId,
+                         @ApiParam(value = "檔案", required = false)
+                         @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                         HttpSession session) {
 
-    @PutMapping("/love/{threadId}")
-    @ApiOperation("按讚")
-    public Result love(@PathVariable Integer threadId){
-        Thread thread = threadService.getById(threadId);
-        threadService.love(thread);
-        boolean flag = threadService.updateById(thread);
-        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章點讚成功":"論壇文章點讚失敗");
+        if (session.getAttribute("userId") == null) {
+            throw new UserNotLoginException();
+        }
+        if(categoryId==null
+                ||title==null||title.isEmpty()
+                ||content==null||content.isEmpty()) {
+            throw new ThreadColumnIsNullException();
+        }
+        thread.setUserId(getUserIdFromSession(session));
+        if(!(files.get(0).isEmpty())) {
+            String paths="";
+            for (String path : upload(files, session)) {
+                paths += path + "|";
+            }
+            thread.setPicture(paths.substring(0,paths.length()-1));
+        }
+        boolean flag = threadService.save(thread);
+        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
     }
-    @PutMapping("/cancelLove/{threadId}")
-    @ApiOperation("按讚")
-    public Result cancelLove(@PathVariable Integer threadId){
-        Thread thread = threadService.getById(threadId);
-        threadService.cancelLove(thread);
-        boolean flag = threadService.updateById(thread);
-        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章點讚成功":"論壇文章點讚失敗");
+    //刪除文章--------------------------------------------------------------
+    @ApiImplicitParam(name = "threadId", value = "論壇文章Id")
+    @DeleteMapping("/{threadId}")
+    @ApiOperation("刪除論壇文章")
+    public Result deleteById(@PathVariable Integer threadId) {
+        boolean flag = threadService.removeById(threadId);
+        return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ?"論壇文章刪除成功":"論壇文章刪除失敗");
     }
+    //修改文章--------------------------------------------------------------
+    @PutMapping
+    @ApiOperation("修改論壇文章")
+    public Result updateById(
+            Thread thread,
+            @ApiParam(value = "文章標題", required = true) @RequestParam String title,
+            @ApiParam(value = "文章內容", required = true) @RequestParam String content,
+            @ApiParam(value = "文章分類 ID", required = true) @RequestParam Integer categoryId,
+            @ApiParam(value = "檔案", required = false)
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            throw new UserNotLoginException();
+        }
+        if(categoryId==null
+                ||title==null||title.isEmpty()
+                ||content==null||content.isEmpty()) {
+            throw new ThreadColumnIsNullException();
+        }
+        if(!(files.get(0).isEmpty())) {
+            String paths="";
+            for (String path : upload(files, session)) {
+                paths += path + "|";
+            }
+            thread.setPicture(paths.substring(0,paths.length()-1));
+        }
+        boolean flag = threadService.updateById(thread);
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章修改成功":"論壇文章修改失敗");
+    }
+    //切換使用者按讚--------------------------------------------------------------
     @PutMapping("/toggleUserLove/{threadId}")
     @ApiOperation("切換使用者按讚")
     public Result toggleUserLove(@PathVariable Integer threadId, HttpSession session) {
@@ -76,145 +127,35 @@ public class ThreadController extends BaseController{
         String message = userThreadLoveService.getLoveMessage(userLoveStatus);
         return new Result(Code.UPDATE_OK, thread , message);
     }
-//    @PutMapping("/toggleUserLove/{threadId}")
-//    @ApiOperation("切換使用者按讚")
-//    public Result toggleUserLove(@PathVariable Integer threadId, HttpSession session) {
-//        if (session.getAttribute("userId") == null) {
-//            throw new UserNotLoginException();
-//        }
-//        Integer userId = (Integer) session.getAttribute("userId");
-//        userThreadLoveService.toggleLove(userId, threadId);
-//        // 取得當前文章的按讚數
-//        Thread thread = threadService.getById(threadId);
-//        int loveCount = thread.getLove();
-//        // 回傳love值有多少
-//        Map<String, Integer> resultMap = new HashMap<>();
-//        resultMap.put("love", loveCount);
-//        // 根據按讚狀態回傳不同的訊息
-//        String message = userThreadLoveService.getLoveMessage(threadId);
-//        return new Result(Code.UPDATE_OK, thread, message);
-//    }
-    //---------------------------------------------
-//    @PutMapping("/toggleLove/{threadId}")
-//    @ApiOperation("切換按讚")
-//    public Result toggleLove(@PathVariable Integer threadId) {
-//        Thread thread = threadService.getById(threadId);
-//        threadService.toggleLove(thread);
-//        boolean flag = threadService.updateById(thread);
-//        String message = (thread.getLove() % 2 == 0) ? "論壇文章取消按讚成功" : "論壇文章點讚成功";
-//        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, message);
-//    }
-    @PostMapping
-    @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Result save(  Thread thread,@ApiParam(value = "文章標題", required = true) @RequestParam String title,
-                         @ApiParam(value = "文章內容", required = true) @RequestParam String content,
-                         @ApiParam(value = "文章分類 ID", required = true) @RequestParam Integer categoryId,
-                         @ApiParam(value = "檔案", required = false)
-                         @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                         HttpSession session) {
-
-        if (session.getAttribute("userId") == null) {
-            throw new UserNotLoginException();
-        }
-        thread.setUserId(getUserIdFromSession(session));
-        if(!(files.get(0).isEmpty())) {
-            String paths="";
-            for (String path : upload(files, session)) {
-                paths += path + "|";
-            }
-            thread.setPicture(paths.substring(0,paths.length()-1));
-        }
-        boolean flag = threadService.save(thread);
-        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
-    }
-    //修改文章
-    @PutMapping
-    @ApiOperation("修改論壇文章")
-    public Result updateById(
-            Thread thread,
-            @ApiParam(value = "文章標題", required = true) @RequestParam String title,
-            @ApiParam(value = "文章內容", required = true) @RequestParam String content,
-            @ApiParam(value = "文章分類 ID", required = true) @RequestParam Integer categoryId,
-            @ApiParam(value = "檔案", required = false)
-            @RequestPart(value = "files", required = false) List<MultipartFile> files,
-            HttpSession session) {
-        if (session.getAttribute("userId") == null) {
-            throw new UserNotLoginException();
-        }
-        if(!(files.get(0).isEmpty())) {
-            String paths="";
-            for (String path : upload(files, session)) {
-                paths += path + "|";
-            }
-            thread.setPicture(paths.substring(0,paths.length()-1));
-        }
+    //按讚--------------------------------------------------------------
+    @PutMapping("/love/{threadId}")
+    @ApiOperation("按讚")
+    public Result love(@PathVariable Integer threadId){
+        Thread thread = threadService.getById(threadId);
+        threadService.love(thread);
         boolean flag = threadService.updateById(thread);
-        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章修改成功":"論壇文章修改失敗");
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章點讚成功":"論壇文章點讚失敗");
     }
-
-    //取得使用者的所有文章
-    @GetMapping("/userThread")
-    @ApiOperation("取得使用者的所有論壇文章")
-    public Result getUserThread(HttpSession session) {
-        Integer userId=getUserIdFromSession(session);
-        List<Thread> thread = threadService.getUserThread(userId);
-        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
-        return new Result(code, thread, msg);
+    //取消按讚--------------------------------------------------------------
+    @PutMapping("/cancelLove/{threadId}")
+    @ApiOperation("取消按讚")
+    public Result cancelLove(@PathVariable Integer threadId){
+        Thread thread = threadService.getById(threadId);
+        threadService.cancelLove(thread);
+        boolean flag = threadService.updateById(thread);
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"論壇文章點讚成功":"論壇文章點讚失敗");
     }
-
-
-    //查詢所有文章
-    @GetMapping
-    @ApiOperation("查詢所有論壇文章")
-    public Result getAllThread() {
-        List<Thread> thread = threadService.list();
-        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = thread != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
-        return new Result(code, thread, msg);
+    //切換按讚--------------------------------------------------------------
+    @PutMapping("/toggleLove/{threadId}")
+    @ApiOperation("切換按讚")
+    public Result toggleLove(@PathVariable Integer threadId) {
+        Thread thread = threadService.getById(threadId);
+        threadService.toggleLove(thread);
+        boolean flag = threadService.updateById(thread);
+        String message = (thread.getLove() % 2 == 0) ? "論壇文章取消按讚成功" : "論壇文章點讚成功";
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, message);
     }
-
-    //刪除文章
-    @ApiImplicitParam(name = "threadId", value = "論壇文章Id")
-    @DeleteMapping("/{threadId}")
-    @ApiOperation("刪除論壇文章")
-    public Result deleteById(@PathVariable Integer threadId) {
-        boolean flag = threadService.removeById(threadId);
-        return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ?"論壇文章刪除成功":"論壇文章刪除失敗");
-    }
-    //查詢單筆論壇
-    @ApiImplicitParam(name = "threadId", value = "論壇文章Id")
-    @GetMapping("/{threadId}")
-    @ApiOperation("查詢單筆論壇文章")
-    public Result getUserById(@PathVariable Integer threadId) {
-        Thread thread = threadService.getThreadWithCategoryName(threadId);
-        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = thread != null ? "論壇文章資料取得成功" : "查無資料";
-        return new Result(code, thread, msg);
-    }
-    //查詢最後一筆論壇文章
-    @GetMapping("last")
-    @ApiOperation("查詢最後一筆論壇文章")
-    public Result getUserlastById() {
-        Integer getThreadId = threadService.getLastThreadById();
-        Thread thread = threadService.getThreadWithCategoryName(getThreadId - 1);
-        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = thread != null ? "最後一筆資料取得成功" : "查無資料";
-        return new Result(code, thread, msg);
-    }
-    @GetMapping("/search")
-    @ApiOperation("關鍵字搜尋")
-    public Result searchThreadsByKeyword(
-            @ApiParam("關鍵字")@RequestParam String keyword,
-            @ApiParam("分類名稱") @RequestParam String categoryName) {
-        List<Thread> search = null;
-        if (keyword != null && !keyword.isEmpty() && categoryName != null && !categoryName.isEmpty()) {
-            search = threadService.searchThreadsByKeyword(keyword, categoryName);
-        }
-        Integer code = search != null && !search.isEmpty() ? Code.GET_OK : Code.GET_ERR;
-        String msg = search != null && !search.isEmpty() ? "搜尋文章資料成功" : "搜尋文章資料失敗!請重新輸入關鍵字";
-        return new Result(code, search, msg);
-    }
+    //亂數按讚--------------------------------------------------------------
     @PutMapping("/loveRandom")
     @ApiOperation("按讚亂數")
     public void loveRandom(){
@@ -230,6 +171,54 @@ public class ThreadController extends BaseController{
                 boolean flag = threadService.updateById(thread);
             }
         }
+    }
+    //查詢使用者的所有文章--------------------------------------------------------------
+    @GetMapping("/userThread")
+    @ApiOperation("查詢使用者的所有論壇文章")
+    public Result getUserThread(HttpSession session) {
+        Integer userId=getUserIdFromSession(session);
+        List<Thread> thread = threadService.getUserThread(userId);
+        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
+        return new Result(code, thread, msg);
+    }
+    //查詢所有文章--------------------------------------------------------------
+    @GetMapping
+    @ApiOperation("查詢所有論壇文章")
+    public Result getAllThread() {
+        List<Thread> thread = threadService.list();
+        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = thread != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
+        return new Result(code, thread, msg);
+    }
+
+    //查詢單筆論壇文章--------------------------------------------------------------
+    @ApiImplicitParam(name = "threadId", value = "論壇文章Id")
+    @GetMapping("/{threadId}")
+    @ApiOperation("查詢單筆論壇文章")
+    public Result getUserById(@PathVariable Integer threadId) {
+        Thread thread = threadService.getThreadWithCategoryName(threadId);
+        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = thread != null ? "論壇文章資料取得成功" : "查無資料";
+        return new Result(code, thread, msg);
+    }
+    //查詢最後一筆論壇文章--------------------------------------------------------------
+    @GetMapping("last")
+    @ApiOperation("查詢最後一筆論壇文章")
+    public Result getUserlastById() {
+        Integer getThreadId = threadService.getLastThreadById();
+        Thread thread = threadService.getThreadWithCategoryName(getThreadId - 1);
+        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = thread != null ? "最後一筆資料取得成功" : "查無資料";
+        return new Result(code, thread, msg);
+    }
+    //關鍵字搜尋--------------------------------------------------------------
+    @GetMapping("/search")
+    @ApiOperation("關鍵字搜尋")
+    public Result searchThreadsByKeyword(
+            @ApiParam("關鍵字") @RequestParam String keyword,
+            @ApiParam("分類名稱") @RequestParam String categoryName) {
+        return threadService.searchThreads(keyword, categoryName);
     }
     //假資料
 //    @ApiIgnore    // 忽略这个api
