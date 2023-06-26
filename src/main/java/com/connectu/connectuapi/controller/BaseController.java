@@ -1,9 +1,11 @@
 package com.connectu.connectuapi.controller;
 
+import com.connectu.connectuapi.config.WebsocketConfig;
 import com.connectu.connectuapi.exception.file.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;

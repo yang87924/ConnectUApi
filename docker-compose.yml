@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - :/root/nginx/html:/usr/share/nginx/html
+      - :/root/nginx/nginx.conf:/etc/nginx/conf/nginx.conf
+    privileged: true

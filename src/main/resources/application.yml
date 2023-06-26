@@ -63,6 +63,18 @@ springfox:
   #      username: root
   #      password: root
   # ========================================================================
+  #    transaction:
+  #      # 配置事务管理器
+  #      platform: org.springframework.jdbc.datasource.DataSourceTransactionManager
+  # ========================================================================
+  #spring:
+  #  datasource:
+  #    druid:
+  #      driver-class-name: com.mysql.cj.jdbc.Driver
+  #      url: jdbc:mysql://localhost:3306/iii?serverTimezone=UTC
+  #      username: root
+  #      password: root
+  # ========================================================================
 
 
 
