@@ -5,6 +5,7 @@ import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.domain.UserThreadLove;
+import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.exception.file.*;
 import com.connectu.connectuapi.service.IReplyService;
@@ -57,6 +58,11 @@ public class ThreadController extends BaseController{
         if (session.getAttribute("userId") == null) {
             throw new UserNotLoginException();
         }
+        if(categoryId==null
+                ||title==null||title.isEmpty()
+                ||content==null||content.isEmpty()) {
+            throw new ThreadColumnIsNullException();
+        }
         thread.setUserId(getUserIdFromSession(session));
         if(!(files.get(0).isEmpty())) {
             String paths="";
@@ -89,6 +95,11 @@ public class ThreadController extends BaseController{
             HttpSession session) {
         if (session.getAttribute("userId") == null) {
             throw new UserNotLoginException();
+        }
+        if(categoryId==null
+                ||title==null||title.isEmpty()
+                ||content==null||content.isEmpty()) {
+            throw new ThreadColumnIsNullException();
         }
         if(!(files.get(0).isEmpty())) {
             String paths="";
