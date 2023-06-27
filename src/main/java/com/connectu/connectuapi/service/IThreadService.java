@@ -20,4 +20,8 @@ public interface IThreadService extends IService<Thread> {
     void cancelLove(Thread thread);
     void toggleLove(Thread thread);
     Result searchThreads(String keyword, String categoryName);
+    boolean addFavoriteThread(Integer userId, Integer threadId);
+    boolean removeFavoriteThread(Integer userId, Integer threadId);
+    List<Thread> getFavoriteThreads(Integer userId);
+
 }
