@@ -104,7 +104,11 @@ public class UserController extends BaseController {
     @GetMapping("/{userId}")
     @ApiOperation("查詢用戶")
     public Result getUserById(@PathVariable Integer userId) {
+
         User user = userService.getById(userId);
+
+
+
         Integer code = user != null ? Code.GET_OK : Code.GET_ERR;
         String msg = user != null ? "用戶資料取得成功" : "查無此用戶";
         return new Result(code, user, msg);
@@ -121,9 +125,9 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/getUserId")
-    public void getUserId(HttpSession session){
-        System.out.println(session.getId());
-        System.out.println(session.getAttribute("userId"));
+    @ApiOperation("從Session查詢用戶")
+    public User getUserId(HttpSession session){
+        return userService.getById(getUserIdFromSession(session));
     }
 
 //登入--------------------------------------------------------------
