@@ -33,10 +33,12 @@ public class Thread  {
     private String createdAt;
     @ApiModelProperty(value = "圖片")
     private String picture;
-    @ApiModelProperty(value = "讚")
+    @ApiModelProperty(value = "讚數")
     private Integer love ;
     @TableField(exist = false)
     @ApiModelProperty(value = "分類名稱")
     private String categoryName;
+    @ApiModelProperty(value = "收藏數量")
+    private Integer favoriteCount;
 
 }

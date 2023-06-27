@@ -8,6 +8,7 @@ import com.connectu.connectuapi.domain.UserThreadLove;
 import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.exception.file.*;
+import com.connectu.connectuapi.service.IFavoriteThreadService;
 import com.connectu.connectuapi.service.IReplyService;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserThreadLoveService;
@@ -45,6 +46,43 @@ public class ThreadController extends BaseController{
     private IThreadService threadService;
     @Autowired
     private IUserThreadLoveService userThreadLoveService;
+    @Autowired
+    private IFavoriteThreadService favoriteThreadService;
+    //新增收藏文章
+    @PostMapping("/favorite")
+    @ApiOperation(value = "新增收藏文章", notes = "新增使用者收藏的文章")
+    public Result addFavoriteThread(@ApiParam(value = "文章 ID", required = true) @RequestParam Integer threadId,
+                                    HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            throw new UserNotLoginException();
+        }
+        Integer userId = getUserIdFromSession(session);
+        boolean flag = threadService.addFavoriteThread(userId, threadId);
+        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "收藏文章成功" : "收藏文章失敗");
+    }
+    //移除收藏文章
+    @DeleteMapping("/favorite/{favoriteThreadId}")
+    @ApiOperation(value = "移除收藏文章", notes = "移除使用者收藏的文章")
+    public Result removeFavoriteThread(@ApiParam(value = "文章 ID", required = true) @PathVariable Integer favoriteThreadId ,
+                                       HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            throw new UserNotLoginException();
+        }
+        Integer userId = getUserIdFromSession(session);
+        boolean flag = favoriteThreadService.removeById(favoriteThreadId);
+        return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ? "移除收藏文章成功" : "移除收藏文章失敗");
+    }
+    //查詢使用者收藏的文章
+    @GetMapping("/favorite")
+    @ApiOperation(value = "查詢收藏文章", notes = "查詢使用者收藏的文章")
+    public Result getFavoriteThreads(HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            throw new UserNotLoginException();
+        }
+        Integer userId = getUserIdFromSession(session);
+        List<Thread> threads = threadService.getFavoriteThreads(userId);
+        return threads.isEmpty() ? new Result(Code.GET_ERR, null, "查詢收藏文章失敗") : new Result(Code.GET_OK, threads, "查詢收藏文章成功");
+    }
     //新增文章--------------------------------------------------------------
     @PostMapping
     @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

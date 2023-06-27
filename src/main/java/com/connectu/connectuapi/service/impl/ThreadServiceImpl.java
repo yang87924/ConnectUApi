@@ -10,16 +10,19 @@ import com.connectu.connectuapi.dao.CategoryDao;
 import com.connectu.connectuapi.dao.ReplyDao;
 import com.connectu.connectuapi.dao.ThreadDao;
 import com.connectu.connectuapi.domain.Category;
+import com.connectu.connectuapi.domain.FavoriteThread;
 import com.connectu.connectuapi.domain.Reply;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 
 import com.connectu.connectuapi.exception.UserNotLoginException;
+import com.connectu.connectuapi.service.IFavoriteThreadService;
 import com.connectu.connectuapi.service.IThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +40,74 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     private ReplyDao replyDao;
     @Autowired
     private CategoryDao categoryDao;
+    @Autowired
+    private IFavoriteThreadService favoriteThreadService;
+    @Override
+    public boolean addFavoriteThread(Integer userId, Integer threadId) {
+        //檢查使用者是否已經收藏過此文章
+        QueryWrapper<FavoriteThread> wrapper = new QueryWrapper<>();
+        wrapper.eq("userId", userId);
+        wrapper.eq("threadId", threadId);
+        FavoriteThread favoriteThread = favoriteThreadService.getOne(wrapper);
+        if (favoriteThread != null) {
+            //使用者已經收藏過此文章
+            return true;
+        }
+        //新增收藏文章
+        favoriteThread = new FavoriteThread();
+        favoriteThread.setUserId(userId);
+        favoriteThread.setThreadId(threadId);
+        boolean flag = favoriteThreadService.save(favoriteThread);
+        if (flag) {
+            //收藏文章數量+1
+            Thread thread = getById(threadId);
+            thread.setFavoriteCount(thread.getFavoriteCount() + 1);
+            updateById(thread);
+        }
+        return flag;
+    }
+    //移除收藏文章
+    @Override
+    public boolean removeFavoriteThread(Integer userId, Integer threadId) {
+        //檢查使用者是否已經收藏過此文章
+        QueryWrapper<FavoriteThread> wrapper = new QueryWrapper<>();
+        wrapper.eq("userId", userId);
+        wrapper.eq("threadId", threadId);
+        FavoriteThread favoriteThread = favoriteThreadService.getOne(wrapper);
+        if (favoriteThread == null) {
+            //使用者沒有收藏過此文章
+            return true;
+        }
+        //移除收藏文章
+        boolean flag = favoriteThreadService.removeById(favoriteThread.getUserId());
+        if (flag) {
+            //收藏文章數量-1
+            Thread thread = getById(threadId);
+            thread.setFavoriteCount(thread.getFavoriteCount() - 1);
+            updateById(thread);
+        }
+        return flag;
+    }
+    //查詢使用者收藏的文章
+    @Override
+    public List<Thread> getFavoriteThreads(Integer userId) {
+        //查詢使用者收藏的文章ID
+        QueryWrapper<FavoriteThread> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", userId);
+        List<FavoriteThread> favoriteThreads = favoriteThreadService.list(wrapper);
+        List<Integer> threadIds = new ArrayList<>();
+        for (FavoriteThread favoriteThread : favoriteThreads) {
+            threadIds.add(favoriteThread.getThreadId());
+        }
+        if (threadIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        //查詢收藏的文章
+        QueryWrapper<Thread> threadWrapper = new QueryWrapper<>();
+        threadWrapper.in("threadId", threadIds);
+        List<Thread> threads = list(threadWrapper);
+        return threads;
+    }
     //新增文章--------------------------------------------------------------
     @Override
     public boolean save(Thread thread) {
@@ -191,6 +262,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
             return new ArrayList<>();
         }
     }
+
     //假資料--------------------------------------------------------------
     @Override
     public void addFakeThread(int count) {
