@@ -8,6 +8,7 @@ import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.exception.file.*;
 import com.connectu.connectuapi.service.IReplyService;
 import com.connectu.connectuapi.service.IThreadService;
+import com.connectu.connectuapi.service.impl.StorageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -40,6 +41,8 @@ import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 public class ThreadController extends BaseController{
     @Autowired
     private IThreadService threadService;
+    @Autowired
+    private StorageService storageService;
     //假資料
 //    @ApiIgnore    // 忽略这个api
 //    @PostMapping("/addFakeThread")
@@ -62,7 +65,7 @@ public class ThreadController extends BaseController{
         Integer userId=getUserIdFromSession(session);
         String picture=null;
         if (files != null && !files.isEmpty()) {
-            List<String> paths = upload(files, session);
+            List<String> paths = storageService.uploadToS3(files, session);
             picture = String.join("|", paths);
         }
         boolean flag = threadService.saveThread(categoryId,userId,title,content,picture);
@@ -132,7 +135,7 @@ public class ThreadController extends BaseController{
                              HttpSession session) {
         if(!(files.get(0).isEmpty())) {
             String paths="";
-            for (String path : upload(files, session)) {
+            for (String path : storageService.uploadToS3(files, session)) {
                 paths += path + "|";
             }
             thread.setPicture(paths.substring(0,paths.length()-1));
