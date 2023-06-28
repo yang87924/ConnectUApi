@@ -4,6 +4,7 @@ import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IUserService;
+import com.connectu.connectuapi.service.impl.StorageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class UserController extends BaseController {
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private StorageService storageService;
     //假資料
 
 //    @PostMapping("/addFakeUser")
@@ -88,7 +91,7 @@ public class UserController extends BaseController {
     public Result updateById(User user, List<MultipartFile> files, HttpSession session) {
         if (!(files.get(0).isEmpty())) {
             String paths = "";
-            for (String path : upload(files, session)) {
+            for (String path : storageService.uploadToS3(files, session)) {
                 paths += path + "|";
             }
             user.setAvatar(paths.substring(0, paths.length() - 1));
