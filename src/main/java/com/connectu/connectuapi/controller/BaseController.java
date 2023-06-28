@@ -20,6 +20,10 @@ import java.util.UUID;
 
 public class BaseController {
 
+    public final Integer getUserIdFromSession(HttpSession session) {
+        return Integer.valueOf(session.getAttribute("userId").toString());
+    }
+
 
     protected final String getUserNameFromSession(HttpSession session) {
         return session.getAttribute("userName").toString();
@@ -34,6 +38,7 @@ public class BaseController {
     }
 
 
+
 //
 //    public static final int AVATAR_MAX_SIZE = 10 * 1024 * 1024;
 //
@@ -46,9 +51,7 @@ public class BaseController {
 //        AVATAR_TYPES.add("image/gif");
 //    }
 //
-//    public final Integer getUserIdFromSession(HttpSession session) {
-//        return Integer.valueOf(session.getAttribute("userId").toString());
-//    }
+
 //
 //    public List<String> upload(List<MultipartFile> files, HttpSession session) {
 //        if (files == null || files.isEmpty()) {
