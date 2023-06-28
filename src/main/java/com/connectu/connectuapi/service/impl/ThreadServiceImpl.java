@@ -93,7 +93,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     public List<Thread> getFavoriteThreads(Integer userId) {
         //查詢使用者收藏的文章ID
         QueryWrapper<FavoriteThread> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id", userId);
+        wrapper.eq("userId", userId);
         List<FavoriteThread> favoriteThreads = favoriteThreadService.list(wrapper);
         List<Integer> threadIds = new ArrayList<>();
         for (FavoriteThread favoriteThread : favoriteThreads) {

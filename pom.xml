@@ -141,8 +141,13 @@
             <artifactId>mybatis-plus-join-boot-starter</artifactId>
             <version>1.4.5</version>
         </dependency>
+        <!--        JWT-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
     </dependencies>
-
 
     <build>
         <plugins>
