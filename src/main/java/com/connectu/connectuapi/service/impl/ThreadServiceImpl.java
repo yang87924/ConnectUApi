@@ -17,6 +17,7 @@ import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 
 import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.service.IFavoriteThreadService;
+import com.connectu.connectuapi.service.IReplyService;
 import com.connectu.connectuapi.service.IThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,6 +44,31 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     private CategoryDao categoryDao;
     @Autowired
     private IFavoriteThreadService favoriteThreadService;
+    @Autowired
+    private IReplyService replyService;
+    @Override
+    public List<Thread> hotThread() {
+        List<Thread> threads = threadDao.selectList(null);
+        threads.forEach(thread -> {
+            Long replyCount = getReplyCount(thread.getThreadId());
+          //  Integer.parseInt(replyCount);
+            thread.setHotScore(thread.getLove() + thread.getFavoriteCount() +replyCount.intValue());
+        });
+        threads.sort(Comparator.comparing(Thread::getHotScore).reversed());
+        for (Thread thread : threads) {
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            if (category != null) {
+                thread.setCategoryName(category.getCategoryName());
+            }
+        }
+        return threads;
+    }
+    private Long getReplyCount(Integer threadId) {
+        //ReplyDao replyDao = new ReplyDao();
+        QueryWrapper<Reply> wrapper = new QueryWrapper<>();
+        wrapper.eq("threadId", threadId);
+        return replyDao.selectCount(wrapper);
+    }
     @Override
     public boolean addFavoriteThread(Integer userId, Integer threadId) {
         //檢查使用者是否已經收藏過此文章

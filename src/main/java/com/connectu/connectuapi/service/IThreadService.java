@@ -23,5 +23,6 @@ public interface IThreadService extends IService<Thread> {
     boolean addFavoriteThread(Integer userId, Integer threadId);
     boolean removeFavoriteThread(Integer userId, Integer threadId);
     List<Thread> getFavoriteThreads(Integer userId);
+    List<Thread> hotThread();
 
 }

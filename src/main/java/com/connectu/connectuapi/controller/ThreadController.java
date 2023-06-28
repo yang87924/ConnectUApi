@@ -51,6 +51,12 @@ public class ThreadController extends BaseController{
     private IFavoriteThreadService favoriteThreadService;
     @Autowired
     private StorageService storageService;
+
+    @GetMapping("/hotThread")
+    @ApiOperation(value = "Sort articles based on love, favoriteCount, and Reply table count", notes = "Sort articles based on the specified sorting criteria")
+    public Result sortThreads() {
+        List<Thread> threads = threadService.hotThread();
+        return threads.isEmpty() ? new Result(Code.GET_ERR, null, "查詢熱門文章失敗") : new Result(Code.GET_OK, threads, "查詢熱門文章成功");    }
     //新增收藏文章
     @PostMapping("/favorite")
     @ApiOperation(value = "新增收藏文章", notes = "新增使用者收藏的文章")

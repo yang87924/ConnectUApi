@@ -10,4 +10,6 @@ import java.util.List;
 
 @Mapper
 public interface UserDao extends BaseMapper<User> {
+    @Select("SELECT * FROM thread ORDER BY love + favoriteCount DESC")
+    List<Thread> getSortedThreads();
 }

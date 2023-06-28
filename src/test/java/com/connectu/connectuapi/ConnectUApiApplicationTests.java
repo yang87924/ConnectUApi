@@ -5,9 +5,14 @@ import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.dao.UserThreadLoveDao;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Locale;
+
+import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
 
 
 @SpringBootTest
@@ -25,7 +30,9 @@ class ConnectUApiApplicationTests {
 //    private StringEncryptor stringEncryptor;
     @Test
     void userTest() {
-        userService.list(null);
+        Faker faker = new Faker(new Locale("zh_TW"));
+        String loremText = faker.lorem().word();
+        System.out.println("Generated Lorem Text: " + loremText);
     }
 
     @Test

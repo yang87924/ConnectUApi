@@ -40,5 +40,7 @@ public class Thread  {
     private String categoryName;
     @ApiModelProperty(value = "收藏數量")
     private Integer favoriteCount;
+    @ApiModelProperty(value = "總分數")
+    private Integer hotScore;
 
 }
