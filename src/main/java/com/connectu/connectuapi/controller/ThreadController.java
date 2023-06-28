@@ -12,6 +12,7 @@ import com.connectu.connectuapi.service.IFavoriteThreadService;
 import com.connectu.connectuapi.service.IReplyService;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserThreadLoveService;
+import com.connectu.connectuapi.service.impl.StorageService;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -48,6 +49,8 @@ public class ThreadController extends BaseController{
     private IUserThreadLoveService userThreadLoveService;
     @Autowired
     private IFavoriteThreadService favoriteThreadService;
+    @Autowired
+    private StorageService storageService;
     //新增收藏文章
     @PostMapping("/favorite")
     @ApiOperation(value = "新增收藏文章", notes = "新增使用者收藏的文章")
@@ -81,7 +84,7 @@ public class ThreadController extends BaseController{
         thread.setUserId(getUserIdFromSession(session));
         if(!(files.get(0).isEmpty())) {
             String paths="";
-            for (String path : upload(files, session)) {
+            for (String path : storageService.uploadToS3(files, session)) {
                 paths += path + "|";
             }
             thread.setPicture(paths.substring(0,paths.length()-1));
@@ -130,7 +133,7 @@ public class ThreadController extends BaseController{
         }
         if(!(files.get(0).isEmpty())) {
             String paths="";
-            for (String path : upload(files, session)) {
+            for (String path : storageService.uploadToS3(files, session)) {
                 paths += path + "|";
             }
             thread.setPicture(paths.substring(0,paths.length()-1));
