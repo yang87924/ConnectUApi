@@ -50,6 +50,22 @@ springfox:
     cache: false
 
   # ========================================================================
+cloud:
+  aws:
+    credentials:
+      access-key: AKIARXOOQM5FKQYNF442
+      secret-key: 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
+    region:
+      static: ap-northeast-1
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: seeiebucket
+
+
+  # ========================================================================
 
   #    transaction:
   #      # 配置事务管理器
