@@ -41,7 +41,9 @@ public class Code {
     public static final Integer PASSWORD_NOT_FORMAT = 50024;
     //文章新增失敗
     public static final Integer THREAD_COLUMN_IS_NULL = 50025;
-    public static final Integer USER_NOT_LOGIN = 50025;
+    public static final Integer USER_NOT_LOGIN = 50026;
+    public static final Integer FAVORITE_THREAD_NOT_FOUND = 50027;
+
 
     //檔案上傳失敗
     public static final Integer FILE_IS_EMPTY = 50031;

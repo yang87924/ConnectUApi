@@ -1,15 +1,19 @@
 package com.connectu.connectuapi;
 
-import com.baomidou.mybatisplus.core.toolkit.AES;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.dao.UserThreadLoveDao;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
-import org.jasypt.encryption.StringEncryptor;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Locale;
+
+import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
+
 
 @SpringBootTest
 class ConnectUApiApplicationTests {
@@ -19,15 +23,36 @@ class ConnectUApiApplicationTests {
     private IThreadService threadService;
     @Autowired
     private UserDao userDao;
+
     @Autowired
     private UserThreadLoveDao userThreadLoveDao;
-    @Autowired
-    private StringEncryptor stringEncryptor;
+//    @Autowired
+//    private StringEncryptor stringEncryptor;
     @Test
     void userTest() {
-        userService.list(null);
+        Faker faker = new Faker(new Locale("zh_TW"));
+        String loremText = generateRandomString(10,50);
+        System.out.println("Generated Lorem Text: " + loremText);
     }
 
+    private static String generateRandomString(int minLength, int maxLength) {
+        String characters = "在現代社會中，工作已成為我們生活的一部分。隨著科技的進步和全球化的影響，工作環境正在發生著巨大的變革。這些變化帶來了一些挑戰，同時也開啟了新的機會。\n" +
+                "\n" +
+                "一個主要的挑戰是適應快速變化的科技環境。隨著人工智能、大數據和自動化技術的普及，許多傳統的工作正在面臨被取代的風險。然而，這同時也創造了新的機會。我們可以利用科技的力量來改善工作效率，從而釋放出更多時間來專注於創造性和戰略性的任務。\n" +
+                "\n" +
+                "另一個挑戰是處理工作和生活之間的平衡。現代的工作節奏快速且繁忙，對我們的時間和精力提出了很大的要求。因此，我們需要學會管理時間，設定優先順序，並保持身心健康。這也是一個機會，讓我們探索彈性工作時間和遠程工作的模式，從而實現更好的工作與生活平衡。\n" +
+                "\n" +
+                "另外，團隊合作也是現代工作中的重要課題。越來越多的工作需要團隊間的合作和協調。這意味著我們需要培養良好的溝通和協作能力，學會在團隊中建立共享的目標和價值觀。同時，多元化的團隊結構也為創新和創造力提供了更多的機會，不同背景和觀點的人們能夠帶來更多的創意和解決問題的能力。\n" +
+                "\n" +
+                "最後，職業發展也是現代工作中的重要議題。工作市場變得競爭激烈，我們需要不斷學習和提升自己的技能，以應對變化中的需求。這也是一個機會，讓我們能夠";
+        StringBuilder sb = new StringBuilder();
+        int length = (int) (Math.random() * (maxLength - minLength + 1) + minLength);
+        for (int i = 0; i < length; i++) {
+            int randomIndex = (int) (Math.random() * characters.length());
+            sb.append(characters.charAt(randomIndex));
+        }
+        return sb.toString();
+    }
     @Test
     void threadTest() {
         userThreadLoveDao.selectList(null);
@@ -45,21 +70,6 @@ class ConnectUApiApplicationTests {
     void loginTest(){
         userService.login("于思源", "kd2j88gaxqalh");
     }
-    @Test
-    void encryptPwd(){
 
-//        String secret="connectU";
-//        String url="jdbc:mysql://mydbinstance2.cmcjn8qqcxqk.ap-northeast-1.rds.amazonaws.com:3306/connectU?serverTimezone=UTC";
-//        System.out.println("ENC("+stringEncryptor.encrypt(url)+")");
-//
-//        String userName="admin";
-//        System.out.println("ENC("+stringEncryptor.encrypt(userName)+")");
-//
-//        String password="GBb4ddyE1mfrBFGQA5sc";
-//        System.out.println("ENC("+stringEncryptor.encrypt(password)+")");
-        //解密方法
-        System.out.println(stringEncryptor.decrypt("oeuu4ruGs8bI1MNZuf7eQE4YvTYpMUufHpBKTJreR8qx0Hh5idsNi7qAZbGFXPyd"));
-
-    }
 
 }

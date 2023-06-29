@@ -4,6 +4,7 @@ import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IUserService;
+import com.connectu.connectuapi.service.impl.StorageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +12,23 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Comparator;
 import java.util.List;
+
 
 @Api(tags = "使用者")
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = "*")
 public class UserController extends BaseController {
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private StorageService storageService;
+
+
 
     //假資料
 
@@ -64,17 +72,6 @@ public class UserController extends BaseController {
     }
 
 
-    //登入--------------------------------------------------------------
-    @PostMapping("/login")
-    @ApiOperation("登入")
-    public Result login(@RequestBody User user, HttpSession session) {
-
-        User loginUser = userService.login(user.getEmail(), user.getPassword());
-        session.setAttribute("userId", loginUser.getUserId());
-        session.setAttribute("userName", loginUser.getUserName());
-        session.setAttribute("email", loginUser.getEmail());
-        return new Result(Code.LOGIN_OK, loginUser, "登入成功");
-    }
 
     //清除Session---------------------------------------------------------------
     @PostMapping("/invalidate")
@@ -100,7 +97,7 @@ public class UserController extends BaseController {
     public Result updateById(User user, List<MultipartFile> files, HttpSession session) {
         if (!(files.get(0).isEmpty())) {
             String paths = "";
-            for (String path : upload(files, session)) {
+            for (String path : storageService.uploadToS3(files, session)) {
                 paths += path + "|";
             }
             user.setAvatar(paths.substring(0, paths.length() - 1));
@@ -116,7 +113,11 @@ public class UserController extends BaseController {
     @GetMapping("/{userId}")
     @ApiOperation("查詢用戶")
     public Result getUserById(@PathVariable Integer userId) {
+
         User user = userService.getById(userId);
+
+
+
         Integer code = user != null ? Code.GET_OK : Code.GET_ERR;
         String msg = user != null ? "用戶資料取得成功" : "查無此用戶";
         return new Result(code, user, msg);
@@ -132,9 +133,32 @@ public class UserController extends BaseController {
         return new Result(code, users, msg);
     }
 
-    @GetMapping("/getUserId")
-    public Integer getUserId(HttpSession session){
-        return getUserIdFromSession(session);
+    @PostMapping("/getUserId")
+    @ApiOperation("從Session查詢用戶")
+    public User getUserId(HttpSession session){
+        return userService.getById(getUserIdFromSession(session));
+    }
+
+//登入--------------------------------------------------------------
+    @PostMapping("/login")
+    @ApiOperation("登入")
+    public Result login(@RequestBody User user, HttpSession session) {
+
+        User loginUser = userService.login(user.getEmail(), user.getPassword());
+        session.setAttribute("userId", loginUser.getUserId());
+        session.setAttribute("userName", loginUser.getUserName());
+        session.setAttribute("email", loginUser.getEmail());
+
+
+        return new Result(Code.LOGIN_OK, loginUser, "登入成功");
+    }
+
+
+
+    @GetMapping("/getUserName")
+    public String getUserName(HttpSession session) {
+        String userName = (String) session.getAttribute("userName");
+        return userName;
     }
 
 
