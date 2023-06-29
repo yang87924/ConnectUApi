@@ -10,22 +10,43 @@ import java.util.List;
 import java.util.Set;
 
 public interface IThreadService extends IService<Thread> {
+    //假資料--------------------------------------------------------------
     void addFakeThread(int count);
-    Integer getLastThreadById();
-    List<Thread> getUserThread(int id);
-    Thread getThreadWithCategoryName(Integer threadId);
-    boolean saveThread(Integer categoryId,Integer userId,String title, String content,  String picture) ;
-    List<Thread> searchThreadsByKeyword(String keyword, String categoryName);
-    void love(Thread thread);
-    void cancelLove(Thread thread);
-    void toggleLove(Thread thread);
-    Result searchThreads(String keyword, String categoryName);
+
+    //新增收藏文章--------------------------------------------------------------
     boolean addFavoriteThread(Integer userId, Integer threadId);
-    boolean removeFavoriteThread(Integer userId, Integer threadId);
+
+    //切換使用者按讚--------------------------------------------------------------
+    void toggleLove(Thread thread);
+
+    //按讚--------------------------------------------------------------
+    void love(Thread thread);
+
+    //取消按讚--------------------------------------------------------------
+    void cancelLove(Thread thread);
+
+    //查詢使用者收藏的文章
     List<Thread> getFavoriteThreads(Integer userId);
+
+    //查詢使用者的所有文章--------------------------------------------------------------
+    List<Thread> getUserThread(int id);
+
+    //熱門文章--------------------------------------------------------------
     List<Thread> hotThread();
-    //熱門作者
-    List<Thread> hotUser(int id);
+
+    //查詢主題文章--------------------------------------------------------------
+    List<Thread> getCategoryThread(int categoryId);
+
+    //查詢單筆論壇文章-------------------------------------------------------------
+    Thread getThreadWithCategoryName(Integer threadId);
+
+    //查詢最後一筆論壇文章--------------------------------------------------------------
+    Integer getLastThreadById();
+
+    //關鍵字搜尋--------------------------------------------------------------
+    Result searchThreads(String keyword, String categoryName);
+    List<Thread> searchThreadsByKeyword(String keyword, String categoryName);
+
 
 
 }

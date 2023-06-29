@@ -2,7 +2,9 @@ package com.connectu.connectuapi.controller;
 
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
+import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
+import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
 import com.connectu.connectuapi.service.impl.StorageService;
 import io.swagger.annotations.Api;
@@ -27,6 +29,7 @@ public class UserController extends BaseController {
 
     @Autowired
     private StorageService storageService;
+
 
 
 
@@ -70,8 +73,15 @@ public class UserController extends BaseController {
         System.out.println(session.getAttribute("email"));
         return new Result(Code.LOGIN_OK, loginUser, "登入成功");
     }
-
-
+    //熱門作者---------------------------------------------------------------
+    @ApiOperation("熱門作者")
+    @GetMapping("/hotUsers")
+    public Result  getSortedUsers() {
+        List<User> users = userService.getSortedUsers();
+        Integer code = users != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = users != null ? "熱門作者查詢成功" : "熱門作者查詢失敗";
+        return new Result(code, users, msg);
+    }
 
     //清除Session---------------------------------------------------------------
     @PostMapping("/invalidate")

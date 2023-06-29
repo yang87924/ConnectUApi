@@ -25,10 +25,5 @@ public class User  {
     private String profile;
     private String point;
     private String isGoogle;
-    // 增加一個欄位用於存儲hotScore
-    @TableField(exist = false)
-    private Integer hotScore;
-    // 增加一個欄位用於存儲該使用者的所有文章
-    @TableField(exist = false)
-    private List<Thread> threads;
+    private Integer HotScore;
 }

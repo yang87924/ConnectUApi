@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.dao.UserDao;
+import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.exception.*;
+import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,7 +29,8 @@ import java.util.Locale;
 public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUserService {
     @Autowired
     private UserDao userDao;
-
+    @Autowired
+    private IThreadService threadService;
     public void addFakeUsers(int count) {
         for (int i = 0; i < count; i++) {
             User fakeUser = UserServiceImpl.createFakeUser();
@@ -34,7 +38,21 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
         }
     }
 
-
+    @Override
+    public List<User> getSortedUsers() {
+        List<User> users=userDao.selectList(null);
+        for (User user : users) {
+            List<Thread> threads = threadService.getUserThread(user.getUserId());
+            int hotScoreSum = 0;
+            for (Thread thread : threads) {
+                hotScoreSum += thread.getHotScore();
+            }
+            user.setHotScore(hotScoreSum);
+            userDao.updateById(user);
+        }
+        users.sort(Comparator.comparingInt(User::getHotScore).reversed());
+        return users;
+    }
 
 
     public static User createFakeUser() {

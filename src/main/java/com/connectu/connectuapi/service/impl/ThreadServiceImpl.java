@@ -43,60 +43,25 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     private CategoryDao categoryDao;
     @Autowired
     private IFavoriteThreadService favoriteThreadService;
-    @Autowired
-    private IReplyService replyService;
-
-    //熱門作者
+    //假資料--------------------------------------------------------------
     @Override
-    public List<Thread> hotUser(int userId) {
-        List<Thread> thread = getUserThread(userId);
-        thread.sort(Comparator.comparing(Thread::getHotScore).reversed());
+    public void addFakeThread(int count) {
+        for (int i = 0; i < count; i++) {
+            Thread thread = ThreadServiceImpl.createFakeThread(count);
+            threadDao.insert(thread);
+        }
+    }
+    public static Thread createFakeThread(int count) {
+        Thread thread = new Thread();
+        // thread.setCategoryId((int) (Math.random() * 13) + 1);
+        thread.setUserId((int) (Math.random() * 98) + 1);
+        // thread.setTitle(generateFakeArticle(10));
+        // thread.setContent(generateFakeArticle(100));
+        // thread.setCreatedAt(getSystemTime());
+        //  thread.setPicture("C:/Users/User/AppData/Local/Temp/tomcat-docbase.80.10138220504103279093/upload/95cf287d-00f7-4c44-aa49-a37eaa374270.png");
         return thread;
     }
-    //查詢使用者的所有文章--------------------------------------------------------------
-    public List<Thread> getUserThread(int userId) {
-        LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Thread::getUserId, userId);
-        List<Thread> result = threadDao.selectList(lqw);
-        // 為每個 thread 設置 categoryName
-        for (Thread thread : result) {
-            Category category = categoryDao.selectById(thread.getCategoryId());
-            if (category != null) {
-                thread.setCategoryName(category.getCategoryName());
-            }
-        }
-        return result;
-    }
-    @Override
-    public List<Thread> hotThread() {
-        List<Thread> threads = threadDao.selectList(null);
-        threads.forEach(thread -> {
-            Long replyCount = getReplyCount(thread.getThreadId());
-          //  Integer.parseInt(replyCount);
-            thread.setHotScore(thread.getLove() + thread.getFavoriteCount() +replyCount.intValue());
-            threadDao.updateById(thread);
-        });
-        threads.sort(Comparator.comparing(Thread::getHotScore).reversed());
-        for (Thread thread : threads) {
-            Category category = categoryDao.selectById(thread.getCategoryId());
-            if (category != null) {
-                thread.setCategoryName(category.getCategoryName());
-            }
-        }
-        return threads;
-    }
-
-    @Override
-    public List<Thread> list() {
-        return super.list();
-    }
-
-    private Long getReplyCount(Integer threadId) {
-        //ReplyDao replyDao = new ReplyDao();
-        QueryWrapper<Reply> wrapper = new QueryWrapper<>();
-        wrapper.eq("threadId", threadId);
-        return replyDao.selectCount(wrapper);
-    }
+    //新增收藏文章--------------------------------------------------------------
     @Override
     public boolean addFavoriteThread(Integer userId, Integer threadId) {
         //檢查使用者是否已經收藏過此文章
@@ -121,29 +86,47 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         }
         return flag;
     }
-    //移除收藏文章
+    //新增文章--------------------------------------------------------------
     @Override
-    public boolean removeFavoriteThread(Integer userId, Integer threadId) {
-        //檢查使用者是否已經收藏過此文章
-        QueryWrapper<FavoriteThread> wrapper = new QueryWrapper<>();
-        wrapper.eq("userId", userId);
-        wrapper.eq("threadId", threadId);
-        FavoriteThread favoriteThread = favoriteThreadService.getOne(wrapper);
-        if (favoriteThread == null) {
-            //使用者沒有收藏過此文章
-            return true;
-        }
-        //移除收藏文章
-        boolean flag = favoriteThreadService.removeById(favoriteThread.getUserId());
-        if (flag) {
-            //收藏文章數量-1
-            Thread thread = getById(threadId);
-            thread.setFavoriteCount(thread.getFavoriteCount() - 1);
-            updateById(thread);
-        }
-        return flag;
+    public boolean save(Thread thread) {
+        thread.setCreatedAt(getSystemTime());
+        return super.save(thread);
     }
-    //查詢使用者收藏的文章
+    //刪除文章--------------------------------------------------------------
+    @Override
+    public boolean removeById(Serializable id) {
+        LambdaQueryWrapper<Reply> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Reply::getThreadId, id);
+        List<Reply> result = replyDao.selectList(lqw);
+
+        for (Reply reply : result) {
+            replyDao.deleteById(reply.getReplyId()) ;
+        }
+        return super.removeById(id);
+    }
+    //切換使用者按讚--------------------------------------------------------------
+    @Override
+    public void toggleLove(Thread thread) {
+        Integer love = thread.getLove();
+        if (love % 2 == 0) {
+            thread.setLove(love + 1);
+        } else {
+            thread.setLove(love - 1);
+        }
+    }
+    //按讚--------------------------------------------------------------
+    @Override
+    public void love(Thread thread) {
+        Integer love = thread.getLove() +1;
+        thread.setLove(love);
+    }
+    //取消按讚--------------------------------------------------------------
+    @Override
+    public void cancelLove(Thread thread) {
+        Integer love = thread.getLove() -1;
+        thread.setLove(love);
+    }
+    //查詢使用者收藏的文章--------------------------------------------------------------
     @Override
     public List<Thread> getFavoriteThreads(Integer userId) {
         //查詢使用者收藏的文章ID
@@ -163,67 +146,45 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         List<Thread> threads = list(threadWrapper);
         return threads;
     }
-    //新增文章--------------------------------------------------------------
+    //熱門文章
     @Override
-    public boolean save(Thread thread) {
-        thread.setCreatedAt(getSystemTime());
-        return super.save(thread);
-    }
-    //新增文章--------------------------------------------------------------
-    @Override
-    public boolean saveThread(Integer categoryId,Integer userId,String title, String content,  String picture) {
-        if(categoryId==null
-                ||title==null||title.isEmpty()
-                ||content==null||content.isEmpty()){
-            throw new ThreadColumnIsNullException();
-        } else if (userId==null) {
-            throw new UserNotLoginException();
+    public List<Thread> hotThread() {
+        List<Thread> threads = threadDao.selectList(null);
+        threads.forEach(thread -> {
+            Long replyCount = getReplyCount(thread.getThreadId());
+            //  Integer.parseInt(replyCount);
+            thread.setHotScore(thread.getLove() + thread.getFavoriteCount() +replyCount.intValue());
+            threadDao.updateById(thread);
+        });
+        threads.sort(Comparator.comparing(Thread::getHotScore).reversed());
+        for (Thread thread : threads) {
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            if (category != null) {
+                thread.setCategoryName(category.getCategoryName());
+            }
         }
-        Thread thread = new Thread();
-        thread.setTitle(title);
-        thread.setContent(content);
-        thread.setPicture(picture);
-        thread.setCategoryId(categoryId);
-        thread.setCreatedAt(getSystemTime());
-        thread.setUserId(userId);
-        thread.setCreatedAt(getSystemTime());
-        return super.save(thread);
+        return threads;
     }
-    //刪除文章--------------------------------------------------------------
-    @Override
-    public boolean removeById(Serializable id) {
-        LambdaQueryWrapper<Reply> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Reply::getThreadId, id);
-        List<Reply> result = replyDao.selectList(lqw);
-
-        for (Reply reply : result) {
-            replyDao.deleteById(reply.getReplyId()) ;
+    private Long getReplyCount(Integer threadId) {
+        //ReplyDao replyDao = new ReplyDao();
+        QueryWrapper<Reply> wrapper = new QueryWrapper<>();
+        wrapper.eq("threadId", threadId);
+        return replyDao.selectCount(wrapper);
+    }
+    //查詢使用者的所有文章--------------------------------------------------------------
+    public List<Thread> getUserThread(int userId) {
+        LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Thread::getUserId, userId);
+        List<Thread> result = threadDao.selectList(lqw);
+        // 為每個 thread 設置 categoryName
+        for (Thread thread : result) {
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            if (category != null) {
+                thread.setCategoryName(category.getCategoryName());
+            }
         }
-        return super.removeById(id);
+        return result;
     }
-    //按讚--------------------------------------------------------------
-    @Override
-    public void love(Thread thread) {
-        Integer love = thread.getLove() +1;
-        thread.setLove(love);
-    }
-    //取消按讚--------------------------------------------------------------
-    @Override
-    public void cancelLove(Thread thread) {
-        Integer love = thread.getLove() -1;
-        thread.setLove(love);
-    }
-    //切換按讚--------------------------------------------------------------
-    @Override
-    public void toggleLove(Thread thread) {
-        Integer love = thread.getLove();
-        if (love % 2 == 0) {
-            thread.setLove(love + 1);
-        } else {
-            thread.setLove(love - 1);
-        }
-    }
-
     //查詢所有文章--------------------------------------------------------------
     @Override
     public List<Thread> list(Wrapper<Thread> queryWrapper) {
@@ -236,8 +197,22 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         }
         return threads;
     }
+
+    //查詢主題的所有文章--------------------------------------------------------------
+    public List<Thread> getCategoryThread(int categoryId) {
+        LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Thread::getCategoryId, categoryId);
+        List<Thread> result = threadDao.selectList(lqw);
+        // 為每個 thread 設置 categoryName
+        for (Thread thread : result) {
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            if (category != null) {
+                thread.setCategoryName(category.getCategoryName());
+            }
+        }
+        return result;
+    }
     //查詢單筆論壇文章--------------------------------------------------------------
-    //查詢最後一筆論壇文章--------------------------------------------------------------
     @Override
     public Thread getThreadWithCategoryName(Integer threadId) {
         Thread thread = this.getById(threadId);
@@ -303,24 +278,5 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         } else {
             return new ArrayList<>();
         }
-    }
-
-    //假資料--------------------------------------------------------------
-    @Override
-    public void addFakeThread(int count) {
-        for (int i = 0; i < count; i++) {
-            Thread thread = ThreadServiceImpl.createFakeThread(count);
-            threadDao.insert(thread);
-        }
-    }
-    public static Thread createFakeThread(int count) {
-        Thread thread = new Thread();
-        thread.setCategoryId((int) (Math.random() * 13) + 1);
-        thread.setUserId((int) (Math.random() * count) + 1);
-        thread.setTitle(generateFakeArticle(10));
-        thread.setContent(generateFakeArticle(100));
-        thread.setCreatedAt(getSystemTime());
-        thread.setPicture("C:/Users/User/AppData/Local/Temp/tomcat-docbase.80.10138220504103279093/upload/95cf287d-00f7-4c44-aa49-a37eaa374270.png");
-        return thread;
     }
 }
