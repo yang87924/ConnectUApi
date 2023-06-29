@@ -14,8 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
-import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
+import static com.connectu.connectuapi.service.utils.faker.*;
 
 @Service
 public class ReplyServiceImpl extends ServiceImpl<ReplyDao, Reply> implements IReplyService {
@@ -36,7 +35,7 @@ public class ReplyServiceImpl extends ServiceImpl<ReplyDao, Reply> implements IR
         Reply Reply = new Reply();
         Reply.setThreadId((int) (Math.random() * count) + 1);
         Reply.setUserId((int) (Math.random() * count) + 1);
-        Reply.setContent(generateFakeArticle(count));
+        Reply.setContent(generateRandomString(50,200));
         Reply.setCreatedAt(formattedDate);
         return Reply;
     }
