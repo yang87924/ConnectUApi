@@ -24,5 +24,8 @@ public interface IThreadService extends IService<Thread> {
     boolean removeFavoriteThread(Integer userId, Integer threadId);
     List<Thread> getFavoriteThreads(Integer userId);
     List<Thread> hotThread();
+    //熱門作者
+    List<Thread> hotUser(int id);
+
 
 }

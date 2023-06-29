@@ -9,9 +9,8 @@ import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.CategoryDao;
 import com.connectu.connectuapi.dao.ReplyDao;
 import com.connectu.connectuapi.dao.ThreadDao;
-import com.connectu.connectuapi.domain.Category;
-import com.connectu.connectuapi.domain.FavoriteThread;
-import com.connectu.connectuapi.domain.Reply;
+import com.connectu.connectuapi.dao.UserDao;
+import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 
@@ -46,6 +45,28 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     private IFavoriteThreadService favoriteThreadService;
     @Autowired
     private IReplyService replyService;
+
+    //熱門作者
+    @Override
+    public List<Thread> hotUser(int userId) {
+        List<Thread> thread = getUserThread(userId);
+        thread.sort(Comparator.comparing(Thread::getHotScore).reversed());
+        return thread;
+    }
+    //查詢使用者的所有文章--------------------------------------------------------------
+    public List<Thread> getUserThread(int userId) {
+        LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Thread::getUserId, userId);
+        List<Thread> result = threadDao.selectList(lqw);
+        // 為每個 thread 設置 categoryName
+        for (Thread thread : result) {
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            if (category != null) {
+                thread.setCategoryName(category.getCategoryName());
+            }
+        }
+        return result;
+    }
     @Override
     public List<Thread> hotThread() {
         List<Thread> threads = threadDao.selectList(null);
@@ -53,6 +74,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
             Long replyCount = getReplyCount(thread.getThreadId());
           //  Integer.parseInt(replyCount);
             thread.setHotScore(thread.getLove() + thread.getFavoriteCount() +replyCount.intValue());
+            threadDao.updateById(thread);
         });
         threads.sort(Comparator.comparing(Thread::getHotScore).reversed());
         for (Thread thread : threads) {
@@ -63,6 +85,12 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         }
         return threads;
     }
+
+    @Override
+    public List<Thread> list() {
+        return super.list();
+    }
+
     private Long getReplyCount(Integer threadId) {
         //ReplyDao replyDao = new ReplyDao();
         QueryWrapper<Reply> wrapper = new QueryWrapper<>();
@@ -195,20 +223,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
             thread.setLove(love - 1);
         }
     }
-    //查詢使用者的所有文章--------------------------------------------------------------
-    public List<Thread> getUserThread(int id) {
-        LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Thread::getUserId, id);
-        List<Thread> result = threadDao.selectList(lqw);
-        // 為每個 thread 設置 categoryName
-        for (Thread thread : result) {
-            Category category = categoryDao.selectById(thread.getCategoryId());
-            if (category != null) {
-                thread.setCategoryName(category.getCategoryName());
-            }
-        }
-        return result;
-    }
+
     //查詢所有文章--------------------------------------------------------------
     @Override
     public List<Thread> list(Wrapper<Thread> queryWrapper) {

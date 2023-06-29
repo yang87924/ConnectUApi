@@ -8,10 +8,7 @@ import com.connectu.connectuapi.domain.UserThreadLove;
 import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.exception.file.*;
-import com.connectu.connectuapi.service.IFavoriteThreadService;
-import com.connectu.connectuapi.service.IReplyService;
-import com.connectu.connectuapi.service.IThreadService;
-import com.connectu.connectuapi.service.IUserThreadLoveService;
+import com.connectu.connectuapi.service.*;
 import com.connectu.connectuapi.service.impl.StorageService;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.Api;
@@ -52,8 +49,9 @@ public class ThreadController extends BaseController{
     @Autowired
     private StorageService storageService;
 
-    @GetMapping("/hotThread")
-    @ApiOperation(value = "Sort articles based on love, favoriteCount, and Reply table count", notes = "Sort articles based on the specified sorting criteria")
+
+    @GetMapping("/getUserSort")
+    @ApiOperation(value = "使用者的所有文章(排序)")
     public Result sortThreads() {
         List<Thread> threads = threadService.hotThread();
         return threads.isEmpty() ? new Result(Code.GET_ERR, null, "查詢熱門文章失敗") : new Result(Code.GET_OK, threads, "查詢熱門文章成功");    }
@@ -223,6 +221,16 @@ public class ThreadController extends BaseController{
         List<Thread> threads = threadService.getFavoriteThreads(userId);
         return threads.isEmpty() ? new Result(Code.GET_ERR, null, "查詢收藏文章失敗") : new Result(Code.GET_OK, threads, "查詢收藏文章成功");
     }
+    //熱門作者--------------------------------------------------------------
+    @GetMapping("/hotUser")
+    @ApiOperation("熱門作者")
+    public Result hotUser(HttpSession session) {
+        Integer userId = getUserIdFromSession(session);
+        List<Thread> thread = threadService.hotUser(userId);
+        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = thread != null ? "查詢熱門使用者資料成功" : "查無資料";
+        return new Result(code, thread, msg);
+    }
     //查詢使用者的所有文章--------------------------------------------------------------
     @GetMapping("/userThread")
     @ApiOperation("查詢使用者的所有論壇文章")
@@ -238,9 +246,11 @@ public class ThreadController extends BaseController{
     @ApiOperation("查詢所有論壇文章")
     public Result getAllThread() {
         List<Thread> thread = threadService.list();
+        thread.sort(Comparator.comparing(Thread::getCreatedAt, Comparator.reverseOrder())); // 根據 createdAt 欄位進行遞減排序
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
+
     }
 
     //查詢單筆論壇文章--------------------------------------------------------------
