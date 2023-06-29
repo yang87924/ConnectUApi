@@ -3,34 +3,26 @@ package com.connectu.connectuapi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
-import com.connectu.connectuapi.dao.CategoryDao;
-import com.connectu.connectuapi.dao.ReplyDao;
-import com.connectu.connectuapi.dao.ThreadDao;
-import com.connectu.connectuapi.dao.UserDao;
+import com.connectu.connectuapi.dao.*;
 import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
-import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 
-import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.service.IFavoriteThreadService;
-import com.connectu.connectuapi.service.IReplyService;
 import com.connectu.connectuapi.service.IThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
 import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 @Transactional
 @Service
@@ -43,6 +35,32 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     private CategoryDao categoryDao;
     @Autowired
     private IFavoriteThreadService favoriteThreadService;
+    @Autowired
+    private HashtagDao hashtagDao;
+    @Autowired
+    private ThreadHashtagDao threadHashtagDao;
+    public void handleHashtags(Thread thread, List<String> hashtags) {
+        for (String hashtag : hashtags) {
+            QueryWrapper<Hashtag> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("name", hashtag);
+            Hashtag existingHashtag = hashtagDao.selectOne(queryWrapper);
+            if (existingHashtag != null) {
+                existingHashtag.setAmount(existingHashtag.getAmount() + 1);
+                hashtagDao.updateById(existingHashtag);
+            } else {
+                Hashtag newHashtag = new Hashtag();
+                newHashtag.setName(hashtag);
+                newHashtag.setAmount(1);
+                hashtagDao.insert(newHashtag);
+                existingHashtag = newHashtag;
+            }
+            ThreadHashtag threadHashtag = new ThreadHashtag();
+            threadHashtag.setThreadId(thread.getThreadId());
+            threadHashtag.setHashtagId(existingHashtag.getHashtagId());
+            threadHashtagDao.insert(threadHashtag);
+        }
+    }
+
     //假資料--------------------------------------------------------------
     @Override
     public void addFakeThread(int count) {

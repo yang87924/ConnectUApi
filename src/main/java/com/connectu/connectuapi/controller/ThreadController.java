@@ -68,6 +68,34 @@ public class ThreadController extends BaseController{
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "收藏文章成功" : "收藏文章失敗");
     }
     //新增文章--------------------------------------------------------------
+//    @PostMapping
+//    @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public Result save(  Thread thread,@ApiParam(value = "文章標題", required = true) @RequestParam String title,
+//                         @ApiParam(value = "文章內容", required = true) @RequestParam String content,
+//                         @ApiParam(value = "文章分類 ID", required = true) @RequestParam Integer categoryId,
+//                         @ApiParam(value = "檔案", required = false)
+//                         @RequestPart(value = "files", required = false) List<MultipartFile> files,
+//                         HttpSession session) {
+//
+//        if (session.getAttribute("userId") == null) {
+//            throw new UserNotLoginException();
+//        }
+//        if(categoryId==null
+//                ||title==null||title.isEmpty()
+//                ||content==null||content.isEmpty()) {
+//            throw new ThreadColumnIsNullException();
+//        }
+//        thread.setUserId(getUserIdFromSession(session));
+//        if(!(files.get(0).isEmpty())) {
+//            String paths="";
+//            for (String path : storageService.uploadToS3(files, session)) {
+//                paths += path + "|";
+//            }
+//            thread.setPicture(paths.substring(0,paths.length()-1));
+//        }
+//        boolean flag = threadService.save(thread);
+//        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
+//    }
     @PostMapping
     @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Result save(  Thread thread,@ApiParam(value = "文章標題", required = true) @RequestParam String title,
@@ -75,6 +103,7 @@ public class ThreadController extends BaseController{
                          @ApiParam(value = "文章分類 ID", required = true) @RequestParam Integer categoryId,
                          @ApiParam(value = "檔案", required = false)
                          @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                         @ApiParam(value = "Hashtags", required = false) @RequestParam(required = false) List<String> hashtags,
                          HttpSession session) {
 
         if (session.getAttribute("userId") == null) {
@@ -94,6 +123,9 @@ public class ThreadController extends BaseController{
             thread.setPicture(paths.substring(0,paths.length()-1));
         }
         boolean flag = threadService.save(thread);
+        if (flag && hashtags != null && !hashtags.isEmpty()) {
+            threadService.handleHashtags(thread, hashtags);
+        }
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
     }
     //刪除文章--------------------------------------------------------------

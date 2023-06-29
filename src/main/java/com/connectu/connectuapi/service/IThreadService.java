@@ -47,6 +47,6 @@ public interface IThreadService extends IService<Thread> {
     Result searchThreads(String keyword, String categoryName);
     List<Thread> searchThreadsByKeyword(String keyword, String categoryName);
 
-
+    void handleHashtags(Thread thread, List<String> hashtags);
 
 }
