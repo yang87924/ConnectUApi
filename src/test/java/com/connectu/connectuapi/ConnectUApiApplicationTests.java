@@ -1,15 +1,19 @@
 package com.connectu.connectuapi;
 
-import com.baomidou.mybatisplus.core.toolkit.AES;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.dao.UserThreadLoveDao;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
-import org.jasypt.encryption.StringEncryptor;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Locale;
+
+import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
+
 
 @SpringBootTest
 class ConnectUApiApplicationTests {
@@ -19,13 +23,16 @@ class ConnectUApiApplicationTests {
     private IThreadService threadService;
     @Autowired
     private UserDao userDao;
+
     @Autowired
     private UserThreadLoveDao userThreadLoveDao;
-    @Autowired
-    private StringEncryptor stringEncryptor;
+//    @Autowired
+//    private StringEncryptor stringEncryptor;
     @Test
     void userTest() {
-        userService.list(null);
+        Faker faker = new Faker(new Locale("zh_TW"));
+        String loremText = faker.lorem().word();
+        System.out.println("Generated Lorem Text: " + loremText);
     }
 
     @Test
@@ -45,21 +52,6 @@ class ConnectUApiApplicationTests {
     void loginTest(){
         userService.login("于思源", "kd2j88gaxqalh");
     }
-    @Test
-    void encryptPwd(){
 
-//        String secret="connectU";
-//        String url="jdbc:mysql://mydbinstance2.cmcjn8qqcxqk.ap-northeast-1.rds.amazonaws.com:3306/connectU?serverTimezone=UTC";
-//        System.out.println("ENC("+stringEncryptor.encrypt(url)+")");
-//
-//        String userName="admin";
-//        System.out.println("ENC("+stringEncryptor.encrypt(userName)+")");
-//
-//        String password="GBb4ddyE1mfrBFGQA5sc";
-//        System.out.println("ENC("+stringEncryptor.encrypt(password)+")");
-        //解密方法
-        System.out.println(stringEncryptor.decrypt("oeuu4ruGs8bI1MNZuf7eQE4YvTYpMUufHpBKTJreR8qx0Hh5idsNi7qAZbGFXPyd"));
-
-    }
 
 }

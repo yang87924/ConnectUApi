@@ -13,13 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Api(tags ="動態文章")
 @RestController
 @RequestMapping("/DyThreads")
 @CrossOrigin(origins = "*")
-public class DyThreadController {
+public class DyThreadController extends BaseController{
     @Autowired
     private IDyThreadService dyThreadService;
     //假資料
@@ -46,10 +47,11 @@ public class DyThreadController {
         return new Result(code, dythread, msg);
     }
     //取得使用者的所有文章
-    @GetMapping("/{id}")
+    @GetMapping("/userDyThread")
     @ApiOperation("取得使用者的所有動態文章")
-    public Result getUserThread(@PathVariable Integer id) {
-        List<DyThread> dythread = dyThreadService.getUserDyThreadById(id);
+    public Result getUserThread(HttpSession session) {
+        Integer userId=getUserIdFromSession(session);
+        List<DyThread> dythread = dyThreadService.getUserDyThreadById(userId);
         Integer code = dythread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = dythread != null ? "查詢使用者動態文章資料成功" : "查無動態文章資料";
         return new Result(code, dythread, msg);
