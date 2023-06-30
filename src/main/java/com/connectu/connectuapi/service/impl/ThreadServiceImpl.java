@@ -3,7 +3,9 @@ package com.connectu.connectuapi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
@@ -65,6 +67,8 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
             threadHashtagDao.insert(threadHashtag);
         }
     }
+
+
 
     //假資料--------------------------------------------------------------
     @Override
@@ -228,7 +232,23 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         }
         return threads;
     }
-
+    @Override
+    public IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper) {
+        IPage<Thread> threadPage = super.page(page, queryWrapper);
+        List<Thread> threads = threadPage.getRecords();
+        for (Thread thread : threads) {
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            if (category != null) {
+                thread.setCategoryName(category.getCategoryName());
+            }
+            User user = userDao.selectById(thread.getUserId());
+            if (user != null) {
+                thread.setUser(user);
+            }
+            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
+        }
+        return threadPage;
+    }
     //查詢主題的所有文章--------------------------------------------------------------
     public List<Thread> getCategoryThread(int categoryId) {
         LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();

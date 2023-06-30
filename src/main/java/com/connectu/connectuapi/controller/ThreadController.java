@@ -1,5 +1,7 @@
 package com.connectu.connectuapi.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Thread;
@@ -261,6 +263,17 @@ public class ThreadController extends BaseController{
         String msg = thread != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
 
+    }
+    @GetMapping("/pageThread")
+    @ApiOperation("分頁查詢所有論壇文章")
+    public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum) {
+        Page<Thread> page = new Page<>(pageNum, 4);
+        IPage<Thread> threadPage = threadService.listWithPagination(page, null);
+        List<Thread> threadList = threadPage.getRecords();
+        threadList.sort(Comparator.comparing(Thread::getCreatedAt, Comparator.reverseOrder()));
+        Integer code = threadList != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = threadList != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
+        return new Result(code, threadList, msg);
     }
     //查詢主題文章--------------------------------------------------------------
     @ApiImplicitParam(name = "查詢主題文章", value = "論壇文章Id")
