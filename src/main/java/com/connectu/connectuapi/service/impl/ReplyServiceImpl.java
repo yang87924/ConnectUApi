@@ -33,7 +33,7 @@ public class ReplyServiceImpl extends ServiceImpl<ReplyDao, Reply> implements IR
         dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Taipei"));
         String formattedDate = dateFormat.format(currentDate);
         Reply Reply = new Reply();
-        Reply.setThreadId((int) (Math.random() * count) + 1);
+        Reply.setThreadId((int) (Math.random() * 71) + 1);
         Reply.setUserId((int) (Math.random() * count) + 1);
         Reply.setContent(generateRandomString(50,200));
         Reply.setCreatedAt(formattedDate);

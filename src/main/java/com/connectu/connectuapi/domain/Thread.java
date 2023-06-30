@@ -42,5 +42,12 @@ public class Thread  {
     private Integer favoriteCount;
     @ApiModelProperty(value = "總分數")
     private Integer hotScore;
+    @TableField(exist = false)
+    @ApiModelProperty(value = "replyCount")
+    private Integer replyCount=0;
+    @TableField(exist = false)
+    @ApiModelProperty(value = "user")
+    private User user;
+
 
 }

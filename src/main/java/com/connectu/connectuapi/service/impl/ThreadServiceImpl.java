@@ -12,6 +12,7 @@ import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
 
 import com.connectu.connectuapi.service.IFavoriteThreadService;
+import com.connectu.connectuapi.service.IReplyService;
 import com.connectu.connectuapi.service.IThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,11 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     @Autowired
     private HashtagDao hashtagDao;
     @Autowired
+    private UserDao userDao;
+    @Autowired
     private ThreadHashtagDao threadHashtagDao;
+    @Autowired
+    private IReplyService replyService;
     public void handleHashtags(Thread thread, List<String> hashtags) {
         for (String hashtag : hashtags) {
             QueryWrapper<Hashtag> queryWrapper = new QueryWrapper<>();
@@ -212,6 +217,14 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
             if (category != null) {
                 thread.setCategoryName(category.getCategoryName());
             }
+            // 加入 join user 資料表的資料
+            User user = userDao.selectById(thread.getUserId());
+            if (user != null) {
+                thread.setUser(user);
+            }
+//            Integer co=thread.getThreadId();
+//            System.out.println("co"+co);
+            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
         }
         return threads;
     }
