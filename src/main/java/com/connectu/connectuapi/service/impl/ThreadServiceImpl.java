@@ -61,6 +61,16 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
                 thread.setUser(user);
             }
             thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
+            // 查询ThreadHashtag表
+            List<ThreadHashtag> threadHashtags = threadHashtagDao.selectList(new QueryWrapper<ThreadHashtag>().eq("threadId", thread.getThreadId()));
+            List<Hashtag> hashtags = new ArrayList<>();
+            for (ThreadHashtag threadHashtag : threadHashtags) {
+                Hashtag hashtag = hashtagDao.selectById(threadHashtag.getHashtagId());
+                if (hashtag != null) {
+                    hashtags.add(hashtag);
+                }
+            }
+            thread.setHashtags(hashtags);
         }
         return threadPage;
     }

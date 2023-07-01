@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import java.util.Date;
+import java.util.List;
 
 @Schema
 @Data
@@ -48,6 +49,8 @@ public class Thread  {
     @TableField(exist = false)
     @ApiModelProperty(value = "user")
     private User user;
+    @TableField(exist = false)
+    private List<Hashtag> hashtags;
 
 
 }
