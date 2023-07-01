@@ -264,6 +264,7 @@ public class ThreadController extends BaseController{
         return new Result(code, thread, msg);
 
     }
+    //分頁查詢--------------------------------------------------------------
     @GetMapping("/pageThread")
     @ApiOperation("分頁查詢所有論壇文章")
     public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum) {

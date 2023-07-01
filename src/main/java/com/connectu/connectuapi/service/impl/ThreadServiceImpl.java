@@ -46,6 +46,24 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
     private ThreadHashtagDao threadHashtagDao;
     @Autowired
     private IReplyService replyService;
+    //查詢所有文章分頁查詢--------------------------------------------------------------
+    @Override
+    public IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper) {
+        IPage<Thread> threadPage = super.page(page, queryWrapper);
+        List<Thread> threads = threadPage.getRecords();
+        for (Thread thread : threads) {
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            if (category != null) {
+                thread.setCategoryName(category.getCategoryName());
+            }
+            User user = userDao.selectById(thread.getUserId());
+            if (user != null) {
+                thread.setUser(user);
+            }
+            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
+        }
+        return threadPage;
+    }
     public void handleHashtags(Thread thread, List<String> hashtags) {
         for (String hashtag : hashtags) {
             QueryWrapper<Hashtag> queryWrapper = new QueryWrapper<>();
@@ -232,23 +250,7 @@ public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implement
         }
         return threads;
     }
-    @Override
-    public IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper) {
-        IPage<Thread> threadPage = super.page(page, queryWrapper);
-        List<Thread> threads = threadPage.getRecords();
-        for (Thread thread : threads) {
-            Category category = categoryDao.selectById(thread.getCategoryId());
-            if (category != null) {
-                thread.setCategoryName(category.getCategoryName());
-            }
-            User user = userDao.selectById(thread.getUserId());
-            if (user != null) {
-                thread.setUser(user);
-            }
-            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
-        }
-        return threadPage;
-    }
+
     //查詢主題的所有文章--------------------------------------------------------------
     public List<Thread> getCategoryThread(int categoryId) {
         LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();

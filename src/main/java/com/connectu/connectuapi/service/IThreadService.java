@@ -51,6 +51,7 @@ public interface IThreadService extends IService<Thread> {
     List<Thread> searchThreadsByKeyword(String keyword, String categoryName);
 
     void handleHashtags(Thread thread, List<String> hashtags);
+    //分頁查詢--------------------------------------------------------------
     IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper);
 
 }
