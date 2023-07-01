@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
+import com.connectu.connectuapi.domain.Hashtag;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.domain.UserThreadLove;
@@ -50,6 +51,15 @@ public class ThreadController extends BaseController{
     private IFavoriteThreadService favoriteThreadService;
     @Autowired
     private StorageService storageService;
+    @Autowired
+    private IHashtagService hashtagService;
+    @GetMapping("/HotHashtag")
+    public Result getTopThreeHashtags() {
+        List<Hashtag> hashtags = hashtagService.getTopThreeHashtags();
+        Integer code = hashtags != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = hashtags != null ? "查詢熱門標籤成功" : "查無熱門標籤資料";
+        return new Result(code, hashtags, msg);
+    }
     //假資料--------------------------------------------------------------
     @ApiIgnore    // 忽略这个api
     @PostMapping("/addFakeThread")

@@ -19,10 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 @Transactional
 @Service
@@ -31,29 +30,30 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
     private UserDao userDao;
     @Autowired
     private IThreadService threadService;
+
     public void addFakeUsers(int count) {
         for (int i = 0; i < count; i++) {
             User fakeUser = UserServiceImpl.createFakeUser();
             userDao.insert(fakeUser);
         }
     }
-
     @Override
     public List<User> getSortedUsers() {
-        List<User> users=userDao.selectList(null);
-        for (User user : users) {
-            List<Thread> threads = threadService.getUserThread(user.getUserId());
+        List<User> users = userDao.selectList(null);
+        Map<Integer, Integer> userHotScores = new HashMap<>();
+        List<Integer> userIds = users.stream().map(User::getUserId).collect(Collectors.toList());
+        List<List<Thread>> userThreads = threadService.getUserThreadForUser(userIds);
+        for (int i = 0; i < users.size(); i++) {
             int hotScoreSum = 0;
+            List<Thread> threads = userThreads.get(i);
             for (Thread thread : threads) {
                 hotScoreSum += thread.getHotScore();
             }
-            user.setHotScore(hotScoreSum);
-            userDao.updateById(user);
+            userHotScores.put(users.get(i).getUserId(), hotScoreSum);
         }
-        users.sort(Comparator.comparingInt(User::getHotScore).reversed());
+        users.sort(Comparator.comparingInt((User user) -> userHotScores.get(user.getUserId())).reversed());
         return users;
     }
-
 
     public static User createFakeUser() {
         Faker faker = new Faker(new Locale("zh-CN"));
@@ -67,7 +67,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
 
     public User selectGoogleUserByEmail(String email) {
         LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(User::getEmail, email).eq(User::getIsGoogle,"1");
+        lqw.eq(User::getEmail, email).eq(User::getIsGoogle, "1");
         List<User> result = userDao.selectList(lqw);
         return result.get(0);
     }
@@ -86,7 +86,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
                 throw new PasswordNotMatchException();
             }
         } else {
-            if(result.size()<2){
+            if (result.size() < 2) {
                 throw new UserIsGoogleException();
             }
             if (result.get(1).getIsGoogle().equals("0")) {
@@ -100,6 +100,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
             }
         }
     }
+
     public User loginByGoogle(String token) {
         User user = new User();
         user.setUserName(parseJSON(token).get("name").asText());
@@ -108,7 +109,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
         user.setPassword("google");
         user.setIsGoogle("1");
         LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(User::getEmail, user.getEmail()).eq(User::getIsGoogle,"1");
+        lqw.eq(User::getEmail, user.getEmail()).eq(User::getIsGoogle, "1");
         List<User> result = userDao.selectList(lqw);
         if (result.isEmpty()) {
             return user;
@@ -117,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
         }
     }
 
-    public static JsonNode parseJSON(String token){
+    public static JsonNode parseJSON(String token) {
         String[] parts = token.split("\\.", 0);
 
 
@@ -138,7 +139,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements IUser
 
     @Override
     public boolean save(User newUser) {
-        if (newUser.getIsGoogle()==null) {
+        if (newUser.getIsGoogle() == null) {
             newUser.setIsGoogle("0");
         }
         LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();

@@ -33,7 +33,7 @@ public interface IThreadService extends IService<Thread> {
 
     //查詢使用者的所有文章--------------------------------------------------------------
     List<Thread> getUserThread(int id);
-
+    List<List<Thread>> getUserThreadForUser(List<Integer> userIds);
     //熱門文章--------------------------------------------------------------
     List<Thread> hotThread();
 
