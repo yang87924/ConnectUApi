@@ -42,6 +42,7 @@ import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 @RestController
 @RequestMapping("/threads")
 
+
 public class ThreadController extends BaseController{
     @Autowired
     private IThreadService threadService;
