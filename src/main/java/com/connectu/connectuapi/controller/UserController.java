@@ -1,5 +1,6 @@
 package com.connectu.connectuapi.controller;
 
+import cn.hutool.jwt.JWTUtil;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.User;
@@ -14,8 +15,11 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Api(tags = "使用者")
@@ -149,8 +153,17 @@ public class UserController extends BaseController {
         session.setAttribute("userName", loginUser.getUserName());
         session.setAttribute("email", loginUser.getEmail());
 
+        //創建JWT
+        Map<String,Object> map=new HashMap<>();
+        map.put("id",loginUser.getUserId());
+        String key="123";
+        String token = JWTUtil.createToken(map,key.getBytes(StandardCharsets.UTF_8));
 
-        return new Result(Code.LOGIN_OK, loginUser, "登入成功");
+        Map<String,Object> map2=new HashMap<>();
+        map2.put("user",loginUser);
+        map2.put("token",token);
+
+        return new Result(Code.LOGIN_OK, map2, "登入成功");
     }
 
         
@@ -160,6 +173,5 @@ public class UserController extends BaseController {
         String userName = (String) session.getAttribute("userName");
         return userName;
     }
-
 
 }
