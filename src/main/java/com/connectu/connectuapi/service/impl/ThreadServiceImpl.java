@@ -15,6 +15,7 @@ import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.service.IFavoriteThreadService;
 import com.connectu.connectuapi.service.IReplyService;
 import com.connectu.connectuapi.service.IThreadService;
+import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 @Transactional
 @Service
-public class ThreadServiceImpl extends ServiceImpl<ThreadDao, Thread>  implements IThreadService  {
+public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> implements IThreadService  {
     @Autowired
     private ThreadDao threadDao;
     @Autowired

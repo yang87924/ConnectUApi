@@ -6,13 +6,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
+import com.github.yulichang.base.MPJBaseService;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Set;
 
-public interface IThreadService extends IService<Thread> {
+public interface IThreadService extends MPJBaseService<Thread> {
     //假資料--------------------------------------------------------------
     void addFakeThread(int count);
 

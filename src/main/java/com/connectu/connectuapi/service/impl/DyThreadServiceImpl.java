@@ -8,6 +8,7 @@ import com.connectu.connectuapi.domain.DyThread;
 import com.connectu.connectuapi.domain.Reply;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.service.IDyThreadService;
+import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
 import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 
 @Service
-public class DyThreadServiceImpl extends ServiceImpl<DyThreadDao, DyThread> implements IDyThreadService {
+public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThread> implements IDyThreadService {
     @Autowired
     private DyThreadDao dythreadDao;
     @Autowired

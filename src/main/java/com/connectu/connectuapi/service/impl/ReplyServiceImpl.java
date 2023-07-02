@@ -6,6 +6,7 @@ import com.connectu.connectuapi.dao.ReplyDao;
 import com.connectu.connectuapi.domain.Reply;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.service.IReplyService;
+import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import java.util.TimeZone;
 import static com.connectu.connectuapi.service.utils.faker.*;
 
 @Service
-public class ReplyServiceImpl extends ServiceImpl<ReplyDao, Reply> implements IReplyService {
+public class ReplyServiceImpl extends MPJBaseServiceImpl<ReplyDao, Reply> implements IReplyService {
     @Autowired
     private ReplyDao replyDao;
     @Override

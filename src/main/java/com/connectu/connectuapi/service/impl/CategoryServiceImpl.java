@@ -7,13 +7,14 @@ import com.connectu.connectuapi.domain.Category;
 import com.connectu.connectuapi.domain.DyReply;
 import com.connectu.connectuapi.service.ICategoryService;
 import com.connectu.connectuapi.service.IDyReplyService;
+import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 
 @Service
-public class CategoryServiceImpl extends ServiceImpl<CategoryDao, Category> implements ICategoryService {
+public class CategoryServiceImpl extends MPJBaseServiceImpl<CategoryDao, Category> implements ICategoryService {
     @Autowired
     private DyReplyDao dyReplyDao;
 

@@ -63,7 +63,12 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.5.2</version>
         </dependency>
-
+<!--        mybatis-plus-join-->
+        <dependency>
+            <groupId>com.github.yulichang</groupId>
+            <artifactId>mybatis-plus-join-boot-starter</artifactId>
+            <version>1.4.5</version>
+        </dependency>
 <!--        lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>

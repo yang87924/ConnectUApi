@@ -7,13 +7,14 @@ import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.UserThreadLove;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserThreadLoveService;
+import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 
 @Service
-public class UserThreadLoveServiceImpl extends ServiceImpl<UserThreadLoveDao, UserThreadLove> implements IUserThreadLoveService {
+public class UserThreadLoveServiceImpl extends MPJBaseServiceImpl<UserThreadLoveDao, UserThreadLove> implements IUserThreadLoveService {
     @Autowired
     private UserThreadLoveDao userThreadLoveDao;
     @Autowired
