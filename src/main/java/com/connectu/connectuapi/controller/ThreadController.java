@@ -136,9 +136,9 @@ public class ThreadController extends BaseController{
             thread.setPicture(paths.substring(0,paths.length()-1));
         }
         boolean flag = threadService.save(thread);
-        if (flag && hashtags != null && !hashtags.isEmpty()) {
-            threadService.handleHashtags(thread, hashtags);
-        }
+//        if (flag && hashtags != null && !hashtags.isEmpty()) {
+//            threadService.handleHashtags(thread, hashtags);
+//        }
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
     }
     //刪除文章--------------------------------------------------------------
