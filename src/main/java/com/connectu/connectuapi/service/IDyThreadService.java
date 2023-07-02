@@ -23,4 +23,6 @@ public interface IDyThreadService extends MPJBaseService<DyThread> {
     void handleHashtags(DyThread dyThread, List<String> dyHashtags);
     //分頁查詢--------------------------------------------------------------
     IPage<DyThread> listWithPagination(Page<DyThread> page, Wrapper<DyThread> queryWrapper);
+    //熱門文章---------------------------------------------------------------
+    List<DyThread> hotDyhread();
 }

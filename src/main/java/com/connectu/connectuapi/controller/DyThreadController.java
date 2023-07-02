@@ -38,6 +38,15 @@ public class DyThreadController extends BaseController{
     @Autowired
     private StorageService storageService;
     //切換使用者按讚--------------------------------------------------------------
+    //熱門文章--------------------------------------------------------------
+    @GetMapping("/hotThread")
+    @ApiOperation("熱門文章")
+    public Result hotUser(HttpSession session) {
+        List<DyThread> dyThread = dyThreadService.hotDyhread();
+        Integer code = dyThread != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = dyThread != null ? "查詢熱門文章資料成功" : "查無資料";
+        return new Result(code, dyThread, msg);
+    }
     @PutMapping("/toggleUserLove/{DyThreadId}")
     @ApiOperation("使用者按讚+紀錄")
     public Result toggleUserLove(@PathVariable Integer DyThreadId, HttpSession session) {

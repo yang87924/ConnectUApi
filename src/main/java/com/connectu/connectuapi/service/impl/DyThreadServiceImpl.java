@@ -15,8 +15,7 @@ import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
@@ -146,5 +145,89 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
         List<DyThread> result = dythreadDao.selectList(lqw);
         return result;
     }
+    //熱門文章
+    @Override
+    public List<DyThread> hotDyhread() {
+        List<DyThread> dyThreads =dythreadDao.selectList(null);
+        Map<Integer, Long> replyCountMap = getReplyCountMap(dyThreads);
+        for (DyThread dyThread : dyThreads) {
+            Long replyCount = replyCountMap.getOrDefault(dyThread.getDyThreadId(), 0L);
+            dyThread.setHotScore(dyThread.getLove() + dyThread.getFavoriteCount() + replyCount.intValue());
+        }
+        dyThreads.sort(Comparator.comparing(DyThread::getHotScore).reversed());
+        List<DyThread> hotThreads = dyThreads.subList(0, Math.min(3, dyThreads.size()));
+        loadAdditionalData(hotThreads);
+        return hotThreads;
+    }
+    private void loadAdditionalData(List<DyThread> dyThreads) {
+        //Set<Integer> categoryIds = new HashSet<>();
+        Set<Integer> userIds = new HashSet<>();
+        Set<Integer> dyThreadIds = new HashSet<>();
+        for (DyThread dyThread : dyThreads) {
+            //categoryIds.add(thread.getCategoryId());
+            userIds.add(dyThread.getUserId());
+            dyThreadIds.add(dyThread.getDyThreadId());
+        }
+        //Map<Integer, Category> categoryMap = getCategoryMap(categoryIds);
+        Map<Integer, User> userMap = getUserMap(userIds);
+        Map<Integer, List<DyHashtag>> dyThreadHashtagsMap = getThreadHashtagsMap(dyThreadIds);
+        for (DyThread dyThread : dyThreads) {
 
+            User user = userMap.get(dyThread.getUserId());
+            if (user != null) {
+                dyThread.setUser(user);
+            }
+            List<DyHashtag> hashtags = dyThreadHashtagsMap.get(dyThread.getDyThreadId());
+            if (hashtags != null) {
+                dyThread.setHashtags(hashtags);
+            }
+            dyThread.setReplyCount(dyReplyService.getDyThreadReplyById(dyThread.getDyThreadId()).size());
+        }
+    }
+
+
+    private Map<Integer, User> getUserMap(Set<Integer> userIds) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("userId", userIds);
+        List<User> users = userDao.selectList(queryWrapper);
+        Map<Integer, User> userMap = new HashMap<>();
+        for (User user : users) {
+            userMap.put(user.getUserId(), user);
+        }
+        return userMap;
+    }
+    private Map<Integer, List<DyHashtag>> getThreadHashtagsMap(Set<Integer> dyThreadIds) {
+        QueryWrapper<dyThreadHashtag> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("dyThreadId", dyThreadIds);
+        List<dyThreadHashtag> dyThreadHashtags = dyThreadHashtagDao.selectList(queryWrapper);
+        Set<Integer> dyHashtagIds = new HashSet<>();
+        for (dyThreadHashtag dyThreadHashtag : dyThreadHashtags) {
+            dyHashtagIds.add(dyThreadHashtag.getDyHashtagId());
+        }
+        Map<Integer, DyHashtag> DyHashtagMap = getDyHashtagMap(dyHashtagIds);
+        Map<Integer, List<DyHashtag>> DyThreadHashtagsMap = new HashMap<>();
+        for (dyThreadHashtag dyThreadHashtag : dyThreadHashtags) {
+            Integer dyThreadId = dyThreadHashtag.getDyThreadId();
+            DyHashtag DyHashtag = DyHashtagMap.get(dyThreadHashtag.getDyHashtagId());
+            if (DyHashtag != null) {
+                DyThreadHashtagsMap.computeIfAbsent(dyThreadId, k -> new ArrayList<>()).add(DyHashtag);
+            }
+        }
+        return DyThreadHashtagsMap;
+    }
+    private Map<Integer, DyHashtag> getDyHashtagMap(Set<Integer> dyHashtagIds) {
+        QueryWrapper<DyHashtag> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("dyHashtagId", dyHashtagIds);
+        List<DyHashtag> dyHashtags = dyHashtagDao.selectList(queryWrapper);
+        Map<Integer, DyHashtag> dyHashtagMap = new HashMap<>();
+        for (DyHashtag DyHashtag : dyHashtags) {
+            dyHashtagMap.put(DyHashtag.getDyHashtagId(), DyHashtag);
+        }
+        return dyHashtagMap;
+    }
+    private Map<Integer, Long> getReplyCountMap(List<DyThread> dyThreads) {
+        List<Integer> dyThreadIds = dyThreads.stream().map(DyThread::getDyThreadId).collect(Collectors.toList());
+        List<DyReply> replies = dyReplyDao.selectList(new QueryWrapper<DyReply>().in("dyThreadId", dyThreadIds));
+        return replies.stream().collect(Collectors.groupingBy(DyReply::getDyReplyId, Collectors.counting()));
+    }
 }

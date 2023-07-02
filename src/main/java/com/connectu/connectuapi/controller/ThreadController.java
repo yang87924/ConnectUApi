@@ -247,7 +247,7 @@ public class ThreadController extends BaseController{
     }
     //熱門文章--------------------------------------------------------------
     @GetMapping("/hotThread")
-    @ApiOperation("熱門作者")
+    @ApiOperation("熱門文章")
     public Result hotUser(HttpSession session) {
         List<Thread> thread = threadService.hotThread();
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;

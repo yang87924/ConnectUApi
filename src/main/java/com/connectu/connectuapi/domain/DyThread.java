@@ -21,6 +21,8 @@ public class DyThread {
     private String createdAt;
     private String picture;
     private Integer love;
+    @ApiModelProperty(value = "總分數")
+    private Integer hotScore;
     @ApiModelProperty(value = "收藏數量")
     private Integer favoriteCount;
     @TableField(exist = false)
