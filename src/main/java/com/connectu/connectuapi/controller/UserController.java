@@ -72,7 +72,18 @@ public class UserController extends BaseController {
         System.out.println(session.getAttribute("userId"));
         System.out.println(session.getAttribute("userName"));
         System.out.println(session.getAttribute("email"));
-        return new Result(Code.LOGIN_OK, loginUser, "登入成功");
+
+        //創建JWT
+        Map<String,Object> map=new HashMap<>();
+        map.put("id",loginUser.getUserId());
+        String key="123";
+        String jwttoken = JWTUtil.createToken(map,key.getBytes(StandardCharsets.UTF_8));
+
+        Map<String,Object> map2=new HashMap<>();
+        map2.put("user",loginUser);
+        map2.put("token",jwttoken);
+
+        return new Result(Code.LOGIN_OK, map2, "登入成功");
     }
 
 
