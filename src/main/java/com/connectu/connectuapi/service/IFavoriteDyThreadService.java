@@ -6,4 +6,6 @@ import com.github.yulichang.base.MPJBaseService;
 
 
 public interface IFavoriteDyThreadService extends MPJBaseService<FavoriteDyThread> {
+    void insertBatchRandomData(int count, int userIdStart, int userIdEnd, int dyThreadIdStart, int dyThreadIdEnd);
+
 }

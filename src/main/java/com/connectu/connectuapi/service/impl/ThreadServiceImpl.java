@@ -153,26 +153,31 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
         thread.setLove(love);
     }
     //查詢使用者收藏的文章--------------------------------------------------------------
+//    @Override
+//    public List<Thread> getFavoriteThreads(Integer userId) {
+//        //查詢使用者收藏的文章ID
+//        QueryWrapper<FavoriteThread> wrapper = new QueryWrapper<>();
+//        wrapper.eq("userId", userId);
+//        List<FavoriteThread> favoriteThreads = favoriteThreadService.list(wrapper);
+//        List<Integer> threadIds = new ArrayList<>();
+//        for (FavoriteThread favoriteThread : favoriteThreads) {
+//            threadIds.add(favoriteThread.getThreadId());
+//        }
+//        if (threadIds.isEmpty()) {
+//            return new ArrayList<>();
+//        }
+//        //查詢收藏的文章
+//        QueryWrapper<Thread> threadWrapper = new QueryWrapper<>();
+//        threadWrapper.in("threadId", threadIds);
+//        List<Thread> threads = list(threadWrapper);
+//        return threads;
+//    }
     @Override
     public List<Thread> getFavoriteThreads(Integer userId) {
-        //查詢使用者收藏的文章ID
-        QueryWrapper<FavoriteThread> wrapper = new QueryWrapper<>();
-        wrapper.eq("userId", userId);
-        List<FavoriteThread> favoriteThreads = favoriteThreadService.list(wrapper);
-        List<Integer> threadIds = new ArrayList<>();
-        for (FavoriteThread favoriteThread : favoriteThreads) {
-            threadIds.add(favoriteThread.getThreadId());
-        }
-        if (threadIds.isEmpty()) {
-            return new ArrayList<>();
-        }
-        //查詢收藏的文章
-        QueryWrapper<Thread> threadWrapper = new QueryWrapper<>();
-        threadWrapper.in("threadId", threadIds);
-        List<Thread> threads = list(threadWrapper);
+        List<Thread> threads = threadDao.getFavoriteThreads(userId);
         return threads;
     }
-    //熱門文章
+    //熱門文章-----------------------------------------
     @Override
     public List<Thread> hotThread() {
         List<Thread> threads = threadDao.selectList(null);

@@ -54,6 +54,7 @@ public class ThreadController extends BaseController{
     private StorageService storageService;
     @Autowired
     private IHashtagService hashtagService;
+    @ApiOperation(value = "熱門標籤OK")
     @GetMapping("/HotHashtag")
     public Result getTopThreeHashtags() {
         List<Hashtag> hashtags = hashtagService.getTopThreeHashtags();
@@ -70,7 +71,7 @@ public class ThreadController extends BaseController{
     }
     //新增收藏文章--------------------------------------------------------------
     @PostMapping("/favorite")
-    @ApiOperation(value = "新增收藏文章", notes = "新增使用者收藏的文章")
+    @ApiOperation(value = "新增收藏文章OK", notes = "新增使用者收藏的文章")
     public Result addFavoriteThread(@ApiParam(value = "文章 ID", required = true) @RequestParam Integer threadId,
                                     HttpSession session) {
         if (session.getAttribute("userId") == null) {
@@ -151,7 +152,7 @@ public class ThreadController extends BaseController{
     }
     //移除收藏文章
     @DeleteMapping("/favorite/{favoriteThreadId}")
-    @ApiOperation(value = "移除收藏文章", notes = "移除使用者收藏的文章")
+    @ApiOperation(value = "移除收藏文章OK", notes = "移除使用者收藏的文章")
     public Result removeFavoriteThread(@ApiParam(value = "文章 ID", required = true) @PathVariable Integer favoriteThreadId ,
                                        HttpSession session) {
         if (session.getAttribute("userId") == null) {
@@ -192,7 +193,7 @@ public class ThreadController extends BaseController{
     }
     //切換使用者按讚--------------------------------------------------------------
     @PutMapping("/toggleUserLove/{threadId}")
-    @ApiOperation("使用者按讚+紀錄")
+    @ApiOperation("使用者按讚+紀錄OK")
     public Result toggleUserLove(@PathVariable Integer threadId, HttpSession session) {
         if (session.getAttribute("userId") == null) {
             throw new UserNotLoginException();
@@ -208,7 +209,7 @@ public class ThreadController extends BaseController{
     }
     //按讚--------------------------------------------------------------
     @PutMapping("/love/{threadId}")
-    @ApiOperation("按讚")
+    @ApiOperation("按讚OK")
     public Result love(@PathVariable Integer threadId){
         Thread thread = threadService.getById(threadId);
         threadService.love(thread);
@@ -217,7 +218,7 @@ public class ThreadController extends BaseController{
     }
     //取消按讚--------------------------------------------------------------
     @PutMapping("/cancelLove/{threadId}")
-    @ApiOperation("取消按讚")
+    @ApiOperation("取消按讚OK")
     public Result cancelLove(@PathVariable Integer threadId){
         Thread thread = threadService.getById(threadId);
         threadService.cancelLove(thread);
@@ -226,7 +227,7 @@ public class ThreadController extends BaseController{
     }
     //按讚+收回--------------------------------------------------------------
     @PutMapping("/toggleLove/{threadId}")
-    @ApiOperation("按讚+收回")
+    @ApiOperation("按讚+收回OK")
     public Result toggleLove(@PathVariable Integer threadId) {
         Thread thread = threadService.getById(threadId);
         threadService.toggleLove(thread);
@@ -238,6 +239,7 @@ public class ThreadController extends BaseController{
     @GetMapping("/favorite/{userId}")
     @ApiOperation(value = "查詢使用者收藏的文章", notes = "查詢使用者收藏的文章")
     public Result getFavoriteThreads(@PathVariable Integer userId ,HttpSession session) {
+       // Integer userId=getUserIdFromSession(session)
         if (session.getAttribute("userId") == null) {
             throw new UserNotLoginException();
         }

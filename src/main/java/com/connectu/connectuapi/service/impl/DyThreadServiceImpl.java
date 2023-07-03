@@ -134,11 +134,11 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
             dyThread.setLove(love - 1);
         }
     }
-//    @Override
-//    public boolean save(DyThread dyThread) {
-//        dyThread.setCreatedAt(getSystemTime());
-//        return super.save(dyThread);
-//    }
+    @Override
+    public boolean save(DyThread dyThread) {
+        dyThread.setCreatedAt(getSystemTime());
+        return super.save(dyThread);
+    }
     public List<DyThread> getUserDyThreadById(int id) {
         LambdaQueryWrapper<DyThread> lqw = new LambdaQueryWrapper<>();
         lqw.eq(DyThread::getUserId, id);

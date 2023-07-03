@@ -4,9 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
-import com.connectu.connectuapi.domain.DyThread;
+import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
-import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.service.*;
@@ -38,10 +37,20 @@ public class DyThreadController extends BaseController{
     private IFavoriteDyThreadService favoriteDyThreadService;
     @Autowired
     private StorageService storageService;
+    @Autowired
+    private IDyHashtagService dyHashtagService;
+    @ApiOperation("熱門標籤OK")
+    @GetMapping("/dyHotHashtag")
+    public Result getTopThreeHashtags() {
+        List<DyHashtag> dyHashtags = dyHashtagService.getTopDyThreeHashtags();
+        Integer code = dyHashtags != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = dyHashtags != null ? "查詢熱門標籤成功" : "查無熱門標籤資料";
+        return new Result(code, dyHashtags, msg);
+    }
     //切換使用者按讚--------------------------------------------------------------
     //熱門文章--------------------------------------------------------------
     @GetMapping("/hotThread")
-    @ApiOperation("熱門文章")
+    @ApiOperation("熱門文章OK")
     public Result hotUser(HttpSession session) {
         List<DyThread> dyThread = dyThreadService.hotDyhread();
         Integer code = dyThread != null ? Code.GET_OK : Code.GET_ERR;
@@ -49,7 +58,7 @@ public class DyThreadController extends BaseController{
         return new Result(code, dyThread, msg);
     }
     @PutMapping("/toggleUserLove/{DyThreadId}")
-    @ApiOperation("使用者按讚+紀錄")
+    @ApiOperation("使用者按讚+紀錄OK")
     public Result toggleUserLove(@PathVariable Integer DyThreadId, HttpSession session) {
         if (session.getAttribute("userId") == null) {
             throw new UserNotLoginException();
@@ -65,7 +74,7 @@ public class DyThreadController extends BaseController{
     }
     //分頁查詢--------------------------------------------------------------
     @GetMapping("/pageDyThread")
-    @ApiOperation("分頁查詢所有論壇文章")
+    @ApiOperation("分頁查詢所有論壇文章OK")
     public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum) {
         Page<DyThread> page = new Page<>(pageNum, 4);
         IPage<DyThread> threadPage = dyThreadService.listWithPagination(page, null);
@@ -77,7 +86,7 @@ public class DyThreadController extends BaseController{
     }
     //新增收藏文章--------------------------------------------------------------
     @PostMapping("/favorite")
-    @ApiOperation(value = "新增收藏文章", notes = "新增使用者收藏的文章")
+    @ApiOperation(value = "新增收藏文章OK", notes = "新增使用者收藏的文章")
     public Result addFavoriteThread(@ApiParam(value = "文章 ID", required = true) @RequestParam Integer dyThreadId,
                                     HttpSession session) {
         if (session.getAttribute("userId") == null) {
@@ -119,7 +128,7 @@ public class DyThreadController extends BaseController{
     //移除收藏文章
     //移除收藏文章
     @DeleteMapping("/favorite/{favoriteDyThreadId}")
-    @ApiOperation(value = "移除收藏文章", notes = "移除使用者收藏的文章")
+    @ApiOperation(value = "移除收藏文章OK", notes = "移除使用者收藏的文章")
     public Result removeFavoriteThread(@ApiParam(value = "文章 ID", required = true) @PathVariable Integer favoriteDyThreadId ,
                                        HttpSession session) {
         if (session.getAttribute("userId") == null) {
@@ -129,18 +138,10 @@ public class DyThreadController extends BaseController{
         boolean flag = favoriteDyThreadService.removeById(favoriteDyThreadId);
         return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ? "移除收藏文章成功" : "移除收藏文章失敗");
     }
-    //查詢動態所有文章
-    @GetMapping
-    @ApiOperation("查詢動態所有文章")
-    public Result getAllDyThread() {
-        List<DyThread> dythread = dyThreadService.list(null);
-        Integer code = dythread != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = dythread != null ? "所有動態文章資料成功" : "查無動態文章資料";
-        return new Result(code, dythread, msg);
-    }
+
     //取得使用者的所有文章
     @GetMapping("/userDyThread/{userId}")
-    @ApiOperation("取得使用者的所有動態文章")
+    @ApiOperation("取得使用者的所有動態文章OK")
     public Result getUserThread(@PathVariable Integer userId,HttpSession session) {
         if(userId==0){
             userId = getUserIdFromSession(session);

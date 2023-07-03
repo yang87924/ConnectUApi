@@ -7,4 +7,6 @@ import com.github.yulichang.base.MPJBaseService;
 
 
 public interface IFavoriteThreadService extends MPJBaseService<FavoriteThread> {
+    void insertBatchRandomData(int count, int userIdStart, int userIdEnd, int threadIdStart, int threadIdEnd);
+
 }
