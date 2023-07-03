@@ -43,6 +43,7 @@ public class Thread  {
     private Integer favoriteCount;
     @ApiModelProperty(value = "總分數")
     private Integer hotScore;
+    private Integer loveStatus;
     @TableField(exist = false)
     @ApiModelProperty(value = "replyCount")
     private Integer replyCount=0;
@@ -52,5 +53,7 @@ public class Thread  {
     @TableField(exist = false)
     private List<Hashtag> hashtags;
 
-
+    public void updateLoveStatus(Integer loveStatus) {
+        this.loveStatus = loveStatus;
+    }
 }

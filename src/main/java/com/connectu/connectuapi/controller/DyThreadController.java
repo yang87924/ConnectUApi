@@ -6,6 +6,7 @@ import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.DyThread;
 import com.connectu.connectuapi.domain.Thread;
+import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.service.*;
@@ -138,15 +139,18 @@ public class DyThreadController extends BaseController{
         return new Result(code, dythread, msg);
     }
     //取得使用者的所有文章
-    @GetMapping("/userDyThread")
+    @GetMapping("/userDyThread/{userId}")
     @ApiOperation("取得使用者的所有動態文章")
-    public Result getUserThread(HttpSession session) {
-        Integer userId=getUserIdFromSession(session);
+    public Result getUserThread(@PathVariable Integer userId,HttpSession session) {
+        if(userId==0){
+            userId = getUserIdFromSession(session);
+        }
         List<DyThread> dythread = dyThreadService.getUserDyThreadById(userId);
         Integer code = dythread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = dythread != null ? "查詢使用者動態文章資料成功" : "查無動態文章資料";
         return new Result(code, dythread, msg);
     }
+
     //修改文章
     @PutMapping
     @ApiOperation("修改動態文章")

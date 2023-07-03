@@ -143,10 +143,15 @@ public class UserController extends BaseController {
         return new Result(code, users, msg);
     }
 
-    @PostMapping("/getUserId")
+    @PostMapping("/getUserId/{userId}")
     @ApiOperation("從Session查詢用戶")
-    public User getUserId(HttpSession session){
-        return userService.getById(getUserIdFromSession(session));
+    public User getUserId(@PathVariable Integer userId ,HttpSession session){
+        if(userId==0){
+            return userService.getById(getUserIdFromSession(session));
+        }else {
+            return userService.getById(userId);
+        }
+
     }
 
 //登入--------------------------------------------------------------

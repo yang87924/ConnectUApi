@@ -46,6 +46,9 @@ public class UserThreadLoveServiceImpl extends MPJBaseServiceImpl<UserThreadLove
             userThreadLoveDao.deleteById(userThreadLove.getUserThreadLoveId()); // 刪除按讚記錄
         }
         threadService.updateById(thread);
+        // 更新loveStatus的值
+        thread.updateLoveStatus(userThreadLove.getLoveStatus());
+        threadService.updateById(thread);
         // 返回當前用戶的按讚狀態
         return userThreadLove.getLoveStatus();
     }

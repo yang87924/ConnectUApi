@@ -235,16 +235,19 @@ public class ThreadController extends BaseController{
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, message);
     }
     //查詢使用者收藏的文章--------------------------------------------------------------
-    @GetMapping("/favorite")
+    @GetMapping("/favorite/{userId}")
     @ApiOperation(value = "查詢使用者收藏的文章", notes = "查詢使用者收藏的文章")
-    public Result getFavoriteThreads(HttpSession session) {
+    public Result getFavoriteThreads(@PathVariable Integer userId ,HttpSession session) {
         if (session.getAttribute("userId") == null) {
             throw new UserNotLoginException();
         }
-        Integer userId = getUserIdFromSession(session);
+        if(userId==0){
+         userId = getUserIdFromSession(session);
+        }
         List<Thread> threads = threadService.getFavoriteThreads(userId);
         return threads.isEmpty() ? new Result(Code.GET_ERR, null, "查詢收藏文章失敗") : new Result(Code.GET_OK, threads, "查詢收藏文章成功");
     }
+
     //熱門文章--------------------------------------------------------------
     @GetMapping("/hotThread")
     @ApiOperation("熱門文章")
@@ -255,15 +258,18 @@ public class ThreadController extends BaseController{
         return new Result(code, thread, msg);
     }
     //查詢使用者的所有文章--------------------------------------------------------------
-    @GetMapping("/userThread")
+    @GetMapping("/userThread/{userId}")
     @ApiOperation("查詢使用者的所有論壇文章")
-    public Result getUserThread(HttpSession session) {
-        Integer userId=getUserIdFromSession(session);
+    public Result getUserThread(@PathVariable Integer userId ,HttpSession session) {
+        if(userId==0){
+            userId = getUserIdFromSession(session);
+        }
         List<Thread> thread = threadService.getUserThread(userId);
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
     }
+
     //查詢所有文章--------------------------------------------------------------
     @GetMapping
     @ApiOperation("查詢所有論壇文章")
