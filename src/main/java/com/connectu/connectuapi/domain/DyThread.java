@@ -23,15 +23,20 @@ public class DyThread {
     private Integer love;
     @ApiModelProperty(value = "總分數")
     private Integer hotScore;
+    private Integer loveStatus;
     @ApiModelProperty(value = "收藏數量")
     private Integer favoriteCount;
-    @TableField(exist = false)
-    private List<DyHashtag> hashtags;
     @ApiModelProperty(value = "replyCount")
     @TableField(exist = false)
     private Integer replyCount=0;
     @TableField(exist = false)
+    private List<DyHashtag> hashtags;
+
+
+    @TableField(exist = false)
     @ApiModelProperty(value = "user")
     private User user;
-
+    public void updateLoveStatus(Integer loveStatus) {
+        this.loveStatus = loveStatus;
+    }
 }

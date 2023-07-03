@@ -21,6 +21,8 @@ public class UserDyThreadLoveServiceImpl extends MPJBaseServiceImpl<UserDyThread
     private UserDyThreadLoveDao userDyThreadLoveDao;
     @Autowired
     private IDyThreadService dyThreadService;
+    @Autowired
+    private IThreadService threadService;  // 注入 IThreadService
     @Override
     public int toggleLove(Integer userId, Integer dyThreadId) {
         // 查找用戶對文章的按讚記錄，包括邏輯刪除的記錄
@@ -47,7 +49,10 @@ public class UserDyThreadLoveServiceImpl extends MPJBaseServiceImpl<UserDyThread
             dythread.setLove(dythread.getLove() - 1);
             userDyThreadLoveDao.deleteById(userDyThreadLove.getUserDyThreadLoveId()); // 刪除按讚記錄
         }
+        // 更新loveStatus的值
+        dythread.updateLoveStatus(userDyThreadLove.getLoveStatus());
         dyThreadService.updateById(dythread);
+        //threadService.up
         // 返回當前用戶的按讚狀態
         return userDyThreadLove.getLoveStatus();
     }
