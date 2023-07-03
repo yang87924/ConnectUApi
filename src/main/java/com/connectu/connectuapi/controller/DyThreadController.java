@@ -26,7 +26,7 @@ import java.util.List;
 
 @Api(tags ="動態文章")
 @RestController
-@RequestMapping("/DyThreads")
+@RequestMapping("/dyThreads")
 
 public class DyThreadController extends BaseController{
     @Autowired

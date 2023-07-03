@@ -18,7 +18,7 @@ import java.util.List;
 
 @Api(tags ="主題")
 @RestController
-@RequestMapping("/Category")
+@RequestMapping("/category")
 @CrossOrigin(origins = "*")
 public class CategoryController {
     @Autowired
