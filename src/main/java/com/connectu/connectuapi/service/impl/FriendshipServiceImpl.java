@@ -34,6 +34,7 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         return userDao.selectList(userWrapper);
     }
 
+
     public List<User> follower(Integer followerId){
         MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
         userWrapper.innerJoin(Friendship.class, Friendship::getFollowingId, User::getUserId)

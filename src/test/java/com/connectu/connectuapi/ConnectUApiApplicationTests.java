@@ -53,6 +53,10 @@ class ConnectUApiApplicationTests {
     }
 
     @Test
+    void a(){
+        System.out.println(friendshipService.list().size());;
+    }
+    @Test
     void userTest() {
         Faker faker = new Faker(new Locale("zh_TW"));
         String loremText = generateRandomString(10, 50);
