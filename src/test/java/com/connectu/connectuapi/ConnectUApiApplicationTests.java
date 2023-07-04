@@ -1,5 +1,6 @@
 package com.connectu.connectuapi;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.FriendshipDao;
 import com.connectu.connectuapi.dao.UserDao;
@@ -8,6 +9,7 @@ import com.connectu.connectuapi.domain.Friendship;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
+import com.connectu.connectuapi.service.impl.FriendshipServiceImpl;
 import com.github.javafaker.Faker;
 import com.github.yulichang.query.MPJLambdaQueryWrapper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
@@ -31,21 +33,29 @@ class ConnectUApiApplicationTests {
     private UserDao userDao;
     @Autowired
     private FriendshipDao friendshipDao;
+    @Autowired
+    private FriendshipServiceImpl friendshipService;
 
     @Autowired
     private UserThreadLoveDao userThreadLoveDao;
-//    @Autowired
+
+    //    @Autowired
     @Test
     void friendTest() {
-        MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
-        userWrapper.innerJoin(Friendship.class, Friendship::getFollowerId, User::getUserId);
-        List<User> users = userDao.selectList(userWrapper);
-        System.out.println(users);
+        Integer followerId = 1;
+        Integer followingId = 15;
+        LambdaQueryWrapper<Friendship> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Friendship::getFollowerId, followerId)
+                .eq(Friendship::getFollowingId, followingId);
+
+        friendshipService.removeByIds(friendshipDao.selectList(lqw));
+
     }
+
     @Test
     void userTest() {
         Faker faker = new Faker(new Locale("zh_TW"));
-        String loremText = generateRandomString(10,50);
+        String loremText = generateRandomString(10, 50);
         System.out.println("Generated Lorem Text: " + loremText);
     }
 
@@ -67,6 +77,7 @@ class ConnectUApiApplicationTests {
         }
         return sb.toString();
     }
+
     @Test
     void threadTest() {
         userThreadLoveDao.selectList(null);
@@ -76,12 +87,14 @@ class ConnectUApiApplicationTests {
     void threadPageTest() {
         //threadService.selectPage(1,5);
     }
+
     @Test
     void Test() {
         System.out.println(new Result(1111, null, "yoyoyo"));
     }
+
     @Test
-    void loginTest(){
+    void loginTest() {
         userService.login("于思源", "kd2j88gaxqalh");
     }
 
