@@ -22,4 +22,7 @@ public class Result {
     public Result() {
 
     }
+
+    public Result(Integer loginOk, User loginUser, String 登入成功, String token) {
+    }
 }
