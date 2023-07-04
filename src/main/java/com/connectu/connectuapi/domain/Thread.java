@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import java.util.Date;
+import java.util.List;
 
 @Schema
 @Data
@@ -42,5 +43,17 @@ public class Thread  {
     private Integer favoriteCount;
     @ApiModelProperty(value = "總分數")
     private Integer hotScore;
+    private Integer loveStatus;
+    @TableField(exist = false)
+    @ApiModelProperty(value = "replyCount")
+    private Integer replyCount=0;
+    @TableField(exist = false)
+    @ApiModelProperty(value = "user")
+    private User user;
+    @TableField(exist = false)
+    private List<Hashtag> hashtags;
 
+    public void updateLoveStatus(Integer loveStatus) {
+        this.loveStatus = loveStatus;
+    }
 }

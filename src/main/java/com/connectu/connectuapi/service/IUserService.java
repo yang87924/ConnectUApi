@@ -2,10 +2,11 @@ package com.connectu.connectuapi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.connectu.connectuapi.domain.User;
+import com.github.yulichang.base.MPJBaseService;
 
 import java.util.List;
 
-public interface IUserService extends IService<User> {
+public interface IUserService extends MPJBaseService<User> {
     User login(String account, String password);
 
     User selectGoogleUserByEmail(String email);

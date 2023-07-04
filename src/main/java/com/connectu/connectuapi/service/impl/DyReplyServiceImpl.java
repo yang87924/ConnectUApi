@@ -5,6 +5,7 @@ import com.connectu.connectuapi.dao.DyReplyDao;
 import com.connectu.connectuapi.domain.DyReply;
 import com.connectu.connectuapi.domain.Reply;
 import com.connectu.connectuapi.service.IDyReplyService;
+import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 
 //import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
 @Service
-public class DyReplyServiceImpl extends ServiceImpl<DyReplyDao, DyReply> implements IDyReplyService {
+public class DyReplyServiceImpl extends MPJBaseServiceImpl<DyReplyDao, DyReply> implements IDyReplyService {
     @Autowired
     private DyReplyDao dyReplyDao;
     @Override

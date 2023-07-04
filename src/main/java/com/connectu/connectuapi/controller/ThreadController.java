@@ -1,7 +1,10 @@
 package com.connectu.connectuapi.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
+import com.connectu.connectuapi.domain.Hashtag;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.domain.UserThreadLove;
@@ -39,6 +42,7 @@ import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 @RestController
 @RequestMapping("/threads")
 
+
 public class ThreadController extends BaseController{
     @Autowired
     private IThreadService threadService;
@@ -48,6 +52,16 @@ public class ThreadController extends BaseController{
     private IFavoriteThreadService favoriteThreadService;
     @Autowired
     private StorageService storageService;
+    @Autowired
+    private IHashtagService hashtagService;
+    @ApiOperation(value = "熱門標籤OK")
+    @GetMapping("/HotHashtag")
+    public Result getTopThreeHashtags() {
+        List<Hashtag> hashtags = hashtagService.getTopThreeHashtags();
+        Integer code = hashtags != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = hashtags != null ? "查詢熱門標籤成功" : "查無熱門標籤資料";
+        return new Result(code, hashtags, msg);
+    }
     //假資料--------------------------------------------------------------
     @ApiIgnore    // 忽略这个api
     @PostMapping("/addFakeThread")
@@ -57,7 +71,7 @@ public class ThreadController extends BaseController{
     }
     //新增收藏文章--------------------------------------------------------------
     @PostMapping("/favorite")
-    @ApiOperation(value = "新增收藏文章", notes = "新增使用者收藏的文章")
+    @ApiOperation(value = "新增收藏文章OK", notes = "新增使用者收藏的文章")
     public Result addFavoriteThread(@ApiParam(value = "文章 ID", required = true) @RequestParam Integer threadId,
                                     HttpSession session) {
         if (session.getAttribute("userId") == null) {
@@ -123,9 +137,9 @@ public class ThreadController extends BaseController{
             thread.setPicture(paths.substring(0,paths.length()-1));
         }
         boolean flag = threadService.save(thread);
-        if (flag && hashtags != null && !hashtags.isEmpty()) {
-            threadService.handleHashtags(thread, hashtags);
-        }
+//        if (flag && hashtags != null && !hashtags.isEmpty()) {
+//            threadService.handleHashtags(thread, hashtags);
+//        }
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
     }
     //刪除文章--------------------------------------------------------------
@@ -138,7 +152,7 @@ public class ThreadController extends BaseController{
     }
     //移除收藏文章
     @DeleteMapping("/favorite/{favoriteThreadId}")
-    @ApiOperation(value = "移除收藏文章", notes = "移除使用者收藏的文章")
+    @ApiOperation(value = "移除收藏文章OK", notes = "移除使用者收藏的文章")
     public Result removeFavoriteThread(@ApiParam(value = "文章 ID", required = true) @PathVariable Integer favoriteThreadId ,
                                        HttpSession session) {
         if (session.getAttribute("userId") == null) {
@@ -179,7 +193,7 @@ public class ThreadController extends BaseController{
     }
     //切換使用者按讚--------------------------------------------------------------
     @PutMapping("/toggleUserLove/{threadId}")
-    @ApiOperation("使用者按讚+紀錄")
+    @ApiOperation("使用者按讚+紀錄OK")
     public Result toggleUserLove(@PathVariable Integer threadId, HttpSession session) {
         if (session.getAttribute("userId") == null) {
             throw new UserNotLoginException();
@@ -195,7 +209,7 @@ public class ThreadController extends BaseController{
     }
     //按讚--------------------------------------------------------------
     @PutMapping("/love/{threadId}")
-    @ApiOperation("按讚")
+    @ApiOperation("按讚OK")
     public Result love(@PathVariable Integer threadId){
         Thread thread = threadService.getById(threadId);
         threadService.love(thread);
@@ -204,7 +218,7 @@ public class ThreadController extends BaseController{
     }
     //取消按讚--------------------------------------------------------------
     @PutMapping("/cancelLove/{threadId}")
-    @ApiOperation("取消按讚")
+    @ApiOperation("取消按讚OK")
     public Result cancelLove(@PathVariable Integer threadId){
         Thread thread = threadService.getById(threadId);
         threadService.cancelLove(thread);
@@ -213,7 +227,7 @@ public class ThreadController extends BaseController{
     }
     //按讚+收回--------------------------------------------------------------
     @PutMapping("/toggleLove/{threadId}")
-    @ApiOperation("按讚+收回")
+    @ApiOperation("按讚+收回OK")
     public Result toggleLove(@PathVariable Integer threadId) {
         Thread thread = threadService.getById(threadId);
         threadService.toggleLove(thread);
@@ -222,19 +236,23 @@ public class ThreadController extends BaseController{
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, message);
     }
     //查詢使用者收藏的文章--------------------------------------------------------------
-    @GetMapping("/favorite")
+    @GetMapping("/favorite/{userId}")
     @ApiOperation(value = "查詢使用者收藏的文章", notes = "查詢使用者收藏的文章")
-    public Result getFavoriteThreads(HttpSession session) {
+    public Result getFavoriteThreads(@PathVariable Integer userId ,HttpSession session) {
+       // Integer userId=getUserIdFromSession(session)
         if (session.getAttribute("userId") == null) {
             throw new UserNotLoginException();
         }
-        Integer userId = getUserIdFromSession(session);
+        if(userId==0){
+         userId = getUserIdFromSession(session);
+        }
         List<Thread> threads = threadService.getFavoriteThreads(userId);
         return threads.isEmpty() ? new Result(Code.GET_ERR, null, "查詢收藏文章失敗") : new Result(Code.GET_OK, threads, "查詢收藏文章成功");
     }
+
     //熱門文章--------------------------------------------------------------
     @GetMapping("/hotThread")
-    @ApiOperation("熱門作者")
+    @ApiOperation("熱門文章")
     public Result hotUser(HttpSession session) {
         List<Thread> thread = threadService.hotThread();
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
@@ -242,15 +260,18 @@ public class ThreadController extends BaseController{
         return new Result(code, thread, msg);
     }
     //查詢使用者的所有文章--------------------------------------------------------------
-    @GetMapping("/userThread")
+    @GetMapping("/userThread/{userId}")
     @ApiOperation("查詢使用者的所有論壇文章")
-    public Result getUserThread(HttpSession session) {
-        Integer userId=getUserIdFromSession(session);
+    public Result getUserThread(@PathVariable Integer userId ,HttpSession session) {
+        if(userId==0){
+            userId = getUserIdFromSession(session);
+        }
         List<Thread> thread = threadService.getUserThread(userId);
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
     }
+
     //查詢所有文章--------------------------------------------------------------
     @GetMapping
     @ApiOperation("查詢所有論壇文章")
@@ -261,6 +282,18 @@ public class ThreadController extends BaseController{
         String msg = thread != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, thread, msg);
 
+    }
+    //分頁查詢--------------------------------------------------------------
+    @GetMapping("/pageThread")
+    @ApiOperation("分頁查詢所有論壇文章")
+    public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum) {
+        Page<Thread> page = new Page<>(pageNum, 4);
+        IPage<Thread> threadPage = threadService.listWithPagination(page, null);
+        List<Thread> threadList = threadPage.getRecords();
+        threadList.sort(Comparator.comparing(Thread::getCreatedAt, Comparator.reverseOrder()));
+        Integer code = threadList != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = threadList != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
+        return new Result(code, threadList, msg);
     }
     //查詢主題文章--------------------------------------------------------------
     @ApiImplicitParam(name = "查詢主題文章", value = "論壇文章Id")

@@ -22,13 +22,7 @@ public class SwaggerConfig {
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.OAS_30)
-//                .apiInfo(apiInfo())
-//                .enable(swaggerEnabled)
-//                .select()
-//                .apis(RequestHandlerSelectors.basePackage("com.connectu.connectuapi.controller"))
-//                .paths(PathSelectors.any())
-//                .build()
-//                .ignoredParameterTypes(HttpSession.class);
+
         //--------------------------------------------
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.connectu.connectuapi.controller")) // 指定API控制器所在的包
@@ -36,16 +30,12 @@ public class SwaggerConfig {
                 .build()
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false);
-
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("ConnectUApi")
-                //创建人
-                //.contact(new Contact("clc", "http://www.baidu.com", "clc@x.com"))
                 .version("1.0")
-               // .description("不需要描述")
                 .build();
     }
 

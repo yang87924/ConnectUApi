@@ -16,7 +16,7 @@ import java.util.List;
 
 @Api(tags ="論壇留言")
 @RestController
-@RequestMapping("/Replys")
+@RequestMapping("/replys")
 public class ReplyController {
     @Autowired
     private IReplyService replyService;
@@ -24,7 +24,7 @@ public class ReplyController {
     @ApiIgnore    // 忽略这个api
     @PostMapping("/addFakeReply")
     public String addFakeReply() {
-        replyService.addFakeReply(50);
+        replyService.addFakeReply(500);
         return "Fake Reply added successfully!";
     }
     //取得論壇文章的所有留言

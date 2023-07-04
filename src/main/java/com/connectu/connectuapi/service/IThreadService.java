@@ -1,15 +1,19 @@
 package com.connectu.connectuapi.service;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
+import com.github.yulichang.base.MPJBaseService;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Set;
 
-public interface IThreadService extends IService<Thread> {
+public interface IThreadService extends MPJBaseService<Thread> {
     //假資料--------------------------------------------------------------
     void addFakeThread(int count);
 
@@ -30,7 +34,7 @@ public interface IThreadService extends IService<Thread> {
 
     //查詢使用者的所有文章--------------------------------------------------------------
     List<Thread> getUserThread(int id);
-
+    List<List<Thread>> getUserThreadForUser(List<Integer> userIds);
     //熱門文章--------------------------------------------------------------
     List<Thread> hotThread();
 
@@ -48,5 +52,7 @@ public interface IThreadService extends IService<Thread> {
     List<Thread> searchThreadsByKeyword(String keyword, String categoryName);
 
     void handleHashtags(Thread thread, List<String> hashtags);
+    //分頁查詢--------------------------------------------------------------
+    IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper);
 
 }
