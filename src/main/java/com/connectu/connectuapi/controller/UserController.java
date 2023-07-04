@@ -237,7 +237,7 @@ public class UserController extends BaseController {
         return new Result(code, users, msg);
     }
 
-    @ApiOperation("查詢當前用戶跟隨的作者")
+    @ApiOperation("查詢當前用戶跟隨的人")
     @GetMapping("/followedBy")
     public Result getUsersFollowedBySessionUser(HttpSession session) {
         List<User> users = friendshipService.follower(getUserIdFromSession(session));
@@ -246,18 +246,11 @@ public class UserController extends BaseController {
         return new Result(code, users, msg);
     }
 
-    @ApiOperation("跟隨用戶")
-    @PostMapping("/follow/{followingId}")
+    @ApiOperation("跟隨或取消跟隨用戶")
+    @PostMapping("/followIfNot/{followingId}")
     public Result followedBySessionUser(@PathVariable Integer followingId, HttpSession session) {
-        boolean flag = friendshipService.save(getUserIdFromSession(session), followingId);
+        boolean flag = friendshipService.saveOrRemove(getUserIdFromSession(session), followingId);
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "跟隨成功" : "跟隨失敗");
-    }
-
-    @ApiOperation("取消跟隨用戶")
-    @DeleteMapping("/unfollow/{followingId}")
-    public Result unfollowedBySessionUser(@PathVariable Integer followingId, HttpSession session) {
-        boolean flag = friendshipService.remove(getUserIdFromSession(session), followingId);
-        return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ? "取消跟隨成功" : "取消跟隨失敗");
     }
 
 
