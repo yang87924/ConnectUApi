@@ -1,15 +1,21 @@
 package com.connectu.connectuapi;
 
 import com.connectu.connectuapi.controller.util.Result;
+import com.connectu.connectuapi.dao.FriendshipDao;
 import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.dao.UserThreadLoveDao;
+import com.connectu.connectuapi.domain.Friendship;
+import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
 import com.github.javafaker.Faker;
+import com.github.yulichang.query.MPJLambdaQueryWrapper;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Locale;
 
 import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
@@ -23,11 +29,19 @@ class ConnectUApiApplicationTests {
     private IThreadService threadService;
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private FriendshipDao friendshipDao;
 
     @Autowired
     private UserThreadLoveDao userThreadLoveDao;
 //    @Autowired
-//    private StringEncryptor stringEncryptor;
+    @Test
+    void friendTest() {
+        MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
+        userWrapper.innerJoin(Friendship.class, Friendship::getFollowerId, User::getUserId);
+        List<User> users = userDao.selectList(userWrapper);
+        System.out.println(users);
+    }
     @Test
     void userTest() {
         Faker faker = new Faker(new Locale("zh_TW"));

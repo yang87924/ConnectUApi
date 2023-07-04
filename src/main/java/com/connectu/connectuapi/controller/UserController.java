@@ -4,6 +4,7 @@ import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
+import com.connectu.connectuapi.service.IFriendshipService;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
 import com.connectu.connectuapi.service.impl.StorageService;
@@ -29,6 +30,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private IFriendshipService friendshipService;
 
 
 
@@ -169,6 +173,28 @@ public class UserController extends BaseController {
     public String getUserName(HttpSession session) {
         String userName = (String) session.getAttribute("userName");
         return userName;
+    }
+
+    //--------------------------------
+
+
+
+    @ApiOperation("查詢跟隨當前用戶的人")
+    @GetMapping("/following/{followingId}")
+    public Result following(@PathVariable Integer followingId) {
+        List<User> users = friendshipService.following(followingId);
+        Integer code = users != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = users != null ? "查詢跟隨當前用戶成功" : "查詢跟隨當前用戶失敗";
+        return new Result(code, users, msg);
+    }
+
+    @ApiOperation("查詢跟隨的作者")
+    @GetMapping("/followedBy/{followerId}")
+    public Result FollowerBy(@PathVariable Integer followerId) {
+        List<User> users = friendshipService.follower(followerId);
+        Integer code = users != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = users != null ? "查詢當前用戶跟隨成功" : "查詢當前用戶跟隨失敗";
+        return new Result(code, users, msg);
     }
 
 
