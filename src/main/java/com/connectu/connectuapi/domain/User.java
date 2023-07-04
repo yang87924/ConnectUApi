@@ -26,4 +26,6 @@ public class User  {
     private String point;
     private String isGoogle;
     private Integer HotScore;
+    private Integer followingCount ;
+    private Integer followedByCount ;
 }

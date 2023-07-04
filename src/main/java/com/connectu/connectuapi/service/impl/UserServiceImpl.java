@@ -8,6 +8,7 @@ import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.exception.*;
+import com.connectu.connectuapi.service.IFriendshipService;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,13 +33,23 @@ public class UserServiceImpl extends MPJBaseServiceImpl<UserDao, User> implement
     private UserDao userDao;
     @Autowired
     private IThreadService threadService;
-
+    @Autowired
+    private IFriendshipService friendshipService;
     public void addFakeUsers(int count) {
         for (int i = 0; i < count; i++) {
             User fakeUser = UserServiceImpl.createFakeUser();
             userDao.insert(fakeUser);
         }
     }
+
+    @Override
+    public User getById(Serializable id) {
+
+        friendshipService.follower((Integer) id);
+        friendshipService.following((Integer) id);
+        return super.getById(id);
+    }
+
     @Override
     public List<User> getSortedUsers() {
         List<User> users = userDao.selectList(null);

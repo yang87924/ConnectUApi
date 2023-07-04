@@ -6,6 +6,7 @@ import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.domain.Friendship;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IFriendshipService;
+import com.connectu.connectuapi.service.IUserService;
 import com.github.yulichang.base.MPJBaseServiceImpl;
 import com.github.yulichang.query.MPJLambdaQueryWrapper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
@@ -22,10 +23,14 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
     @Autowired
     private FriendshipDao friendshipDao;
 
+
     public List<User> following(Integer followingId){
         MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
         userWrapper.innerJoin(Friendship.class, Friendship::getFollowerId, User::getUserId)
                 .eq(Friendship::getFollowingId, followingId);
+        User user=userDao.selectById(followingId);
+        user.setFollowingCount(userDao.selectList(userWrapper).size());
+        userDao.updateById(user);
         return userDao.selectList(userWrapper);
     }
 
@@ -33,6 +38,10 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
         userWrapper.innerJoin(Friendship.class, Friendship::getFollowingId, User::getUserId)
                 .eq(Friendship::getFollowerId, followerId);
+        User user=userDao.selectById(followerId);
+        System.out.println("+++++++"+userDao.selectList(userWrapper).size());
+        user.setFollowedByCount(userDao.selectList(userWrapper).size());
+        userDao.updateById(user);
         return userDao.selectList(userWrapper);
     }
 
