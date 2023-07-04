@@ -1,5 +1,6 @@
 package com.connectu.connectuapi.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.connectu.connectuapi.dao.FriendshipDao;
 import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.domain.Friendship;
@@ -11,6 +12,7 @@ import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Service
@@ -34,5 +36,19 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         return userDao.selectList(userWrapper);
     }
 
+
+    public boolean save(Integer followerId, Integer followingId) {
+        Friendship friendship = new Friendship();
+        friendship.setFollowerId(followerId);
+        friendship.setFollowingId(followingId);
+        return super.save(friendship);
+    }
+
+    public boolean remove(Integer followerId, Integer followingId) {
+        LambdaQueryWrapper<Friendship> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Friendship::getFollowerId, followerId)
+                        .eq(Friendship::getFollowingId, followingId);
+        return super.removeByIds(friendshipDao.selectList(lqw));
+    }
 
 }

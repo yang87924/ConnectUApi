@@ -25,19 +25,4 @@ public class MyGlobalCORSConfig {
         };
     }
 
-    @Bean
-    public FilterRegistrationBean<CoopFilter> coopFilter1() {
-        FilterRegistrationBean<CoopFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new CoopFilter());
-        registrationBean.addUrlPatterns("/users/google");
-        return registrationBean;
-    }
-
-    @Bean
-    public FilterRegistrationBean<CoepFilter> coepFilter1() {
-        FilterRegistrationBean<CoepFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new CoepFilter());
-        registrationBean.addUrlPatterns("/*");
-        return registrationBean;
-    }
 }
