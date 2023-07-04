@@ -2,6 +2,7 @@ package com.connectu.connectuapi.controller;
 
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
+import com.connectu.connectuapi.domain.Friendship;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IFriendshipService;
@@ -180,13 +181,13 @@ public class UserController extends BaseController {
         return userName;
     }
 
-    //--------------------------------
+//跟隨--------------------------------
 
 
 
-    @ApiOperation("查詢跟隨當前用戶的人")
+    @ApiOperation("查詢跟隨用戶的人")
     @GetMapping("/following/{followingId}")
-    public Result following(@PathVariable Integer followingId) {
+    public Result usersFollowing(@PathVariable Integer followingId) {
         List<User> users = friendshipService.following(followingId);
         Integer code = users != null ? Code.GET_OK : Code.GET_ERR;
         String msg = users != null ? "查詢跟隨當前用戶成功" : "查詢跟隨當前用戶失敗";
@@ -195,12 +196,47 @@ public class UserController extends BaseController {
 
     @ApiOperation("查詢跟隨的作者")
     @GetMapping("/followedBy/{followerId}")
-    public Result FollowerBy(@PathVariable Integer followerId) {
+    public Result usersFollowedBy(@PathVariable Integer followerId) {
         List<User> users = friendshipService.follower(followerId);
         Integer code = users != null ? Code.GET_OK : Code.GET_ERR;
         String msg = users != null ? "查詢當前用戶跟隨成功" : "查詢當前用戶跟隨失敗";
         return new Result(code, users, msg);
     }
+
+
+    @ApiOperation("查詢跟隨當前用戶的人")
+    @GetMapping("/following")
+    public Result getUsersFollowingSessionUser(HttpSession session) {
+        List<User> users = friendshipService.following(getUserIdFromSession(session));
+        Integer code = users != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = users != null ? "查詢跟隨當前用戶成功" : "查詢跟隨當前用戶失敗";
+        return new Result(code, users, msg);
+    }
+
+    @ApiOperation("查詢當前用戶跟隨的作者")
+    @GetMapping("/followedBy")
+    public Result getUsersFollowedBySessionUser(HttpSession session) {
+        List<User> users = friendshipService.follower(getUserIdFromSession(session));
+        Integer code = users != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = users != null ? "查詢當前用戶跟隨成功" : "查詢當前用戶跟隨失敗";
+        return new Result(code, users, msg);
+    }
+
+    @ApiOperation("跟隨用戶")
+    @PostMapping("/follow/{followingId}")
+    public Result followedBySessionUser(@PathVariable Integer followingId, HttpSession session) {
+        boolean flag = friendshipService.save(getUserIdFromSession(session), followingId);
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "跟隨成功" : "跟隨失敗");
+    }
+
+    @ApiOperation("取消跟隨用戶")
+    @DeleteMapping("/unfollow/{followingId}")
+    public Result unfollowedBySessionUser(@PathVariable Integer followingId, HttpSession session) {
+        boolean flag = friendshipService.remove(getUserIdFromSession(session), followingId);
+        return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ? "取消跟隨成功" : "取消跟隨失敗");
+    }
+
+
 
 
 }
