@@ -156,7 +156,6 @@ public class UserController extends BaseController {
         }else {
             return userService.getById(userId);
         }
-
     }
 
 //登入--------------------------------------------------------------
@@ -213,6 +212,15 @@ public class UserController extends BaseController {
         return new Result(code, users, msg);
     }
 
+    @ApiOperation("查詢跟隨當前用戶的人數")
+    @GetMapping("/followingNum")
+    public Result getUserNumFollowingSessionUser(HttpSession session) {
+        String num = friendshipService.followingNum(getUserIdFromSession(session));
+        Integer code = num != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = num != null ? "查詢跟隨當前用戶人數成功" : "查詢跟隨當前用戶人數失敗";
+        return new Result(code, num, msg);
+    }
+
     @ApiOperation("查詢當前用戶跟隨的人")
     @GetMapping("/followedBy")
     public Result getUsersFollowedBySessionUser(HttpSession session) {
@@ -222,14 +230,20 @@ public class UserController extends BaseController {
         return new Result(code, users, msg);
     }
 
+    @ApiOperation("查詢當前用戶跟隨的人數")
+    @GetMapping("/followedByNum")
+    public Result getUserNumFollowedBySessionUser(HttpSession session) {
+        String num = friendshipService.followerNum(getUserIdFromSession(session));
+        Integer code = num != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = num != null ? "查詢當前用戶跟隨人數成功" : "查詢當前用戶跟隨人數失敗";
+        return new Result(code, num, msg);
+    }
+
     @ApiOperation("跟隨或取消跟隨用戶")
     @PostMapping("/followIfNot/{followingId}")
     public Result followedBySessionUser(@PathVariable Integer followingId, HttpSession session) {
         boolean flag = friendshipService.saveOrRemove(getUserIdFromSession(session), followingId);
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "跟隨成功" : "跟隨失敗");
     }
-
-
-
 
 }

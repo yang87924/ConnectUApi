@@ -29,11 +29,23 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         return userDao.selectList(userWrapper);
     }
 
+    public String followingNum(Integer followingId){
+        LambdaQueryWrapper<Friendship> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Friendship::getFollowingId, followingId);
+        return friendshipDao.selectCount(lqw).toString();
+    }
+
     public List<User> follower(Integer followerId){
         MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
         userWrapper.innerJoin(Friendship.class, Friendship::getFollowingId, User::getUserId)
                 .eq(Friendship::getFollowerId, followerId);
         return userDao.selectList(userWrapper);
+    }
+
+    public String followerNum(Integer followerId){
+        LambdaQueryWrapper<Friendship> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Friendship::getFollowerId, followerId);
+        return friendshipDao.selectCount(lqw).toString();
     }
 
 

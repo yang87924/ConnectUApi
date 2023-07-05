@@ -8,6 +8,15 @@ spring:
       username: admin
       password: GBb4ddyE1mfrBFGQA5sc
 
+##==============================================================
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+
+
+
   # ========================================================================
   #Swagger配置
   # 启动报错需要修改以下mvc配置 Failed to start bean 'documentationPluginsBootstrapper'
@@ -30,13 +39,7 @@ springfox:
     swagger-ui:
       enabled: true
   #=============================================================
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
-      enabled: true
 
-  ##==============================================================
   #熱部屬配置
   devtools:
     restart:
