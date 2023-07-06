@@ -3,9 +3,12 @@ package com.connectu.connectuapi;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.FriendshipDao;
+import com.connectu.connectuapi.dao.ThreadDao;
 import com.connectu.connectuapi.dao.UserDao;
 import com.connectu.connectuapi.dao.UserThreadLoveDao;
+import com.connectu.connectuapi.domain.Category;
 import com.connectu.connectuapi.domain.Friendship;
+import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
@@ -35,7 +38,8 @@ class ConnectUApiApplicationTests {
     private FriendshipDao friendshipDao;
     @Autowired
     private FriendshipServiceImpl friendshipService;
-
+    @Autowired
+    private ThreadDao threadDao;
     @Autowired
     private UserThreadLoveDao userThreadLoveDao;
 
@@ -54,7 +58,14 @@ class ConnectUApiApplicationTests {
 
     @Test
     void a(){
-        System.out.println(friendshipService.list().size());;
+        MPJLambdaWrapper<Thread> threadWrapper = new MPJLambdaWrapper<>();
+        threadWrapper
+                .selectAll(Thread.class)
+                .selectAll(Category.class)
+                .leftJoin(Category.class, Category::getCategoryId, Thread::getCategoryId)
+                .eq(Thread::getThreadId, 8);
+        List<Thread> threads = threadDao.selectList(threadWrapper);
+        System.out.println(threads);
     }
     @Test
     void userTest() {

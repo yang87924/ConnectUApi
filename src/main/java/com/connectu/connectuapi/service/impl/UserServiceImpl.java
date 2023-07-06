@@ -45,8 +45,8 @@ public class UserServiceImpl extends MPJBaseServiceImpl<UserDao, User> implement
     @Override
     public User getById(Serializable id) {
 
-        friendshipService.follower((Integer) id);
-        friendshipService.following((Integer) id);
+        friendshipService.followerNum((Integer) id);
+        friendshipService.followingNum((Integer) id);
         return super.getById(id);
     }
 

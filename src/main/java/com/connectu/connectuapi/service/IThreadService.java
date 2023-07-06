@@ -54,5 +54,5 @@ public interface IThreadService extends MPJBaseService<Thread> {
     void handleHashtags(Thread thread, List<String> hashtags);
     //分頁查詢--------------------------------------------------------------
     IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper);
-
+    List<Thread> getThreadById(Integer threadId);
 }

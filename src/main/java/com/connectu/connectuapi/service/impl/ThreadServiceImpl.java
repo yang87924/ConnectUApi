@@ -16,6 +16,7 @@ import com.connectu.connectuapi.service.IFavoriteThreadService;
 import com.connectu.connectuapi.service.IReplyService;
 import com.connectu.connectuapi.service.IThreadService;
 import com.github.yulichang.base.MPJBaseServiceImpl;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -176,6 +177,15 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     public List<Thread> getFavoriteThreads(Integer userId) {
         List<Thread> threads = threadDao.getFavoriteThreads(userId);
         return threads;
+    }
+
+
+    @Override
+    public List<Thread>getThreadById(Integer threadId){
+        MPJLambdaWrapper<Thread> userWrapper = new MPJLambdaWrapper<>();
+        userWrapper.innerJoin(Thread.class, Thread::getUserId, User::getUserId)
+                .eq(Thread::getThreadId, threadId);
+        return threadDao.selectList(userWrapper);
     }
     //熱門文章-----------------------------------------
     @Override
@@ -412,15 +422,16 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     //查詢單筆論壇文章--------------------------------------------------------------
     @Override
     public Thread getThreadWithCategoryName(Integer threadId) {
-        Thread thread = this.getById(threadId);
-        if (thread != null) {
-            Category category = categoryDao.selectById(thread.getCategoryId());
-            if (category != null) {
-                thread.setCategoryName(category.getCategoryName());
-            }
-        }
+        MPJLambdaWrapper<Thread> threadWrapper = new MPJLambdaWrapper<>();
+        threadWrapper
+                .selectAll(Thread.class)
+                .selectAll(Category.class)
+                .leftJoin(Category.class, Category::getCategoryId, Thread::getCategoryId)
+                .eq(Thread::getThreadId, threadId);
+        Thread thread = threadDao.selectOne(threadWrapper);
         return thread;
     }
+
     //查詢最後一筆資料--------------------------------------------------------------
     @Override
     public Integer getLastThreadById() {

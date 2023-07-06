@@ -24,6 +24,9 @@ public class Thread  {
     private Integer threadId;
     @ApiModelProperty(value = "分類 ID")
     private Integer categoryId;
+    @TableField(exist = false)
+    @ApiModelProperty(value = "分類名稱")
+    private String categoryName;
     @ApiModelProperty(value = "使用者 ID")
     private Integer userId ;
     @ApiModelProperty(value = "標題")
@@ -36,9 +39,6 @@ public class Thread  {
     private String picture;
     @ApiModelProperty(value = "讚數")
     private Integer love ;
-    @TableField(exist = false)
-    @ApiModelProperty(value = "分類名稱")
-    private String categoryName;
     @ApiModelProperty(value = "收藏數量")
     private Integer favoriteCount;
     @ApiModelProperty(value = "總分數")

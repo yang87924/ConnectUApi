@@ -27,15 +27,15 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
         userWrapper.innerJoin(Friendship.class, Friendship::getFollowerId, User::getUserId)
                 .eq(Friendship::getFollowingId, followingId);
-        User user=userDao.selectById(followingId);
-        user.setFollowingCount(userDao.selectList(userWrapper).size());
-        userDao.updateById(user);
         return userDao.selectList(userWrapper);
     }
 
     public String followingNum(Integer followingId){
         LambdaQueryWrapper<Friendship> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Friendship::getFollowingId, followingId);
+        User user=userDao.selectById(followingId);
+        user.setFollowingCount(friendshipDao.selectCount(lqw).intValue());
+        userDao.updateById(user);
         return friendshipDao.selectCount(lqw).toString();
     }
 
@@ -44,16 +44,15 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
         userWrapper.innerJoin(Friendship.class, Friendship::getFollowingId, User::getUserId)
                 .eq(Friendship::getFollowerId, followerId);
-        User user=userDao.selectById(followerId);
-        System.out.println("+++++++"+userDao.selectList(userWrapper).size());
-        user.setFollowedByCount(userDao.selectList(userWrapper).size());
-        userDao.updateById(user);
         return userDao.selectList(userWrapper);
     }
 
     public String followerNum(Integer followerId){
         LambdaQueryWrapper<Friendship> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Friendship::getFollowerId, followerId);
+        User user=userDao.selectById(followerId);
+        user.setFollowedByCount(friendshipDao.selectCount(lqw).intValue());
+        userDao.updateById(user);
         return friendshipDao.selectCount(lqw).toString();
     }
 
