@@ -286,7 +286,7 @@ public class ThreadController extends BaseController{
     //分頁查詢--------------------------------------------------------------
     @GetMapping("/pageThread")
     @ApiOperation("分頁查詢所有論壇文章")
-    public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum) {
+    public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum, HttpSession session) {
         Page<Thread> page = new Page<>(pageNum, 4);
         IPage<Thread> threadPage = threadService.listWithPagination(page, null);
         List<Thread> threadList = threadPage.getRecords();
