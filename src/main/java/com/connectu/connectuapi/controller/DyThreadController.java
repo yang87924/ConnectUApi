@@ -102,7 +102,7 @@ public class DyThreadController extends BaseController{
                          @ApiParam(value = "文章內容", required = true) @RequestParam String content,
                          @ApiParam(value = "檔案", required = false)
                          @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                         @ApiParam(value = "Hashtags", required = false) @RequestParam(required = false) List<String> hashtags,
+                        // @ApiParam(value = "Hashtags", required = false) @RequestParam(required = false) List<String> hashtags,
                          HttpSession session) {
 
         if (session.getAttribute("userId") == null) {
@@ -111,14 +111,16 @@ public class DyThreadController extends BaseController{
         if(content==null||content.isEmpty()) {
             throw new ThreadColumnIsNullException();
         }
+        String paths="";
         dyThread.setUserId(getUserIdFromSession(session));
         if(!(files.get(0).isEmpty())) {
-            String paths="";
+             paths="";
             for (String path : storageService.uploadToS3(files, session)) {
                 paths += path + "|";
             }
-            dyThread.setPicture(paths.substring(0,paths.length()-1));
+
         }
+        dyThread.setPicture(paths.substring(0,paths.length()-1));
         boolean flag = dyThreadService.save(dyThread);
 //        if (flag && hashtags != null && !hashtags.isEmpty()) {
 //            threadService.handleHashtags(thread, hashtags);

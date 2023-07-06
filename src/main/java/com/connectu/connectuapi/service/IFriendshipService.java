@@ -12,4 +12,5 @@ public interface IFriendshipService extends MPJBaseService<Friendship> {
     public boolean saveOrRemove(Integer followerId, Integer followingId);
     public String followingNum(Integer followingId);
     public String followerNum(Integer followerId);
+    public List<User> followerThread(Integer followerId);
 }

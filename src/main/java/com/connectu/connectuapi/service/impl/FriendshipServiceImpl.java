@@ -3,7 +3,9 @@ package com.connectu.connectuapi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.connectu.connectuapi.dao.FriendshipDao;
 import com.connectu.connectuapi.dao.UserDao;
+import com.connectu.connectuapi.domain.Category;
 import com.connectu.connectuapi.domain.Friendship;
+import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IFriendshipService;
 import com.connectu.connectuapi.service.IUserService;
@@ -43,6 +45,18 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
     public List<User> follower(Integer followerId){
         MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
         userWrapper.innerJoin(Friendship.class, Friendship::getFollowingId, User::getUserId)
+                .eq(Friendship::getFollowerId, followerId);
+        return userDao.selectList(userWrapper);
+    }
+    public List<User> followerThread(Integer followerId){
+        MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
+        userWrapper
+                .selectAll(Thread.class)
+                .selectAll(User.class)
+                .selectAll(Category.class)
+                .selectAll(User.class)
+                .innerJoin(Friendship.class, Friendship::getFollowingId, User::getUserId)
+                .innerJoin(Thread.class, Thread::getUserId, User::getUserId)
                 .eq(Friendship::getFollowerId, followerId);
         return userDao.selectList(userWrapper);
     }

@@ -68,6 +68,22 @@ class ConnectUApiApplicationTests {
         System.out.println(threads);
     }
     @Test
+    void b(){
+        MPJLambdaWrapper<Thread> userWrapper = new MPJLambdaWrapper<>();
+        userWrapper
+                .selectAll(Thread.class)
+                //.selectAll(TH)
+                .selectAll(Category.class)
+                .selectAll(Friendship.class)
+                .selectAll(User.class)
+                .leftJoin(Category.class, Category::getCategoryId, Thread::getCategoryId)
+                .leftJoin(Friendship.class,Friendship::getFollowerId,Thread::getUserId)
+                .rightJoin(User.class,User::getUserId,Friendship::getFollowerId)
+                .eq(Thread::getThreadId, 4);
+        List<Thread> threads = threadDao.selectList(userWrapper);
+        System.out.println(threads);
+    }
+    @Test
     void userTest() {
         Faker faker = new Faker(new Locale("zh_TW"));
         String loremText = generateRandomString(10, 50);
