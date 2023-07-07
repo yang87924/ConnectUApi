@@ -8,6 +8,7 @@
 #      password: root
 
 spring:
+
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
