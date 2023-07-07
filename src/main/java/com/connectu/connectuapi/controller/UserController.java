@@ -131,8 +131,6 @@ public class UserController extends BaseController {
 
         User user = userService.getById(userId);
 
-
-
         Integer code = user != null ? Code.GET_OK : Code.GET_ERR;
         String msg = user != null ? "用戶資料取得成功" : "查無此用戶";
         return new Result(code, user, msg);
@@ -178,6 +176,16 @@ public class UserController extends BaseController {
     public String getUserName(HttpSession session) {
         String userName = (String) session.getAttribute("userName");
         return userName;
+    }
+
+    @GetMapping("/getUser")
+    public User getUser(HttpSession session) {
+        return userService.getById((Integer) session.getAttribute("userId"));
+    }
+
+    @GetMapping("/getUserAvatar")
+    public String getUserAvatar(String userName) {
+        return userService.getAvatarFromName(userName);
     }
 
 //跟隨--------------------------------
