@@ -1,12 +1,11 @@
 package com.connectu.connectuapi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.connectu.connectuapi.dao.DyThreadDao;
 import com.connectu.connectuapi.dao.FriendshipDao;
 import com.connectu.connectuapi.dao.UserDao;
-import com.connectu.connectuapi.domain.Category;
-import com.connectu.connectuapi.domain.Friendship;
+import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
-import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IFriendshipService;
 import com.connectu.connectuapi.service.IUserService;
 import com.github.yulichang.base.MPJBaseServiceImpl;
@@ -24,6 +23,8 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
     private UserDao userDao;
     @Autowired
     private FriendshipDao friendshipDao;
+    @Autowired
+    private DyThreadDao dyThreadDao;
 
     public List<User> following(Integer followingId){
         MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
@@ -48,18 +49,7 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
                 .eq(Friendship::getFollowerId, followerId);
         return userDao.selectList(userWrapper);
     }
-    public List<User> followerThread(Integer followerId){
-        MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
-        userWrapper
-                .selectAll(Thread.class)
-                .selectAll(User.class)
-                .selectAll(Category.class)
-                .selectAll(User.class)
-                .innerJoin(Friendship.class, Friendship::getFollowingId, User::getUserId)
-                .innerJoin(Thread.class, Thread::getUserId, User::getUserId)
-                .eq(Friendship::getFollowerId, followerId);
-        return userDao.selectList(userWrapper);
-    }
+
 
     public String followerNum(Integer followerId){
         LambdaQueryWrapper<Friendship> lqw = new LambdaQueryWrapper<>();
@@ -68,6 +58,26 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         user.setFollowedByCount(friendshipDao.selectCount(lqw).intValue());
         userDao.updateById(user);
         return friendshipDao.selectCount(lqw).toString();
+    }
+
+    @Override
+    public List followingDyThread(Integer userId) {
+        MPJLambdaWrapper<Friendship> userWrapper = new MPJLambdaWrapper<>();
+        userWrapper
+                .selectAll(User.class)
+                //.selectAll(DyThread.class)
+               // .selectAll(dyThreadHashtag.class)
+                .selectAll(Friendship.class)
+               // .selectAll(User.class)
+              //  .selectAll(DyHashtag.class)
+                .innerJoin(User.class,User::getUserId,Friendship::getFollowerId)
+                //.innerJoin(DyThread.class,DyThread::getUserId,Friendship::getFollowerId)
+               // .innerJoin(dyThreadHashtag.class,dyThreadHashtag::getDyThreadId,DyThread::getDyThreadId)
+               // .innerJoin(DyHashtag.class,DyHashtag::getDyHashtagId,dyThreadHashtag::getDyHashtagId)
+                .eq(Friendship::getFollowingId, userId);
+        System.out.println(friendshipDao.selectList(userWrapper));
+       //System.out.println("----------"+dythreads);
+        return friendshipDao.selectList(userWrapper);
     }
 
 

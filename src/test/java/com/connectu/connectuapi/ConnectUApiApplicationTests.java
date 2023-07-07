@@ -2,14 +2,9 @@ package com.connectu.connectuapi;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.connectu.connectuapi.controller.util.Result;
-import com.connectu.connectuapi.dao.FriendshipDao;
-import com.connectu.connectuapi.dao.ThreadDao;
-import com.connectu.connectuapi.dao.UserDao;
-import com.connectu.connectuapi.dao.UserThreadLoveDao;
-import com.connectu.connectuapi.domain.Category;
-import com.connectu.connectuapi.domain.Friendship;
+import com.connectu.connectuapi.dao.*;
+import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
-import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
 import com.connectu.connectuapi.service.impl.FriendshipServiceImpl;
@@ -41,9 +36,16 @@ class ConnectUApiApplicationTests {
     @Autowired
     private ThreadDao threadDao;
     @Autowired
+    private DyThreadDao dyThreadDao;
+    @Autowired
     private UserThreadLoveDao userThreadLoveDao;
 
     //    @Autowired
+
+    @Test
+    void f1riendTest() {
+        friendshipService.followingDyThread(2);
+    }
     @Test
     void friendTest() {
         Integer followerId = 1;
@@ -68,20 +70,26 @@ class ConnectUApiApplicationTests {
         System.out.println(threads);
     }
     @Test
+    void c(){
+        friendshipService.followingDyThread(4);
+    }
+    @Test
     void b(){
-        MPJLambdaWrapper<Thread> userWrapper = new MPJLambdaWrapper<>();
+        MPJLambdaWrapper<Friendship> userWrapper = new MPJLambdaWrapper<>();
         userWrapper
-                .selectAll(Thread.class)
-                //.selectAll(TH)
-                .selectAll(Category.class)
+                .selectAll(User.class)
+                .selectAll(DyThread.class)
+                .selectAll(dyThreadHashtag.class)
                 .selectAll(Friendship.class)
                 .selectAll(User.class)
-                .leftJoin(Category.class, Category::getCategoryId, Thread::getCategoryId)
-                .leftJoin(Friendship.class,Friendship::getFollowerId,Thread::getUserId)
-                .rightJoin(User.class,User::getUserId,Friendship::getFollowerId)
-                .eq(Thread::getThreadId, 4);
-        List<Thread> threads = threadDao.selectList(userWrapper);
-        System.out.println(threads);
+                .selectAll(DyHashtag.class)
+                .innerJoin(User.class,User::getUserId,Friendship::getFollowerId)
+                .innerJoin(DyThread.class,DyThread::getUserId,Friendship::getFollowerId)
+                .innerJoin(dyThreadHashtag.class,dyThreadHashtag::getDyThreadId,DyThread::getDyThreadId)
+                .innerJoin(DyHashtag.class,DyHashtag::getDyHashtagId,dyThreadHashtag::getDyHashtagId)
+                .eq(Friendship::getFollowingId, 2);
+        List<Friendship> dythreads = friendshipDao.selectList(userWrapper);
+        System.out.println(dythreads);
     }
     @Test
     void userTest() {

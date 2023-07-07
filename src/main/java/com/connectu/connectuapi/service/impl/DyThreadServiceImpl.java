@@ -12,6 +12,7 @@ import com.connectu.connectuapi.service.IDyThreadService;
 import com.connectu.connectuapi.service.IFavoriteDyThreadService;
 import com.connectu.connectuapi.service.IReplyService;
 import com.github.yulichang.base.MPJBaseServiceImpl;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,11 +64,9 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
         IPage<DyThread> threadPage = super.page(page, queryWrapper);
         List<DyThread> dyThreads = threadPage.getRecords();
         // 批次查詢分類和使用者資訊
-
         List<Integer> userIds = dyThreads.stream().map(DyThread::getUserId).collect(Collectors.toList());
         Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream().collect(Collectors.toMap(User::getUserId, user -> user));
         for (DyThread dyThread : dyThreads) {
-
             User user = userMap.get(dyThread.getUserId());
             if (user != null) {
                 dyThread.setUser(user);
@@ -81,8 +80,51 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
                 dyThread.setHashtags(hashtags);
             }
         }
+        Collections.reverse(dyThreads);
+        threadPage.setRecords(dyThreads);
         return threadPage;
     }
+    @Override
+    public List<DyThread> getUserDyThreadById(int id) {
+        MPJLambdaWrapper<DyThread> lqw = new MPJLambdaWrapper<>();
+        lqw.eq(DyThread::getUserId, id);
+        List<DyThread> dyThreads = dythreadDao.selectList(lqw);
+
+        // Fetch User info
+        List<Integer> userIds = dyThreads.stream().map(DyThread::getUserId).collect(Collectors.toList());
+        Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream().collect(Collectors.toMap(User::getUserId, user -> user));
+
+        // Initiate an empty Map to hold DyHashtag
+        Map<Integer, DyHashtag> dyHashtagMap = new HashMap<>();
+
+        for (DyThread dyThread : dyThreads) {
+            User user = userMap.get(dyThread.getUserId());
+            if (user != null) {
+                dyThread.setUser(user);
+            }
+            dyThread.setReplyCount(dyReplyService.getDyThreadReplyById(dyThread.getDyThreadId()).size());
+
+            // Fetch dyThreadHashtag info
+            List<dyThreadHashtag> dyThreadHashtags = dyThreadHashtagDao.selectList(new QueryWrapper<dyThreadHashtag>().eq("dyThreadId", dyThread.getDyThreadId()));
+            List<Integer> hashtagIds = dyThreadHashtags.stream().map(dyThreadHashtag::getDyHashtagId).collect(Collectors.toList());
+
+            // Fetch DyHashtag info if not fetched already
+            if (!hashtagIds.isEmpty()) {
+                // Check and fetch only those DyHashtag not already fetched
+                List<Integer> notFetchedHashtagIds = hashtagIds.stream().filter(ids -> !dyHashtagMap.containsKey(ids)).collect(Collectors.toList());
+                if(!notFetchedHashtagIds.isEmpty()){
+                    List<DyHashtag> dyHashtags = dyHashtagDao.selectBatchIds(notFetchedHashtagIds);
+                    dyHashtags.forEach(dyHashtag -> dyHashtagMap.put(dyHashtag.getDyHashtagId(), dyHashtag));
+                }
+
+                // Add DyHashtags to DyThread
+                List<DyHashtag> hashtags = hashtagIds.stream().map(dyHashtagMap::get).collect(Collectors.toList());
+                dyThread.setHashtags(hashtags);
+            }
+        }
+        return dyThreads;
+    }
+
     //假資料
     @Override
     public void addFakeDyThread(int count) {
@@ -139,12 +181,7 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
         dyThread.setCreatedAt(getSystemTime());
         return super.save(dyThread);
     }
-    public List<DyThread> getUserDyThreadById(int id) {
-        LambdaQueryWrapper<DyThread> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(DyThread::getUserId, id);
-        List<DyThread> result = dythreadDao.selectList(lqw);
-        return result;
-    }
+
     //熱門文章
     @Override
     public List<DyThread> hotDyhread() {

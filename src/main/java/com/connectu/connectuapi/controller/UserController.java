@@ -3,9 +3,8 @@ package com.connectu.connectuapi.controller;
 import cn.hutool.jwt.JWTUtil;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
-import com.connectu.connectuapi.domain.Friendship;
+import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
-import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.service.IFriendshipService;
 import com.connectu.connectuapi.service.IThreadService;
 import com.connectu.connectuapi.service.IUserService;
@@ -266,5 +265,14 @@ public class UserController extends BaseController {
         boolean flag = friendshipService.saveOrRemove(getUserIdFromSession(session), followingId);
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "跟隨成功" : "跟隨失敗");
     }
+    @ApiOperation("查詢追隨的人的動態文章")
+    @GetMapping("/followingDyThread")
+    public void followingDyThread(HttpSession session){
 
+        List dyThread =friendshipService.followingDyThread(2);
+       // System.out.println(dyThread);
+//        Integer code = dyThread != null ? Code.GET_OK : Code.GET_ERR;
+//        String msg = dyThread != null ? "查詢追隨的人的動態文章成功" : "查詢追隨的人的動態文章失敗";
+//        return new Result(code, dyThread, msg);
+    }
 }

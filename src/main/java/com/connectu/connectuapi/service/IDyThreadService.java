@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.connectu.connectuapi.domain.DyReply;
-import com.connectu.connectuapi.domain.DyThread;
-import com.connectu.connectuapi.domain.Reply;
+import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
 import com.github.yulichang.base.MPJBaseService;
 

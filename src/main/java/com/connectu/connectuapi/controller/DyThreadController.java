@@ -79,7 +79,7 @@ public class DyThreadController extends BaseController{
         Page<DyThread> page = new Page<>(pageNum, 4);
         IPage<DyThread> threadPage = dyThreadService.listWithPagination(page, null);
         List<DyThread> threadList = threadPage.getRecords();
-        threadList.sort(Comparator.comparing(DyThread::getCreatedAt, Comparator.reverseOrder()));
+      //  threadList.sort(Comparator.comparing(DyThread::getCreatedAt, Comparator.reverseOrder()));
         Integer code = threadList != null ? Code.GET_OK : Code.GET_ERR;
         String msg = threadList != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, threadList, msg);
@@ -111,12 +111,15 @@ public class DyThreadController extends BaseController{
         if(content==null||content.isEmpty()) {
             throw new ThreadColumnIsNullException();
         }
+
         if(!(files.get(0).isEmpty())) {
             String paths="";
             for (String path : storageService.uploadToS3(files, session)) {
                 paths += path + "|";
+                System.out.println(path);
             }
             dyThread.setPicture(paths.substring(0,paths.length()-1));
+
         }
         boolean flag = dyThreadService.save(dyThread);
 //        if (flag && hashtags != null && !hashtags.isEmpty()) {
