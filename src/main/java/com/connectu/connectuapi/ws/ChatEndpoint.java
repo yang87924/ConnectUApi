@@ -34,6 +34,7 @@ public class ChatEndpoint {
     @OnOpen
     //连接建立时被调用
     public void onOpen(Session session, EndpointConfig config) {
+        System.out.println("onOpen.................");
         //将局部的session对象赋值给成员session
         this.session = session;
         //获取httpSession对象

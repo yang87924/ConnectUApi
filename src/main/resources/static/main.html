@@ -50,6 +50,7 @@
             $.ajax({
                 url: "users/getUserName",
                 success: function (res) {
+                    console.log("success.......")
                     userName = res;
                     //显示在线信息
                     $("#userName").html(" 用户：" + res + "<span style='float: right;color: green'>在线</span>");
@@ -58,7 +59,7 @@
             })
 
             //创建webSocket对象
-            var ws = new WebSocket("ws://localhost/chat");
+            var ws = new WebSocket("ws://localhost:8080/chat");
             //给ws绑定事件
             ws.onopen = function () {
                 //在建立连接后需要做什么事？
