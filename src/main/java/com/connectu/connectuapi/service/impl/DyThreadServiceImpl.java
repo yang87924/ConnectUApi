@@ -63,6 +63,8 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
     public IPage<DyThread> listWithPagination(Page<DyThread> page, Wrapper<DyThread> queryWrapper) {
         IPage<DyThread> threadPage = super.page(page, queryWrapper);
         List<DyThread> dyThreads = threadPage.getRecords();
+        // 處理資料
+       // Collections.reverse(dyThreads);
         // 批次查詢分類和使用者資訊
         List<Integer> userIds = dyThreads.stream().map(DyThread::getUserId).collect(Collectors.toList());
         Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream().collect(Collectors.toMap(User::getUserId, user -> user));
@@ -80,7 +82,6 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
                 dyThread.setHashtags(hashtags);
             }
         }
-        Collections.reverse(dyThreads);
         threadPage.setRecords(dyThreads);
         return threadPage;
     }

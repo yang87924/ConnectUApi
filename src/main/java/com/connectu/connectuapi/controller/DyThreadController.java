@@ -1,5 +1,6 @@
 package com.connectu.connectuapi.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.connectu.connectuapi.controller.util.Code;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -73,13 +75,15 @@ public class DyThreadController extends BaseController{
         return new Result(Code.UPDATE_OK, dyThread , message);
     }
     //分頁查詢--------------------------------------------------------------
+
     @GetMapping("/pageDyThread")
     @ApiOperation("分頁查詢所有論壇文章OK")
     public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum) {
         Page<DyThread> page = new Page<>(pageNum, 4);
-        IPage<DyThread> threadPage = dyThreadService.listWithPagination(page, null);
+        QueryWrapper<DyThread> wrapper = new QueryWrapper<>();
+        wrapper.orderByDesc("dyThreadId"); // 將資料庫中的資料進行反向排序
+        IPage<DyThread> threadPage = dyThreadService.listWithPagination(page, wrapper);
         List<DyThread> threadList = threadPage.getRecords();
-      //  threadList.sort(Comparator.comparing(DyThread::getCreatedAt, Comparator.reverseOrder()));
         Integer code = threadList != null ? Code.GET_OK : Code.GET_ERR;
         String msg = threadList != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, threadList, msg);
