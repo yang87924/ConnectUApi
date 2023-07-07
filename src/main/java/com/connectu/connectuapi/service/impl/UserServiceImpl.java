@@ -173,4 +173,12 @@ public class UserServiceImpl extends MPJBaseServiceImpl<UserDao, User> implement
         }
         return super.save(newUser);
     }
+
+
+    public String getAvatarFromName(String userName) {
+        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(User::getUserName, userName);
+        User user = userDao.selectList(lqw).get(0);
+        return user.getAvatar();
+    }
 }

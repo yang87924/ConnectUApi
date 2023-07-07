@@ -98,6 +98,7 @@ class ConnectUApiApplicationTests {
         System.out.println("Generated Lorem Text: " + loremText);
     }
 
+
     private static String generateRandomString(int minLength, int maxLength) {
         String characters = "在現代社會中，工作已成為我們生活的一部分。隨著科技的進步和全球化的影響，工作環境正在發生著巨大的變革。這些變化帶來了一些挑戰，同時也開啟了新的機會。\n" +
                 "\n" +
