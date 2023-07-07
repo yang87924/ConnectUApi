@@ -1,26 +1,76 @@
 package com.connectu.connectuapi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.connectu.connectuapi.domain.Category;
 import com.connectu.connectuapi.domain.Friendship;
-import com.connectu.connectuapi.service.IFavoriteDyThreadService;
-import com.connectu.connectuapi.service.IFavoriteThreadService;
-import com.connectu.connectuapi.service.IFriendshipService;
+import com.connectu.connectuapi.domain.Hashtag;
+import com.connectu.connectuapi.service.*;
+import com.connectu.connectuapi.service.impl.StorageService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @RestController
+@Api(tags ="資料產生器")
 @RequestMapping("/fake")
-public class FakeController {
+public class FakeController extends  BaseController {
     @Autowired
     private  IFavoriteDyThreadService favoriteDyThreadService;
-
+    @Autowired
+    private StorageService storageService;
     @Autowired
     private  IFavoriteThreadService favoriteThreadService;
+    @Autowired
+    private ICategoryService iCategoryService;
+    @Autowired
+    private IHashtagService iHashtagService;
+    @ApiOperation("HashTag修改圖片")
+    @PutMapping("/hashTagPicture/{threadId}")
+    public String hashTagPicture(@PathVariable Integer hashTagId,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                             HttpSession session){
+        String picture= storageService.uploadToS3(files, session).toString();
+        Hashtag hashtag=new Hashtag();
+        hashtag.setHashtagId(hashTagId);
+        if(!(files.get(0).isEmpty())) {
+            String paths="";
+            for (String path : storageService.uploadToS3(files, session)) {
+                paths += path + "|";
+                System.out.println(path);
+            }
+            hashtag.setPicture(paths.substring(0,paths.length()-1));
+
+        }
+        iHashtagService.updateById(hashtag);
+        return picture;
+    }
+    @ApiOperation("HashTag修改圖片")
+    @PutMapping("/CategoryPicture/{CategoryId}")
+    public String CategoryPicture(@PathVariable Integer CategoryId,
+                             @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                             HttpSession session){
+        String picture= storageService.uploadToS3(files, session).toString();
+        Category category=new Category();
+       // Hashtag hashtag=new Hashtag();
+        category.setCategoryId(CategoryId);
+        if(!(files.get(0).isEmpty())) {
+            String paths="";
+            for (String path : storageService.uploadToS3(files, session)) {
+                paths += path + "|";
+                System.out.println(path);
+            }
+            category.setPicture(paths.substring(0,paths.length()-1));
+
+        }
+        iCategoryService.updateById(category);
+        return picture;
+    }
 
     @GetMapping("/insertDyFavoriteThread")
     public String insertDyFavoriteThread() {

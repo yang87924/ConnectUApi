@@ -50,9 +50,15 @@ public class Thread  {
     @TableField(exist = false)
     @ApiModelProperty(value = "user")
     private User user;
+
     @TableField(exist = false)
     private List<Hashtag> hashtags;
 
+    @TableField(exist = false)
+    private ThreadHashtag threadHashtag;
+
+    @TableField(exist = false)
+    private Hashtag hashtag;
     public void updateLoveStatus(Integer loveStatus) {
         this.loveStatus = loveStatus;
     }

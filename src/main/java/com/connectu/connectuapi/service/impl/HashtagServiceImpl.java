@@ -7,10 +7,12 @@ import com.connectu.connectuapi.domain.Hashtag;
 import com.connectu.connectuapi.service.IHashtagService;
 import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class HashtagServiceImpl extends MPJBaseServiceImpl<HashtagDao, Hashtag> implements IHashtagService {
     @Override
     public List<Hashtag> getTopThreeHashtags() {

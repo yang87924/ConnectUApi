@@ -8,9 +8,10 @@ import com.connectu.connectuapi.domain.DyHashtag;
 import com.connectu.connectuapi.service.IDyHashtagService;
 import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+@Transactional
 @Service
 public class DyHashtagServiceImpl extends MPJBaseServiceImpl<DyHashtagDao, DyHashtag>implements IDyHashtagService  {
     @Override

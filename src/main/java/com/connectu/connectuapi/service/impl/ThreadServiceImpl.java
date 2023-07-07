@@ -292,20 +292,19 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     }
     //查詢使用者的所有文章--------------------------------------------------------------
     public List<Thread> getUserThread(int userId) {
-        List<Thread> result = threadDao.selectList(new QueryWrapper<Thread>().eq("userId", userId));
-        Set<Integer> categoryIds = result.stream().map(Thread::getCategoryId).collect(Collectors.toSet());
-        if (categoryIds.isEmpty()) {
-            return result;
-        }
-        Map<Integer, Category> categoryMap = categoryDao.selectBatchIds(categoryIds)
-                .stream().collect(Collectors.toMap(Category::getCategoryId, c -> c));
-        for (Thread thread : result) {
-            Category category = categoryMap.get(thread.getCategoryId());
-            if (category != null) {
-                thread.setCategoryName(category.getCategoryName());
-            }
-        }
-        return result;
+        MPJLambdaWrapper<Thread> wrapper = new MPJLambdaWrapper<>(Thread.class);
+        wrapper
+                .selectAll(Thread.class)
+                .select(Category::getCategoryName)
+                .selectAll(ThreadHashtag.class)
+                .selectAll(Hashtag.class)
+                .innerJoin(Category.class, Category::getCategoryId, Thread::getCategoryId)
+                .innerJoin(ThreadHashtag.class,ThreadHashtag::getThreadId,Thread::getThreadId)
+                .innerJoin(Hashtag.class,Hashtag::getHashtagId,ThreadHashtag::getHashtagId)
+                .eq(Thread::getUserId, userId);
+        List<Thread> threads = this.list(wrapper);
+        System.out.println(threads); // 打印结果
+        return this.list(wrapper);
     }
     public List<List<Thread>> getUserThreadForUser(List<Integer> userIds) {
         List<Thread> allThreads = threadDao.selectList(new QueryWrapper<Thread>().in("userId", userIds));

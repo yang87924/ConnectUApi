@@ -8,10 +8,12 @@ import com.connectu.connectuapi.service.IFavoriteDyThreadService;
 import com.connectu.connectuapi.service.IFavoriteThreadService;
 import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Random;
 
 @Service
+@Transactional
 public class FavoriteDyThreadServiceImpl extends MPJBaseServiceImpl<FavoriteDyThreadDao, FavoriteDyThread> implements IFavoriteDyThreadService {
     private final FavoriteDyThreadDao favoriteDyThreadDao;
     public FavoriteDyThreadServiceImpl(FavoriteDyThreadDao favoriteDyThreadDao) {

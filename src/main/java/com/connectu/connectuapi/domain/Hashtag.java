@@ -13,4 +13,5 @@ public class Hashtag {
     private Integer hashtagId;
     private String name;
     private Integer amount ;
+    private String picture;
 }

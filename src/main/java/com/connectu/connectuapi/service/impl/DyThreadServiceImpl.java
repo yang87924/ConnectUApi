@@ -15,6 +15,7 @@ import com.github.yulichang.base.MPJBaseServiceImpl;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
 import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
 
 @Service
+@Transactional
 public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThread> implements IDyThreadService {
     @Autowired
     private DyThreadDao dythreadDao;

@@ -9,6 +9,7 @@ import com.connectu.connectuapi.service.IReplyService;
 import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +19,7 @@ import java.util.TimeZone;
 import static com.connectu.connectuapi.service.utils.faker.*;
 
 @Service
+@Transactional
 public class ReplyServiceImpl extends MPJBaseServiceImpl<ReplyDao, Reply> implements IReplyService {
     @Autowired
     private ReplyDao replyDao;

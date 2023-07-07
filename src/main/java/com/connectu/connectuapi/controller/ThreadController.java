@@ -262,15 +262,34 @@ public class ThreadController extends BaseController{
     //查詢使用者的所有文章--------------------------------------------------------------
     @GetMapping("/userThread/{userId}")
     @ApiOperation("查詢使用者的所有論壇文章")
-    public Result getUserThread(@PathVariable Integer userId ,HttpSession session) {
-        if(userId==0){
+    public Result getUserThread(@PathVariable Integer userId, HttpSession session) {
+        if (userId == 0) {
             userId = getUserIdFromSession(session);
         }
-        List<Thread> thread = threadService.getUserThread(userId);
-        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = thread != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
-        return new Result(code, thread, msg);
+        List<Thread> threads = threadService.getUserThread(userId);
+        System.out.println(threads); // 打印结果
+
+        Integer code;
+        String msg;
+        if (threads != null && !threads.isEmpty()) {
+            code = Code.GET_OK;
+            msg = "查詢使用者論壇文章資料成功";
+
+            // 处理 threads 列表中的每个 Thread 对象
+            for (Thread thread : threads) {
+                // 进行您需要的操作
+                System.out.println(thread.getThreadId());
+                System.out.println(thread.getTitle());
+                // ...
+            }
+        } else {
+            code = Code.GET_ERR;
+            msg = "查無論壇文章資料";
+        }
+
+        return new Result(code, threads, msg);
     }
+
 
     //查詢所有文章--------------------------------------------------------------
     @GetMapping

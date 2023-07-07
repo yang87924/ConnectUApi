@@ -13,11 +13,13 @@ import com.github.yulichang.query.MPJLambdaQueryWrapper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Service
+@Transactional
 public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Friendship> implements IFriendshipService {
     @Autowired
     private UserDao userDao;

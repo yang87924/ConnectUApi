@@ -11,6 +11,7 @@ import com.connectu.connectuapi.service.impl.FriendshipServiceImpl;
 import com.github.javafaker.Faker;
 import com.github.yulichang.query.MPJLambdaQueryWrapper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
+import io.swagger.models.auth.In;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,9 +20,10 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
+import static org.assertj.core.util.Lists.list;
 
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ConnectUApiApplicationTests {
     @Autowired
     private IUserService userService;
@@ -37,6 +39,8 @@ class ConnectUApiApplicationTests {
     private ThreadDao threadDao;
     @Autowired
     private DyThreadDao dyThreadDao;
+    @Autowired
+    private CategoryDao categoryDao;
     @Autowired
     private UserThreadLoveDao userThreadLoveDao;
 
@@ -57,17 +61,30 @@ class ConnectUApiApplicationTests {
         friendshipService.removeByIds(friendshipDao.selectList(lqw));
 
     }
-
     @Test
-    void a(){
+    void CategoryThread() {
         MPJLambdaWrapper<Thread> threadWrapper = new MPJLambdaWrapper<>();
         threadWrapper
                 .selectAll(Thread.class)
-                .selectAll(Category.class)
-                .leftJoin(Category.class, Category::getCategoryId, Thread::getCategoryId)
-                .eq(Thread::getThreadId, 8);
+                .innerJoin(Category.class, Category::getCategoryId, Category::getCategoryId)
+                .eq(Category::getCategoryId, 2);
         List<Thread> threads = threadDao.selectList(threadWrapper);
         System.out.println(threads);
+    }
+    @Test
+    void a(){
+        MPJLambdaWrapper<Thread> wrapper = new MPJLambdaWrapper<>(Thread.class);
+        wrapper
+                .selectAll(Thread.class)
+                .select(Category::getCategoryName)
+                .selectAll(ThreadHashtag.class)
+                .selectAll(Hashtag.class)
+                .innerJoin(Category.class, Category::getCategoryId, Thread::getCategoryId)
+                .innerJoin(ThreadHashtag.class,ThreadHashtag::getThreadId,Thread::getThreadId)
+                .innerJoin(Hashtag.class,Hashtag::getHashtagId,ThreadHashtag::getHashtagId)
+                .eq(Thread::getUserId, 2);
+        list(wrapper).toString();
+        System.out.println(list(wrapper));
     }
     @Test
     void c(){

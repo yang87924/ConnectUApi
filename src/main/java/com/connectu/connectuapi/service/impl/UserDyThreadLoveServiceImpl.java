@@ -14,8 +14,10 @@ import com.connectu.connectuapi.service.IUserThreadLoveService;
 import com.github.yulichang.base.MPJBaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class UserDyThreadLoveServiceImpl extends MPJBaseServiceImpl<UserDyThreadLoveDao, UserDyThreadLove> implements IUserDyThreadLoveService {
     @Autowired
     private UserDyThreadLoveDao userDyThreadLoveDao;

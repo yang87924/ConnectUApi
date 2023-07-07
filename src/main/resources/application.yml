@@ -67,7 +67,9 @@ application:
   bucket:
     name: seeiebucket
 
-
+mybatis-plus-join:
+  #是否打印 mybatis plus join banner 默认true
+  banner: true
   # ========================================================================
 
   #    transaction:
