@@ -111,7 +111,7 @@ public class DyThreadController extends BaseController{
         if(content==null||content.isEmpty()) {
             throw new ThreadColumnIsNullException();
         }
-
+        dyThread.setUserId(getUserIdFromSession(session));
         if(!(files.get(0).isEmpty())) {
             String paths="";
             for (String path : storageService.uploadToS3(files, session)) {
