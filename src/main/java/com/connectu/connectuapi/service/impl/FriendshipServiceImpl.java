@@ -1,11 +1,12 @@
 package com.connectu.connectuapi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.connectu.connectuapi.dao.DyThreadDao;
-import com.connectu.connectuapi.dao.FriendshipDao;
-import com.connectu.connectuapi.dao.UserDao;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.connectu.connectuapi.dao.*;
 import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
+import com.connectu.connectuapi.service.IDyHashtagService;
+import com.connectu.connectuapi.service.IDyThreadService;
 import com.connectu.connectuapi.service.IFriendshipService;
 import com.connectu.connectuapi.service.IUserService;
 import com.github.yulichang.base.MPJBaseServiceImpl;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,6 +29,19 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
     private FriendshipDao friendshipDao;
     @Autowired
     private DyThreadDao dyThreadDao;
+    @Autowired
+    private IDyThreadService iDyThreadService;
+
+    @Autowired
+    private DyThreadHashtagDao dyThreadHashtagDao;
+    @Autowired
+    private DyHashtagDao dyHashtagDao;
+
+
+
+
+
+
 
     public List<User> following(Integer followingId){
         MPJLambdaWrapper<User> userWrapper = new MPJLambdaWrapper<>();
@@ -81,6 +96,45 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
        //System.out.println("----------"+dythreads);
         return friendshipDao.selectList(userWrapper);
     }
+
+    @Override
+    public List<Friendship> getFirendShipThread(Integer userId) {
+        QueryWrapper<Friendship> friendshipQuery = new QueryWrapper<>();
+        friendshipQuery.eq("followingId", userId);
+        List<Friendship> friendships = friendshipDao.selectList(friendshipQuery);
+
+        for (Friendship friendship : friendships) {
+            Integer followerId = friendship.getFollowerId();
+
+            User user = userDao.selectById(followerId);
+            friendship.setUser(user);
+
+            QueryWrapper<DyThread> dyThreadQuery = new QueryWrapper<>();
+            dyThreadQuery.eq("userId", followerId);
+            List<DyThread> dyThreads = dyThreadDao.selectList(dyThreadQuery);
+
+            for (DyThread dyThread : dyThreads) {
+                friendship.setDyThread(dyThread);
+
+                QueryWrapper<dyThreadHashtag> dyThreadHashtagQuery = new QueryWrapper<>();
+                dyThreadHashtagQuery.eq("dyThreadId", dyThread.getDyThreadId());
+                List<dyThreadHashtag> dyThreadHashtags = dyThreadHashtagDao.selectList(dyThreadHashtagQuery);
+
+                List<DyHashtag> dyHashtags = new ArrayList<>();
+                for (dyThreadHashtag dyThreadHashtag : dyThreadHashtags) {
+                    Integer dyHashtagId = dyThreadHashtag.getDyHashtagId();
+                    DyHashtag dyHashtag = dyHashtagDao.selectById(dyHashtagId);
+                    dyHashtags.add(dyHashtag);
+                }
+
+                dyThread.setHashtags(dyHashtags);
+            }
+        }
+
+        return friendships;
+    }
+
+
 
 
     public boolean saveOrRemove(Integer followerId, Integer followingId) {

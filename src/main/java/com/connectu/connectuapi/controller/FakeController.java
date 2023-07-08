@@ -1,9 +1,11 @@
 package com.connectu.connectuapi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.connectu.connectuapi.dao.DyThreadHashtagDao;
 import com.connectu.connectuapi.domain.Category;
 import com.connectu.connectuapi.domain.Friendship;
 import com.connectu.connectuapi.domain.Hashtag;
+import com.connectu.connectuapi.domain.dyThreadHashtag;
 import com.connectu.connectuapi.service.*;
 import com.connectu.connectuapi.service.impl.StorageService;
 import io.swagger.annotations.Api;
@@ -30,6 +32,27 @@ public class FakeController extends  BaseController {
     private ICategoryService iCategoryService;
     @Autowired
     private IHashtagService iHashtagService;
+    @Autowired
+    private DyThreadHashtagDao dyThreadHashtagDao;
+    @Autowired
+    private IDyThreadHashtagService iDyThreadHashtagService;
+    @ApiOperation("新增dyThreadHashtag資料")
+    @PostMapping("/dyThreadHashtag")
+    public String createDyThreadHashtags() {
+        List<dyThreadHashtag> dyThreadHashtags = new ArrayList<>();
+
+        for (int i = 0; i < 1000; i++) {
+            dyThreadHashtag dyThreadHashtag = new dyThreadHashtag();
+            dyThreadHashtag.setDyThreadId((int) (Math.random() * 105) + 1);
+            dyThreadHashtag.setDyHashtagId((int) (Math.random() * 12) + 1);
+            dyThreadHashtags.add(dyThreadHashtag);
+            System.out.println("第"+i+"筆");
+        }
+
+        iDyThreadHashtagService.saveBatch(dyThreadHashtags);
+
+        return "成功新增500筆dyThreadHashtag資料";
+    }
     @ApiOperation("HashTag修改圖片")
     @PutMapping("/hashTagPicture/{threadId}")
     public String hashTagPicture(@PathVariable Integer hashTagId,
