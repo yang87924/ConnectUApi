@@ -12,9 +12,7 @@ import com.connectu.connectuapi.dao.*;
 import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
 
-import com.connectu.connectuapi.service.IFavoriteThreadService;
-import com.connectu.connectuapi.service.IReplyService;
-import com.connectu.connectuapi.service.IThreadService;
+import com.connectu.connectuapi.service.*;
 import com.github.yulichang.base.MPJBaseServiceImpl;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +44,10 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     private ThreadHashtagDao threadHashtagDao;
     @Autowired
     private IReplyService replyService;
+    @Autowired
+    private IThreadHashtagService iThreadHashtagService;
+    @Autowired
+    private IHashtagService iHashtagService;
     //查詢使用者的所有文章--------------------------------------------------------------
     @Override
     public List<Thread> getUserThread(Integer userId) {
@@ -199,30 +201,80 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
         thread.setLove(love);
     }
     //查詢使用者收藏的文章--------------------------------------------------------------
-//    @Override
-//    public List<Thread> getFavoriteThreads(Integer userId) {
-//        //查詢使用者收藏的文章ID
-//        QueryWrapper<FavoriteThread> wrapper = new QueryWrapper<>();
-//        wrapper.eq("userId", userId);
-//        List<FavoriteThread> favoriteThreads = favoriteThreadService.list(wrapper);
-//        List<Integer> threadIds = new ArrayList<>();
-//        for (FavoriteThread favoriteThread : favoriteThreads) {
-//            threadIds.add(favoriteThread.getThreadId());
-//        }
-//        if (threadIds.isEmpty()) {
-//            return new ArrayList<>();
-//        }
-//        //查詢收藏的文章
-//        QueryWrapper<Thread> threadWrapper = new QueryWrapper<>();
-//        threadWrapper.in("threadId", threadIds);
-//        List<Thread> threads = list(threadWrapper);
-//        return threads;
-//    }
     @Override
     public List<Thread> getFavoriteThreads(Integer userId) {
-        List<Thread> threads = threadDao.getFavoriteThreads(userId);
+        // 查詢使用者收藏的文章ID
+        List<Integer> threadIds = favoriteThreadService.lambdaQuery()
+                .eq(FavoriteThread::getUserId, userId)
+                .list()
+                .stream()
+                .map(FavoriteThread::getThreadId)
+                .collect(Collectors.toList());
+        if (threadIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        // 查詢收藏的文章
+        List<Thread> threads = lambdaQuery()
+                .in(Thread::getThreadId, threadIds)
+                .list();
+        // 查詢所有文章的Hashtag的資料
+        Map<Integer, List<Hashtag>> threadHashtags = getHashtagsByThreadIds(threadIds);
+        for (Thread thread : threads) {
+            thread.setHashtags(threadHashtags.get(thread.getThreadId()));
+            thread.setUser(userDao.selectById(thread.getUserId())); // 添加查詢使用者資料的邏輯
+        }
         return threads;
     }
+
+    private Map<Integer, List<Hashtag>> getHashtagsByThreadIds(List<Integer> threadIds) {
+        // 查詢所有文章的Hashtag ID
+        List<ThreadHashtag> threadHashtags = iThreadHashtagService.lambdaQuery()
+                .in(ThreadHashtag::getThreadId, threadIds)
+                .list();
+        List<Integer> hashtagIds = threadHashtags.stream()
+                .map(ThreadHashtag::getHashtagId)
+                .collect(Collectors.toList());
+        if (hashtagIds.isEmpty()) {
+            return new HashMap<>();
+        }
+        // 查詢所有Hashtag
+        List<Hashtag> hashtags = iHashtagService.lambdaQuery()
+                .in(Hashtag::getHashtagId, hashtagIds)
+                .list();
+        // 將Hashtag按照文章ID分組
+        Map<Integer, List<Hashtag>> threadHashtagsMap = new HashMap<>();
+        for (ThreadHashtag threadHashtag : threadHashtags) {
+            if (!threadHashtagsMap.containsKey(threadHashtag.getThreadId())) {
+                threadHashtagsMap.put(threadHashtag.getThreadId(), new ArrayList<>());
+            }
+            for (Hashtag hashtag : hashtags) {
+                if (hashtag.getHashtagId().equals(threadHashtag.getHashtagId())) {
+                    threadHashtagsMap.get(threadHashtag.getThreadId()).add(hashtag);
+                }
+            }
+        }
+        return threadHashtagsMap;
+    }
+
+
+//    @Override
+//    public List<Thread> getFavoriteThreads(Integer userId) {
+//        List<Thread> threads = threadDao.getFavoriteThreads(userId);
+//        User user = userDao.selectById(thread.getUserId());
+//        thread.setUser(user);
+//
+//        // 获取并设置 Hashtag 信息
+//        LambdaQueryWrapper<ThreadHashtag> threadHashtagQueryWrapper = new LambdaQueryWrapper<>();
+//        threadHashtagQueryWrapper.eq(ThreadHashtag::getThreadId, thread.getThreadId());
+//        List<ThreadHashtag> threadHashtags = threadHashtagDao.selectList(threadHashtagQueryWrapper);
+//        List<Hashtag> hashtags = new ArrayList<>();
+//        for (ThreadHashtag threadHashtag : threadHashtags) {
+//            Hashtag hashtag = hashtagDao.selectById(threadHashtag.getHashtagId());
+//            hashtags.add(hashtag);
+//        }
+//        thread.setHashtags(hashtags);
+//        return threads;
+//    }
 
 
 
