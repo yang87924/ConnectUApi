@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.connectu.connectuapi.service.utils.faker.getSystemTime;
@@ -45,6 +46,50 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     private ThreadHashtagDao threadHashtagDao;
     @Autowired
     private IReplyService replyService;
+    //查詢使用者的所有文章--------------------------------------------------------------
+    @Override
+    public List<Thread> getUserThread(Integer userId) {
+        MPJLambdaWrapper<Thread> lqw = new MPJLambdaWrapper<>();
+        lqw.eq(Thread::getUserId, userId);
+        List<Thread> Threads = threadDao.selectList(lqw);
+
+        // Fetch User info
+        List<Integer> userIds = Threads.stream().map(Thread::getUserId).collect(Collectors.toList());
+        Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream().collect(Collectors.toMap(User::getUserId, user -> user));
+
+        // Initiate an empty Map to hold DyHashtag
+        Map<Integer, Hashtag> hashtagMap = new HashMap<>();
+
+        for (Thread thread : Threads) {
+            User user = userMap.get(thread.getUserId());
+            if (user != null) {
+                thread.setUser(user);
+            }
+            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
+
+            // Fetch dyThreadHashtag info
+            List<ThreadHashtag> dyThreadHashtags = threadHashtagDao.selectList(new QueryWrapper<ThreadHashtag>().eq("threadId", thread.getThreadId()));
+            List<Integer> hashtagIds = dyThreadHashtags.stream().map(ThreadHashtag::getHashtagId).collect(Collectors.toList());
+
+            // Fetch DyHashtag info if not fetched already
+            if (!hashtagIds.isEmpty()) {
+                // Check and fetch only those DyHashtag not already fetched
+                List<Integer> notFetchedHashtagIds = hashtagIds.stream().filter(ids -> !hashtagMap.containsKey(ids)).collect(Collectors.toList());
+                if(!notFetchedHashtagIds.isEmpty()){
+                    List<Hashtag> hashtags = hashtagDao.selectBatchIds(notFetchedHashtagIds);
+                    hashtags.forEach(hashtag -> hashtagMap.put(hashtag.getHashtagId(), hashtag));
+                }
+
+                // Add DyHashtags to DyThread
+                List<Hashtag> hashtags = hashtagIds.stream().map(hashtagMap::get).collect(Collectors.toList());
+                thread.setHashtags(hashtags);
+            }
+        }
+        return Threads;
+    }
+
+
+
 
     public void handleHashtags(Thread thread, List<String> hashtags) {
         for (String hashtag : hashtags) {
@@ -180,6 +225,8 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     }
 
 
+
+
     @Override
     public List<Thread>getThreadById(Integer threadId){
         MPJLambdaWrapper<Thread> userWrapper = new MPJLambdaWrapper<>();
@@ -290,22 +337,11 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
         wrapper.eq("threadId", threadId);
         return replyDao.selectCount(wrapper);
     }
-    //查詢使用者的所有文章--------------------------------------------------------------
-    public List<Thread> getUserThread(int userId) {
-        MPJLambdaWrapper<Thread> wrapper = new MPJLambdaWrapper<>(Thread.class);
-        wrapper
-                .selectAll(Thread.class)
-                .select(Category::getCategoryName)
-                .selectAll(ThreadHashtag.class)
-                .selectAll(Hashtag.class)
-                .innerJoin(Category.class, Category::getCategoryId, Thread::getCategoryId)
-                .innerJoin(ThreadHashtag.class,ThreadHashtag::getThreadId,Thread::getThreadId)
-                .innerJoin(Hashtag.class,Hashtag::getHashtagId,ThreadHashtag::getHashtagId)
-                .eq(Thread::getUserId, userId);
-        List<Thread> threads = this.list(wrapper);
-        System.out.println(threads); // 打印结果
-        return this.list(wrapper);
-    }
+
+
+
+
+
     public List<List<Thread>> getUserThreadForUser(List<Integer> userIds) {
         List<Thread> allThreads = threadDao.selectList(new QueryWrapper<Thread>().in("userId", userIds));
         Map<Integer, List<Thread>> userThreadsMap = allThreads.stream().collect(Collectors.groupingBy(Thread::getUserId));

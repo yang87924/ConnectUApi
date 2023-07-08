@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Column;
 import java.util.Date;
@@ -53,13 +54,9 @@ public class Thread  {
 
     @TableField(exist = false)
     private List<Hashtag> hashtags;
-
-    @TableField(exist = false)
-    private ThreadHashtag threadHashtag;
-
-    @TableField(exist = false)
-    private Hashtag hashtag;
     public void updateLoveStatus(Integer loveStatus) {
         this.loveStatus = loveStatus;
     }
+
+
 }

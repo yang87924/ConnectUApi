@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,8 +28,7 @@ import static org.assertj.core.util.Lists.list;
 class ConnectUApiApplicationTests {
     @Autowired
     private IUserService userService;
-    @Autowired
-    private IThreadService threadService;
+
     @Autowired
     private UserDao userDao;
     @Autowired
@@ -43,6 +43,13 @@ class ConnectUApiApplicationTests {
     private CategoryDao categoryDao;
     @Autowired
     private UserThreadLoveDao userThreadLoveDao;
+    @Autowired
+    private IThreadService threadService;
+
+    @Test
+    void a() {
+
+    }
 
     //    @Autowired
 
@@ -71,21 +78,7 @@ class ConnectUApiApplicationTests {
         List<Thread> threads = threadDao.selectList(threadWrapper);
         System.out.println(threads);
     }
-    @Test
-    void a(){
-        MPJLambdaWrapper<Thread> wrapper = new MPJLambdaWrapper<>(Thread.class);
-        wrapper
-                .selectAll(Thread.class)
-                .select(Category::getCategoryName)
-                .selectAll(ThreadHashtag.class)
-                .selectAll(Hashtag.class)
-                .innerJoin(Category.class, Category::getCategoryId, Thread::getCategoryId)
-                .innerJoin(ThreadHashtag.class,ThreadHashtag::getThreadId,Thread::getThreadId)
-                .innerJoin(Hashtag.class,Hashtag::getHashtagId,ThreadHashtag::getHashtagId)
-                .eq(Thread::getUserId, 2);
-        list(wrapper).toString();
-        System.out.println(list(wrapper));
-    }
+
     @Test
     void c(){
         friendshipService.followingDyThread(4);

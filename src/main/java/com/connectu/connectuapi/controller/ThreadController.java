@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
-import com.connectu.connectuapi.domain.Hashtag;
+import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
-import com.connectu.connectuapi.domain.User;
-import com.connectu.connectuapi.domain.UserThreadLove;
 import com.connectu.connectuapi.exception.ThreadColumnIsNullException;
 import com.connectu.connectuapi.exception.UserNotLoginException;
 import com.connectu.connectuapi.exception.file.*;
@@ -267,26 +265,10 @@ public class ThreadController extends BaseController{
             userId = getUserIdFromSession(session);
         }
         List<Thread> threads = threadService.getUserThread(userId);
-        System.out.println(threads); // 打印结果
+        System.out.println(threadService.getUserThread(userId)); // 打印结果
 
-        Integer code;
-        String msg;
-        if (threads != null && !threads.isEmpty()) {
-            code = Code.GET_OK;
-            msg = "查詢使用者論壇文章資料成功";
-
-            // 处理 threads 列表中的每个 Thread 对象
-            for (Thread thread : threads) {
-                // 进行您需要的操作
-                System.out.println(thread.getThreadId());
-                System.out.println(thread.getTitle());
-                // ...
-            }
-        } else {
-            code = Code.GET_ERR;
-            msg = "查無論壇文章資料";
-        }
-
+        Integer code = threads != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = threads != null ? "查詢熱門文章資料成功" : "查無資料";
         return new Result(code, threads, msg);
     }
 

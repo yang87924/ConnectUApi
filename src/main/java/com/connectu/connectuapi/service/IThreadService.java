@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
+import com.connectu.connectuapi.domain.UserThreadDTO;
 import com.github.yulichang.base.MPJBaseService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,7 +34,8 @@ public interface IThreadService extends MPJBaseService<Thread> {
     List<Thread> getFavoriteThreads(Integer userId);
 
     //查詢使用者的所有文章--------------------------------------------------------------
-    List<Thread> getUserThread(int id);
+    List<Thread> getUserThread(Integer userId);
+
     List<List<Thread>> getUserThreadForUser(List<Integer> userIds);
     //熱門文章--------------------------------------------------------------
     List<Thread> hotThread();
