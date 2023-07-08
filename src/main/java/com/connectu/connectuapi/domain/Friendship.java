@@ -14,8 +14,7 @@ public class Friendship {
     private Integer friendshipId;
     private Integer followerId;
     private Integer followingId;
-    @TableField(exist = false)
-    private List a;
+
 
 }
 
