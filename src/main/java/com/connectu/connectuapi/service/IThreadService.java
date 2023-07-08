@@ -50,8 +50,8 @@ public interface IThreadService extends MPJBaseService<Thread> {
     Integer getLastThreadById();
 
     //關鍵字搜尋--------------------------------------------------------------
-    Result searchThreads(String keyword, String categoryName);
-    List<Thread> searchThreadsByKeyword(String keyword, String categoryName);
+    Result searchThreads(String keyword);
+    List<Thread> searchThreadsByKeyword(String keyword);
 
     void handleHashtags(Thread thread, List<String> hashtags);
     //分頁查詢--------------------------------------------------------------

@@ -180,4 +180,10 @@ public class DyThreadController extends BaseController{
         dyThreadService.addFakeDyThread(50);
         return "Fake DyThreads added successfully!";
     }
+    //關鍵字搜尋--------------------------------------------------------------
+    @GetMapping("/search")
+    @ApiOperation("關鍵字搜尋")
+    public Result searchThreadsByKeyword(@ApiParam("關鍵字") @RequestParam String keyword) {
+        return dyThreadService.searchDyThreads(keyword);
+    }
 }

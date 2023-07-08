@@ -547,41 +547,56 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     }
     //關鍵字搜尋--------------------------------------------------------------
     @Override
-    public Result searchThreads(String keyword, String categoryName) {
+    public Result searchThreads(String keyword) {
         List<Thread> search = null;
-        if (keyword != null && !keyword.isEmpty() && categoryName != null && !categoryName.isEmpty()) {
-            search = searchThreadsByKeyword(keyword, categoryName);
+        if (keyword != null && !keyword.isEmpty()) {
+            search = searchThreadsByKeyword(keyword);
         }
         Integer code = search != null && !search.isEmpty() ? Code.GET_OK : Code.GET_ERR;
         String msg = search != null && !search.isEmpty() ? "搜尋文章資料成功" : "搜尋文章資料失敗!請重新輸入關鍵字";
         return new Result(code, search, msg);
     }
-    //關鍵字搜尋--------------------------------------------------------------
+
     @Override
-    public List<Thread> searchThreadsByKeyword(String keyword, String categoryName) {
+    public List<Thread> searchThreadsByKeyword(String keyword) {
         LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();
-        if (keyword != null && !keyword.isEmpty() && categoryName != null && !categoryName.isEmpty()) {
-            lqw.and(threadLqw -> threadLqw.like(Thread::getTitle, keyword)
+        if (keyword != null && !keyword.isEmpty()) {
+            lqw.and(threadLqw -> threadLqw
+                    .like(Thread::getTitle, keyword)
                     .or()
                     .like(Thread::getContent, keyword));
 
-            // 根据 categoryName 查询 categoryId
-            LambdaQueryWrapper<Category> categoryLqw = new LambdaQueryWrapper<>();
-            categoryLqw.like(Category::getCategoryName, categoryName);
-            List<Category> categories = categoryDao.selectList(categoryLqw);
-            if (!categories.isEmpty()) {
-                List<Integer> categoryIds = categories.stream()
-                        .map(Category::getCategoryId)
-                        .collect(Collectors.toList());
-                lqw.and(threadLqw -> threadLqw.in(Thread::getCategoryId, categoryIds));
-            }
-
             List<Thread> result = threadDao.selectList(lqw);
-            // 为每个 thread 设置 categoryName
+            // Fetch User info
+            List<Integer> userIds = result.stream().map(Thread::getUserId).collect(Collectors.toList());
+            Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream().collect(Collectors.toMap(User::getUserId, user -> user));
+
+            // Initiate an empty Map to hold DyHashtag
+            Map<Integer, Hashtag> hashtagMap = new HashMap<>();
+
             for (Thread thread : result) {
-                Category category = categoryDao.selectById(thread.getCategoryId());
-                if (category != null) {
-                    thread.setCategoryName(category.getCategoryName());
+                User user = userMap.get(thread.getUserId());
+                if (user != null) {
+                    thread.setUser(user);
+                }
+                thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
+
+                // Fetch dyThreadHashtag info
+                List<ThreadHashtag> dyThreadHashtags = threadHashtagDao.selectList(new QueryWrapper<ThreadHashtag>().eq("threadId", thread.getThreadId()));
+                List<Integer> hashtagIds = dyThreadHashtags.stream().map(ThreadHashtag::getHashtagId).collect(Collectors.toList());
+
+                // Fetch DyHashtag info if not fetched already
+                if (!hashtagIds.isEmpty()) {
+                    // Check and fetch only those DyHashtag not already fetched
+                    List<Integer> notFetchedHashtagIds = hashtagIds.stream().filter(ids -> !hashtagMap.containsKey(ids)).collect(Collectors.toList());
+                    if(!notFetchedHashtagIds.isEmpty()){
+                        List<Hashtag> hashtags = hashtagDao.selectBatchIds(notFetchedHashtagIds);
+                        hashtags.forEach(hashtag -> hashtagMap.put(hashtag.getHashtagId(), hashtag));
+                    }
+
+                    // Add DyHashtags to DyThread
+                    List<Hashtag> hashtags = hashtagIds.stream().map(hashtagMap::get).collect(Collectors.toList());
+                    thread.setHashtags(hashtags);
                 }
             }
             return result;

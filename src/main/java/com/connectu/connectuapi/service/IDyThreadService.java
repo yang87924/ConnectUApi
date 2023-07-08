@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
 import com.github.yulichang.base.MPJBaseService;
@@ -23,4 +24,7 @@ public interface IDyThreadService extends MPJBaseService<DyThread> {
     IPage<DyThread> listWithPagination(Page<DyThread> page, Wrapper<DyThread> queryWrapper);
     //熱門文章---------------------------------------------------------------
     List<DyThread> hotDyhread();
+//    關鍵字搜尋
+    Result searchDyThreads(String keyword);
+    List<DyThread> searchDyThreadsByKeyword(String keyword);
 }

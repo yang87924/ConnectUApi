@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.connectu.connectuapi.controller.util.Code;
+import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.*;
 import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
@@ -199,6 +201,65 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
         loadAdditionalData(hotThreads);
         return hotThreads;
     }
+
+    @Override
+    public Result searchDyThreads(String keyword) {
+        List<DyThread> search = null;
+        if (keyword != null && !keyword.isEmpty()) {
+            search = searchDyThreadsByKeyword(keyword);
+        }
+        Integer code = search != null && !search.isEmpty() ? Code.GET_OK : Code.GET_ERR;
+        String msg = search != null && !search.isEmpty() ? "搜尋動態資料成功" : "搜尋動態資料失敗!請重新輸入關鍵字";
+        return new Result(code, search, msg);
+    }
+
+    @Override
+    public List<DyThread> searchDyThreadsByKeyword(String keyword) {
+        LambdaQueryWrapper<DyThread> lqw = new LambdaQueryWrapper<>();
+        if (keyword != null && !keyword.isEmpty()) {
+            lqw.and(threadLqw -> threadLqw
+                    .or()
+                    .like(DyThread::getContent, keyword));
+
+            List<DyThread> result = dythreadDao.selectList(lqw);
+            // Fetch User info
+            List<Integer> userIds = result.stream().map(DyThread::getUserId).collect(Collectors.toList());
+            Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream().collect(Collectors.toMap(User::getUserId, user -> user));
+
+            // Initiate an empty Map to hold DyHashtag
+            Map<Integer, DyHashtag> hashtagMap = new HashMap<>();
+
+            for (DyThread dyThread : result) {
+                User user = userMap.get(dyThread.getUserId());
+                if (user != null) {
+                    dyThread.setUser(user);
+                }
+                dyThread.setReplyCount(dyReplyService.getDyThreadReplyById(dyThread.getDyThreadId()).size());
+
+                // Fetch dyThreadHashtag info
+                List<dyThreadHashtag> dyThreadHashtags = dyThreadHashtagDao.selectList(new QueryWrapper<dyThreadHashtag>().eq("dyThreadId", dyThread.getDyThreadId()));
+                List<Integer> hashtagIds = dyThreadHashtags.stream().map(dyThreadHashtag::getDyHashtagId).collect(Collectors.toList());
+
+                // Fetch DyHashtag info if not fetched already
+                if (!hashtagIds.isEmpty()) {
+                    // Check and fetch only those DyHashtag not already fetched
+                    List<Integer> notFetchedHashtagIds = hashtagIds.stream().filter(ids -> !hashtagMap.containsKey(ids)).collect(Collectors.toList());
+                    if(!notFetchedHashtagIds.isEmpty()){
+                        List<DyHashtag> hashtags = dyHashtagDao.selectBatchIds(notFetchedHashtagIds);
+                        hashtags.forEach(hashtag -> hashtagMap.put(hashtag.getDyHashtagId(), hashtag));
+                    }
+
+                    // Add DyHashtags to DyThread
+                    List<DyHashtag> hashtags = hashtagIds.stream().map(hashtagMap::get).collect(Collectors.toList());
+                    dyThread.setHashtags(hashtags);
+                }
+            }
+            return result;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
     private void loadAdditionalData(List<DyThread> dyThreads) {
         //Set<Integer> categoryIds = new HashSet<>();
         Set<Integer> userIds = new HashSet<>();

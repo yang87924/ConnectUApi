@@ -329,11 +329,10 @@ public class ThreadController extends BaseController{
     //關鍵字搜尋--------------------------------------------------------------
     @GetMapping("/search")
     @ApiOperation("關鍵字搜尋")
-    public Result searchThreadsByKeyword(
-            @ApiParam("關鍵字") @RequestParam String keyword,
-            @ApiParam("分類名稱") @RequestParam String categoryName) {
-        return threadService.searchThreads(keyword, categoryName);
+    public Result searchThreadsByKeyword(@ApiParam("關鍵字") @RequestParam String keyword) {
+        return threadService.searchThreads(keyword);
     }
+
 
 
 }
