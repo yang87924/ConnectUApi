@@ -464,6 +464,21 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
                 .leftJoin(Category.class, Category::getCategoryId, Thread::getCategoryId)
                 .eq(Thread::getThreadId, threadId);
         Thread thread = threadDao.selectOne(threadWrapper);
+        // 获取并设置 User 信息
+        User user = userDao.selectById(thread.getUserId());
+        thread.setUser(user);
+
+        // 获取并设置 Hashtag 信息
+        LambdaQueryWrapper<ThreadHashtag> threadHashtagQueryWrapper = new LambdaQueryWrapper<>();
+        threadHashtagQueryWrapper.eq(ThreadHashtag::getThreadId, thread.getThreadId());
+        List<ThreadHashtag> threadHashtags = threadHashtagDao.selectList(threadHashtagQueryWrapper);
+        List<Hashtag> hashtags = new ArrayList<>();
+        for (ThreadHashtag threadHashtag : threadHashtags) {
+            Hashtag hashtag = hashtagDao.selectById(threadHashtag.getHashtagId());
+            hashtags.add(hashtag);
+        }
+        thread.setHashtags(hashtags);
+
         return thread;
     }
 

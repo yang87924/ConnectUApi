@@ -12,4 +12,5 @@ public class Reply {
     private Integer userId  ;
     private String content;
     private String createdAt;
+    private Integer loveCount;
 }
