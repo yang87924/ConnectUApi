@@ -1,5 +1,6 @@
 package com.connectu.connectuapi.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.connectu.connectuapi.controller.util.Code;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.domain.Friendship;
@@ -10,10 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -26,11 +24,16 @@ public class FirendshipController extends BaseController{
     @GetMapping()
     @ApiImplicitParam(name = "userId", value = "論壇文章id")
     @ApiOperation("所有追隨的人的文章")
-    public Result getFirendShipThread(HttpSession session) {
+    public Result getFirendShipThread(HttpSession session, @RequestParam(defaultValue = "1") Integer page) {
         if (session.getAttribute("userId") == null) {
             throw new UserNotLoginException();
         }
-        List<Friendship> friendships = iFriendshipService.getFirendShipThread(getUserIdFromSession(session));
+
+        // 设置分页参数
+        Page<Friendship> friendshipPage = new Page<>(page, 4);
+
+        List<Friendship> friendships = iFriendshipService.getFirendShipThread(getUserIdFromSession(session), friendshipPage);
+
         Integer code = friendships != null ? Code.GET_OK : Code.GET_ERR;
         String msg = friendships != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, friendships, msg);

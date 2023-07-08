@@ -2,6 +2,8 @@ package com.connectu.connectuapi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.connectu.connectuapi.dao.*;
 import com.connectu.connectuapi.domain.*;
 import com.connectu.connectuapi.domain.Thread;
@@ -98,10 +100,13 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
     }
 
     @Override
-    public List<Friendship> getFirendShipThread(Integer userId) {
+    public List<Friendship> getFirendShipThread(Integer userId, Page<Friendship> page) {
         QueryWrapper<Friendship> friendshipQuery = new QueryWrapper<>();
         friendshipQuery.eq("followingId", userId);
-        List<Friendship> friendships = friendshipDao.selectList(friendshipQuery);
+
+        // 应用分页查询
+        Page<Friendship> friendshipPage = friendshipDao.selectPage(page, friendshipQuery);
+        List<Friendship> friendships = friendshipPage.getRecords();
 
         for (Friendship friendship : friendships) {
             Integer followerId = friendship.getFollowerId();
@@ -111,6 +116,7 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
 
             QueryWrapper<DyThread> dyThreadQuery = new QueryWrapper<>();
             dyThreadQuery.eq("userId", followerId);
+            dyThreadQuery.last("limit 4"); // 只查询每个用户的前4条动态线程数据
             List<DyThread> dyThreads = dyThreadDao.selectList(dyThreadQuery);
 
             for (DyThread dyThread : dyThreads) {
@@ -133,6 +139,7 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
 
         return friendships;
     }
+
 
 
 
