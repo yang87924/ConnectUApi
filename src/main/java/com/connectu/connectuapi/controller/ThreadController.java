@@ -299,7 +299,7 @@ public class ThreadController extends BaseController{
     //查詢主題文章--------------------------------------------------------------
     @ApiImplicitParam(name = "查詢主題文章", value = "論壇文章Id")
     @GetMapping("category/{categoryId}")
-    @ApiOperation("查詢單筆論壇文章")
+    @ApiOperation("查詢主題文章")
     public Result getCategoryThread(@PathVariable Integer categoryId) {
         List<Thread> thread = threadService.getCategoryThread(categoryId);
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
