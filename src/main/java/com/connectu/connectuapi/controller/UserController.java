@@ -271,7 +271,7 @@ public class UserController extends BaseController {
     @PostMapping("/followIfNot/{followingId}")
     public Result followedBySessionUser(@PathVariable Integer followingId, HttpSession session) {
         boolean flag = friendshipService.saveOrRemove(getUserIdFromSession(session), followingId);
-        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "跟隨成功" : "跟隨失敗");
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "跟隨成功" : "取消追隨");
     }
     @ApiOperation("查詢追隨的人的動態文章")
     @GetMapping("/followingDyThread")

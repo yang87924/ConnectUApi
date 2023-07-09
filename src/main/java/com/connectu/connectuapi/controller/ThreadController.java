@@ -1,5 +1,6 @@
 package com.connectu.connectuapi.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.connectu.connectuapi.controller.util.Code;
@@ -289,7 +290,9 @@ public class ThreadController extends BaseController{
     @ApiOperation("分頁查詢所有論壇文章")
     public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum, HttpSession session) {
         Page<Thread> page = new Page<>(pageNum, 4);
-        IPage<Thread> threadPage = threadService.listWithPagination(page, null);
+        QueryWrapper<Thread> wrapper = new QueryWrapper<>();
+        wrapper.orderByDesc("threadId"); // 將資料庫中的資料進行反向排序
+        IPage<Thread> threadPage = threadService.listWithPagination(page, wrapper);
         List<Thread> threadList = threadPage.getRecords();
         threadList.sort(Comparator.comparing(Thread::getCreatedAt, Comparator.reverseOrder()));
         Integer code = threadList != null ? Code.GET_OK : Code.GET_ERR;

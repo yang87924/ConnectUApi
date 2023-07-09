@@ -94,7 +94,7 @@ public class FakeController extends  BaseController {
         iCategoryService.updateById(category);
         return picture;
     }
-
+    @ApiOperation("動態收藏產生器")
     @GetMapping("/insertDyFavoriteThread")
     public String insertDyFavoriteThread() {
         int count = 1500;
@@ -105,6 +105,7 @@ public class FakeController extends  BaseController {
         favoriteDyThreadService.insertBatchRandomData(count, userIdStart, userIdEnd, dyThreadIdStart, dyThreadIdEnd);
         return "Data inserted successfully";
     }
+    @ApiOperation("收藏產生器")
     @GetMapping("/insertFavoriteThread")
     public String insertFavoriteThread() {
         int count = 1500;
@@ -117,6 +118,7 @@ public class FakeController extends  BaseController {
     }
     @Autowired
     private IFriendshipService friendshipService;
+    @ApiOperation("好友產生器")
     @PostMapping("/generateFriendship")
     public String generateFriendship() {
         int userIdStart = 1;

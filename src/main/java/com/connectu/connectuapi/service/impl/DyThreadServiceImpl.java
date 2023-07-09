@@ -68,7 +68,7 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
         IPage<DyThread> threadPage = super.page(page, queryWrapper);
         List<DyThread> dyThreads = threadPage.getRecords();
         // 處理資料
-       // Collections.reverse(dyThreads);
+        // Collections.reverse(dyThreads);
         // 批次查詢分類和使用者資訊
         List<Integer> userIds = dyThreads.stream().map(DyThread::getUserId).collect(Collectors.toList());
         Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream().collect(Collectors.toMap(User::getUserId, user -> user));
@@ -85,10 +85,18 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
                 List<DyHashtag> hashtags = dyHashtagDao.selectBatchIds(hashtagIds);
                 dyThread.setHashtags(hashtags);
             }
+
+            // 字符串分割并以数组形式返回
+            String[] pictureArray = null;
+            if (dyThread.getPicture() != null && !dyThread.getPicture().isEmpty()) {
+                pictureArray = dyThread.getPicture().split("▲");
+            }
+            dyThread.setPictureArray(pictureArray);
         }
         threadPage.setRecords(dyThreads);
         return threadPage;
     }
+
     @Override
     public List<DyThread> getUserDyThreadById(int id) {
         MPJLambdaWrapper<DyThread> lqw = new MPJLambdaWrapper<>();

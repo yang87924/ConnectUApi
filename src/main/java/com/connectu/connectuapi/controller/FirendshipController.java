@@ -35,7 +35,7 @@ public class FirendshipController extends BaseController{
         List<Friendship> friendships = iFriendshipService.getFirendShipThread(getUserIdFromSession(session), friendshipPage);
 
         Integer code = friendships != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = friendships != null ? "查詢使用者論壇文章資料成功" : "查無論壇文章資料";
+        String msg = friendships != null ? "所有追隨的人的文章" : "查無追隨的人的文章";
         return new Result(code, friendships, msg);
     }
 }

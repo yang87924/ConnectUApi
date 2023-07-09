@@ -39,4 +39,12 @@ public class DyThread {
     public void updateLoveStatus(Integer loveStatus) {
         this.loveStatus = loveStatus;
     }
+
+    @TableField(exist = false)
+    private String[] pictureArray; // Use this field instead of 'PictureArray'
+
+    public void setPictureArray(String[] pictureArray) {
+        this.pictureArray = pictureArray;
+    }
+
 }

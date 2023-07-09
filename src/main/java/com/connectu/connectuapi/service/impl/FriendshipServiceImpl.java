@@ -85,17 +85,17 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         userWrapper
                 .selectAll(User.class)
                 //.selectAll(DyThread.class)
-               // .selectAll(dyThreadHashtag.class)
+                // .selectAll(dyThreadHashtag.class)
                 .selectAll(Friendship.class)
-               // .selectAll(User.class)
-              //  .selectAll(DyHashtag.class)
+                // .selectAll(User.class)
+                //  .selectAll(DyHashtag.class)
                 .innerJoin(User.class,User::getUserId,Friendship::getFollowerId)
                 //.innerJoin(DyThread.class,DyThread::getUserId,Friendship::getFollowerId)
-               // .innerJoin(dyThreadHashtag.class,dyThreadHashtag::getDyThreadId,DyThread::getDyThreadId)
-               // .innerJoin(DyHashtag.class,DyHashtag::getDyHashtagId,dyThreadHashtag::getDyHashtagId)
+                // .innerJoin(dyThreadHashtag.class,dyThreadHashtag::getDyThreadId,DyThread::getDyThreadId)
+                // .innerJoin(DyHashtag.class,DyHashtag::getDyHashtagId,dyThreadHashtag::getDyHashtagId)
                 .eq(Friendship::getFollowingId, userId);
         System.out.println(friendshipDao.selectList(userWrapper));
-       //System.out.println("----------"+dythreads);
+        //System.out.println("----------"+dythreads);
         return friendshipDao.selectList(userWrapper);
     }
 
@@ -151,7 +151,8 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         List<Friendship> friendships = friendshipDao.selectList(lqw);
         if(friendships.size()!=0){
             System.out.println("not null..." + friendships.size());
-            return super.removeByIds(friendshipDao.selectList(lqw));
+            super.removeByIds(friendshipDao.selectList(lqw));
+            return false;
         }
         Friendship friendship = new Friendship();
         friendship.setFollowerId(followerId);
