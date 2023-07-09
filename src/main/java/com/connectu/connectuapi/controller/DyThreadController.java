@@ -105,13 +105,14 @@ public class DyThreadController extends BaseController{
     @ApiOperation(value = "新增論壇文章", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Result save(  DyThread dyThread,
                          @ApiParam(value = "文章內容", required = true) @RequestParam String content,
-                         @ApiParam(value = "檔案", required = false) @RequestPart(value = "files", required = false) List<MultipartFile> file1,
                          @ApiParam(value = "檔案", required = false)
-                             @RequestPart(value = "files", required = false) List<MultipartFile> file2,
+                             @RequestPart(value = "file1", required = false) List<MultipartFile> file1,
                          @ApiParam(value = "檔案", required = false)
-                             @RequestPart(value = "files", required = false) List<MultipartFile> file3,
+                             @RequestPart(value = "file2", required = false) List<MultipartFile> file2,
                          @ApiParam(value = "檔案", required = false)
-                             @RequestPart(value = "files", required = false) List<MultipartFile> file4,
+                             @RequestPart(value = "file3", required = false) List<MultipartFile> file3,
+                         @ApiParam(value = "檔案", required = false)
+                             @RequestPart(value = "file4", required = false) List<MultipartFile> file4,
                         // @ApiParam(value = "Hashtags", required = false) @RequestParam(required = false) List<String> hashtags,
                          HttpSession session) {
 
@@ -122,18 +123,18 @@ public class DyThreadController extends BaseController{
             throw new ThreadColumnIsNullException();
         }
         List<MultipartFile> files = new ArrayList<>();
-        System.out.println(file1);
+        //System.out.println(file1);
         if (file1 != null && !file1.isEmpty()) {
-            files.add((MultipartFile) file1);
+            files.addAll(file1);
         }
         if (file2 != null && !file2.isEmpty()) {
-            files.add((MultipartFile) file2);
+            files.addAll(file2);
         }
         if (file3 != null && !file3.isEmpty()) {
-            files.add((MultipartFile) file3);
+            files.addAll(file3);
         }
         if (file4 != null && !file4.isEmpty()) {
-            files.add((MultipartFile) file4);
+            files.addAll(file4);
         }
         String paths;
         dyThread.setUserId(getUserIdFromSession(session));
@@ -141,7 +142,7 @@ public class DyThreadController extends BaseController{
              paths="";
             for (String path : storageService.uploadToS3(files, session)) {
                 paths += path + "▲";
-                System.out.println(path);
+
             }
             System.out.println(paths);
             dyThread.setPicture(paths.substring(0,paths.length()-1));
