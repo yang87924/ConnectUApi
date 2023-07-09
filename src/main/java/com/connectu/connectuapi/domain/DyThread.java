@@ -42,6 +42,14 @@ public class DyThread {
 
     @TableField(exist = false)
     private String[] pictureArray; // Use this field instead of 'PictureArray'
+    public void setPicture(String picture) {
+        this.picture = picture;
+        this.pictureArray = picture.split("▲");
+    }
+
+    public String[] getPictureArray() {
+        return pictureArray;
+    }
 
     public void setPictureArray(String[] pictureArray) {
         this.pictureArray = pictureArray;

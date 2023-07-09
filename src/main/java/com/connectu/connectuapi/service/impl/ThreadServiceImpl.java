@@ -39,8 +39,6 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     @Autowired
     private HashtagDao hashtagDao;
     @Autowired
-    private UserDao userDao;
-    @Autowired
     private ThreadHashtagDao threadHashtagDao;
     @Autowired
     private IReplyService replyService;
@@ -48,6 +46,62 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     private IThreadHashtagService iThreadHashtagService;
     @Autowired
     private IHashtagService iHashtagService;
+    @Autowired
+    private UserDao userDao;
+    @Override
+    public void handleHashtags(String threadHashtags, Thread thread) {
+        List<Hashtag> hashtags = new ArrayList<>();
+        String[] tags = threadHashtags.split("#");
+        for (String tag : tags) {
+            if (!tag.isEmpty()) {
+                Hashtag existingHashtag = hashtagDao.selectOne(new QueryWrapper<Hashtag>().eq("name", tag));
+                if (existingHashtag != null) {
+                    existingHashtag.setAmount(existingHashtag.getAmount() + 1);
+                    hashtagDao.updateById(existingHashtag);
+                    hashtags.add(existingHashtag);
+                } else {
+                    Hashtag newHashtag = new Hashtag();
+                    newHashtag.setName(tag);
+                    newHashtag.setAmount(1);
+                    hashtagDao.insert(newHashtag);
+                    hashtags.add(newHashtag);
+                }
+            }
+        }
+        thread.setHashtags(hashtags);
+    }
+
+
+
+
+
+    @Override
+    public IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper) {
+        IPage<Thread> threadPage = threadDao.selectPage(page, queryWrapper);
+        List<Thread> threads = threadPage.getRecords();
+        List<Integer> userIds = threads.stream()
+                .map(Thread::getUserId)
+                .collect(Collectors.toList());
+        Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream()
+                .collect(Collectors.toMap(User::getUserId, user -> user));
+        for (Thread thread : threads) {
+            User user = userMap.get(thread.getUserId());
+            if (user != null) {
+                thread.setUser(user);
+            }
+            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
+            // 批次查詢ThreadHashtag表
+            List<ThreadHashtag> ThreadHashtags = threadHashtagDao.selectList(new QueryWrapper<ThreadHashtag>().eq("threadId", thread.getThreadId()));
+            List<Integer> hashtagIds = ThreadHashtags.stream().map(ThreadHashtag::getHashtagId).collect(Collectors.toList());
+            if (!hashtagIds.isEmpty()) {
+                List<Hashtag> hashtags = hashtagDao.selectBatchIds(hashtagIds);
+                thread.setHashtags(hashtags);
+            }
+        }
+        threadPage.setRecords(threads);
+        return threadPage;
+    }
+
     //查詢使用者的所有文章--------------------------------------------------------------
     @Override
     public List<Thread> getUserThread(Integer userId) {
@@ -93,27 +147,27 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
 
 
 
-    public void handleHashtags(Thread thread, List<String> hashtags) {
-        for (String hashtag : hashtags) {
-            QueryWrapper<Hashtag> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("name", hashtag);
-            Hashtag existingHashtag = hashtagDao.selectOne(queryWrapper);
-            if (existingHashtag != null) {
-                existingHashtag.setAmount(existingHashtag.getAmount() + 1);
-                hashtagDao.updateById(existingHashtag);
-            } else {
-                Hashtag newHashtag = new Hashtag();
-                newHashtag.setName(hashtag);
-                newHashtag.setAmount(1);
-                hashtagDao.insert(newHashtag);
-                existingHashtag = newHashtag;
-            }
-            ThreadHashtag threadHashtag = new ThreadHashtag();
-            threadHashtag.setThreadId(thread.getThreadId());
-            threadHashtag.setHashtagId(existingHashtag.getHashtagId());
-            threadHashtagDao.insert(threadHashtag);
-        }
-    }
+//    public void handleHashtags(Thread thread, List<String> hashtags) {
+//        for (String hashtag : hashtags) {
+//            QueryWrapper<Hashtag> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.eq("name", hashtag);
+//            Hashtag existingHashtag = hashtagDao.selectOne(queryWrapper);
+//            if (existingHashtag != null) {
+//                existingHashtag.setAmount(existingHashtag.getAmount() + 1);
+//                hashtagDao.updateById(existingHashtag);
+//            } else {
+//                Hashtag newHashtag = new Hashtag();
+//                newHashtag.setName(hashtag);
+//                newHashtag.setAmount(1);
+//                hashtagDao.insert(newHashtag);
+//                existingHashtag = newHashtag;
+//            }
+//            ThreadHashtag threadHashtag = new ThreadHashtag();
+//            threadHashtag.setThreadId(thread.getThreadId());
+//            threadHashtag.setHashtagId(existingHashtag.getHashtagId());
+//            threadHashtagDao.insert(threadHashtag);
+//        }
+//    }
 
 
 
@@ -286,6 +340,42 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
                 .eq(Thread::getThreadId, threadId);
         return threadDao.selectList(userWrapper);
     }
+
+    @Override
+    public void processHashtags(String hashtags, Thread thread) {
+        if (hashtags != null && !hashtags.isEmpty()) {
+            List<String> hashtagList = Arrays.asList(hashtags.split("#"));
+            for (String tag : hashtagList) {
+                if (!tag.trim().isEmpty()) {
+                    // 创建Hashtag对象并设置属性
+                    Hashtag hashtag = new Hashtag();
+                    hashtag.setName(tag);
+                    hashtag.setAmount(1); // 初始化为1
+
+                    // 判断是否已存在该Hashtag
+                    QueryWrapper<Hashtag> wrapper = new QueryWrapper<>();
+                    wrapper.eq("name", tag);
+                    Hashtag existingHashtag = hashtagDao.selectOne(wrapper);
+
+                    if (existingHashtag != null) {
+                        // 已存在，更新amount
+                        existingHashtag.setAmount(existingHashtag.getAmount() + 1);
+                        hashtagDao.updateById(existingHashtag);
+                    } else {
+                        // 不存在，新增Hashtag
+                        hashtagDao.insert(hashtag);
+                    }
+
+                    // 创建ThreadHashtag对象并设置属性
+                    ThreadHashtag threadHashtag = new ThreadHashtag();
+                    threadHashtag.setThreadId(thread.getThreadId());
+                    threadHashtag.setHashtagId(hashtag.getHashtagId());
+                    threadHashtagDao.insert(threadHashtag);
+                }
+            }
+        }
+    }
+
     //熱門文章-----------------------------------------
     @Override
     public List<Thread> hotThread() {
@@ -418,23 +508,23 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
 
 
     //查詢所有文章--------------------------------------------------------------
-    @Override
-    public List<Thread> list(Wrapper<Thread> queryWrapper) {
-        List<Thread> threads = super.list(queryWrapper);
-        for (Thread thread : threads) {
-            Category category = categoryDao.selectById(thread.getCategoryId());
-            if (category != null) {
-                thread.setCategoryName(category.getCategoryName());
-            }
-            // 加入 join user 資料表的資料
-            User user = userDao.selectById(thread.getUserId());
-            if (user != null) {
-                thread.setUser(user);
-            }
-            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
-        }
-        return threads;
-    }
+//    @Override
+//    public List<Thread> list(Wrapper<Thread> queryWrapper) {
+//        List<Thread> threads = super.list(queryWrapper);
+//        for (Thread thread : threads) {
+//            Category category = categoryDao.selectById(thread.getCategoryId());
+//            if (category != null) {
+//                thread.setCategoryName(category.getCategoryName());
+//            }
+//            // 加入 join user 資料表的資料
+//            User user = userDao.selectById(thread.getUserId());
+//            if (user != null) {
+//                thread.setUser(user);
+//            }
+//            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
+//        }
+//        return threads;
+//    }
     //查詢所有文章分頁查詢--------------------------------------------------------------
 //    @Override
 //    public IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper) {
@@ -463,36 +553,33 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
 //        }
 //        return threadPage;
 //    }
-    @Override
-    public IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper) {
+//    @Override
+//    public IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper) {
+//        IPage<Thread> threadPage = super.page(page, queryWrapper);
+//        List<Thread> threads = threadPage.getRecords();
+//        // 處理資料
+//        // Collections.reverse(dyThreads);
+//        // 批次查詢分類和使用者資訊
+//        List<Integer> userIds = threads.stream().map(Thread::getUserId).collect(Collectors.toList());
+//        Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream().collect(Collectors.toMap(User::getUserId, user -> user));
+//        for (Thread thread : threads) {
+//            User user = userMap.get(thread.getUserId());
+//            if (user != null) {
+//                thread.setUser(user);
+//            }
+//            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
+//            // 批次查詢ThreadHashtag表
+//            List<ThreadHashtag> ThreadHashtags = threadHashtagDao.selectList(new QueryWrapper<ThreadHashtag>().eq("threadId", thread.getThreadId()));
+//            List<Integer> hashtagIds = ThreadHashtags.stream().map(ThreadHashtag::getHashtagId).collect(Collectors.toList());
+//            if (!hashtagIds.isEmpty()) {
+//                List<Hashtag> hashtags = hashtagDao.selectBatchIds(hashtagIds);
+//                thread.setHashtags(hashtags);
+//            }
+//        }
+//        threadPage.setRecords(threads);
+//        return threadPage;
+//    }
 
-        IPage<Thread> threadPage = super.page(page, null);
-        List<Thread> threads = threadPage.getRecords();
-        // 批次查詢分類和使用者資訊
-        List<Integer> categoryIds = threads.stream().map(Thread::getCategoryId).collect(Collectors.toList());
-        List<Integer> userIds = threads.stream().map(Thread::getUserId).collect(Collectors.toList());
-        Map<Integer, Category> categoryMap = categoryDao.selectBatchIds(categoryIds).stream().collect(Collectors.toMap(Category::getCategoryId, category -> category));
-        Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream().collect(Collectors.toMap(User::getUserId, user -> user));
-        for (Thread thread : threads) {
-            Category category = categoryMap.get(thread.getCategoryId());
-            if (category != null) {
-                thread.setCategoryName(category.getCategoryName());
-            }
-            User user = userMap.get(thread.getUserId());
-            if (user != null) {
-                thread.setUser(user);
-            }
-            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
-            // 批次查詢ThreadHashtag表
-            List<ThreadHashtag> threadHashtags = threadHashtagDao.selectList(new QueryWrapper<ThreadHashtag>().eq("threadId", thread.getThreadId()));
-            List<Integer> hashtagIds = threadHashtags.stream().map(ThreadHashtag::getHashtagId).collect(Collectors.toList());
-            if (!hashtagIds.isEmpty()) {
-                List<Hashtag> hashtags = hashtagDao.selectBatchIds(hashtagIds);
-                thread.setHashtags(hashtags);
-            }
-        }
-        return threadPage;
-    }
     //查詢主題的所有文章--------------------------------------------------------------
     public List<Thread> getCategoryThread(int categoryId) {
         LambdaQueryWrapper<Thread> lqw = new LambdaQueryWrapper<>();

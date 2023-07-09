@@ -54,8 +54,25 @@ public class Thread  {
 
     @TableField(exist = false)
     private List<Hashtag> hashtags;
+    @TableField(exist = false)
+    private String[] pictureArray; // Use this field instead of 'PictureArray'
+    public void setPicture(String picture) {
+        this.picture = picture;
+        this.pictureArray = picture.split("▲");
+    }
+
+    public String[] getPictureArray() {
+        return pictureArray;
+    }
     public void updateLoveStatus(Integer loveStatus) {
         this.loveStatus = loveStatus;
+    }
+    public void setHashtags(List<Hashtag> hashtags) {
+        this.hashtags = hashtags;
+    }
+
+    public List<Hashtag> getHashtags() {
+        return hashtags;
     }
 
 

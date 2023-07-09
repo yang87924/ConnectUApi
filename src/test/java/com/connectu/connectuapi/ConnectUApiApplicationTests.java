@@ -1,6 +1,7 @@
 package com.connectu.connectuapi;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.connectu.connectuapi.controller.util.Result;
 import com.connectu.connectuapi.dao.*;
 import com.connectu.connectuapi.domain.*;
@@ -48,7 +49,9 @@ class ConnectUApiApplicationTests {
 
     @Test
     void a() {
-
+        QueryWrapper<Thread> wrapper = new QueryWrapper<>();
+        wrapper.orderByDesc("threadId");
+        threadService.list(wrapper);
     }
 
     //    @Autowired

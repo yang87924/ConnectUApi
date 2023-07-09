@@ -83,7 +83,7 @@ public class DyThreadController extends BaseController{
         Page<DyThread> page = new Page<>(pageNum, 4);
         QueryWrapper<DyThread> wrapper = new QueryWrapper<>();
         wrapper.orderByDesc("dyThreadId"); // 將資料庫中的資料進行反向排序
-        IPage<DyThread> threadPage = dyThreadService.listWithPagination(page, wrapper);
+        IPage<DyThread> threadPage = dyThreadService.listWithDyPagination(page, wrapper);
         List<DyThread> threadList = threadPage.getRecords();
         Integer code = threadList != null ? Code.GET_OK : Code.GET_ERR;
         String msg = threadList != null ? "所有論壇文章資料成功" : "查無論壇文章資料";

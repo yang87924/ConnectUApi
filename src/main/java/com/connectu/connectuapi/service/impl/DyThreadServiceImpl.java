@@ -64,7 +64,7 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
         }
     }
     @Override
-    public IPage<DyThread> listWithPagination(Page<DyThread> page, Wrapper<DyThread> queryWrapper) {
+    public IPage<DyThread> listWithDyPagination(Page<DyThread> page, Wrapper<DyThread> queryWrapper) {
         IPage<DyThread> threadPage = super.page(page, queryWrapper);
         List<DyThread> dyThreads = threadPage.getRecords();
         // 處理資料

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.connectu.connectuapi.controller.util.Result;
+import com.connectu.connectuapi.domain.Hashtag;
 import com.connectu.connectuapi.domain.Thread;
 import com.connectu.connectuapi.domain.User;
 import com.connectu.connectuapi.domain.UserThreadDTO;
@@ -53,8 +54,10 @@ public interface IThreadService extends MPJBaseService<Thread> {
     Result searchThreads(String keyword);
     List<Thread> searchThreadsByKeyword(String keyword);
 
-    void handleHashtags(Thread thread, List<String> hashtags);
+    //void handleHashtags(Thread thread, List<String> hashtags);
+    void handleHashtags(String threadHashtags, Thread thread) ;
     //分頁查詢--------------------------------------------------------------
     IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper);
     List<Thread> getThreadById(Integer threadId);
+    void processHashtags(String hashtags, Thread thread);
 }
