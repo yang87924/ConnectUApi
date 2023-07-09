@@ -85,13 +85,6 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
                 List<DyHashtag> hashtags = dyHashtagDao.selectBatchIds(hashtagIds);
                 dyThread.setHashtags(hashtags);
             }
-
-            // 字符串分割并以数组形式返回
-            String[] pictureArray = null;
-            if (dyThread.getPicture() != null && !dyThread.getPicture().isEmpty()) {
-                pictureArray = dyThread.getPicture().split("▲");
-            }
-            dyThread.setPictureArray(pictureArray);
         }
         threadPage.setRecords(dyThreads);
         return threadPage;
