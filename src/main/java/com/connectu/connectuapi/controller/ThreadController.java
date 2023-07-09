@@ -290,11 +290,10 @@ public class ThreadController extends BaseController{
     @ApiOperation("分頁查詢所有論壇文章")
     public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum, HttpSession session) {
         Page<Thread> page = new Page<>(pageNum, 4);
-        QueryWrapper<Thread> wrapper = new QueryWrapper<>();
-        wrapper.orderByDesc("threadId"); // 將資料庫中的資料進行反向排序
-        IPage<Thread> threadPage = threadService.listWithPagination(page, wrapper);
+//        QueryWrapper<Thread> wrapper = new QueryWrapper<>();
+//        wrapper.orderByDesc("threadId");
+        IPage<Thread> threadPage = threadService.listWithPagination(page, null);
         List<Thread> threadList = threadPage.getRecords();
-        threadList.sort(Comparator.comparing(Thread::getCreatedAt, Comparator.reverseOrder()));
         Integer code = threadList != null ? Code.GET_OK : Code.GET_ERR;
         String msg = threadList != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
         return new Result(code, threadList, msg);

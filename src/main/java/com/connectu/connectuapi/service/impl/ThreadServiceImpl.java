@@ -465,7 +465,8 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
 //    }
     @Override
     public IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper) {
-        IPage<Thread> threadPage = super.page(page, queryWrapper);
+
+        IPage<Thread> threadPage = super.page(page, null);
         List<Thread> threads = threadPage.getRecords();
         // 批次查詢分類和使用者資訊
         List<Integer> categoryIds = threads.stream().map(Thread::getCategoryId).collect(Collectors.toList());
