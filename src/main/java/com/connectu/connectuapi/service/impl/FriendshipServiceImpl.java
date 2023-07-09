@@ -140,8 +140,22 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         return friendships;
     }
 
-
-
+    @Override
+    public void getFriendShipStatus(Integer followerId, Integer followingId) {
+        LambdaQueryWrapper<Friendship> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Friendship::getFollowerId, followerId)
+                .eq(Friendship::getFollowingId, followingId);
+        List<Friendship> friendships = friendshipDao.selectList(lqw);
+        User user=new User();
+        user.setUserId(followingId);
+        if(friendships.size()!=0){
+            user.setFriendshipStatus(1);
+        }
+        else {
+            user.setFriendshipStatus(0);
+        }
+        userDao.updateById(user);
+    }
 
 
     public boolean saveOrRemove(Integer followerId, Integer followingId) {
@@ -149,7 +163,7 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         lqw.eq(Friendship::getFollowerId, followerId)
                 .eq(Friendship::getFollowingId, followingId);
         List<Friendship> friendships = friendshipDao.selectList(lqw);
-        if(friendships.size()!=0){
+        if (friendships.size() != 0) {
             System.out.println("not null..." + friendships.size());
             super.removeByIds(friendshipDao.selectList(lqw));
             return false;

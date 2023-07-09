@@ -50,6 +50,7 @@ public class UserServiceImpl extends MPJBaseServiceImpl<UserDao, User> implement
         return super.getById(id);
     }
 
+
     @Override
     public List<User> getSortedUsers() {
         List<User> users = userDao.selectList(null);

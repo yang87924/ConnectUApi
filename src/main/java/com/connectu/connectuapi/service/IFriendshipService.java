@@ -15,5 +15,5 @@ public interface IFriendshipService extends MPJBaseService<Friendship> {
     public String followerNum(Integer followerId);
     public List followingDyThread(Integer userId);
     public List<Friendship> getFirendShipThread(Integer userId, Page<Friendship> page);
-
+    void getFriendShipStatus(Integer followerId, Integer followingId);
 }

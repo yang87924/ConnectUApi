@@ -138,17 +138,7 @@ public class UserController extends BaseController {
     }
 
 
-    //查詢用戶--------------------------------------------------------------
-    @GetMapping("/{userId}")
-    @ApiOperation("查詢用戶")
-    public Result getUserById(@PathVariable Integer userId) {
 
-        User user = userService.getById(userId);
-
-        Integer code = user != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = user != null ? "用戶資料取得成功" : "查無此用戶";
-        return new Result(code, user, msg);
-    }
 
 
     @GetMapping
@@ -273,8 +263,19 @@ public class UserController extends BaseController {
         boolean flag = friendshipService.saveOrRemove(getUserIdFromSession(session), followingId);
         return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ? "跟隨成功" : "取消追隨");
     }
-    @ApiOperation("查詢追隨的人的動態文章")
-    @GetMapping("/followingDyThread")
+    //查詢用戶--------------------------------------------------------------
+    @GetMapping("/{userId}")
+    @ApiOperation("查詢用戶")
+    public Result getUserById(@PathVariable Integer userId,HttpSession session) {
+        friendshipService.getFriendShipStatus(getUserIdFromSession(session), userId);
+        User user = userService.getById(userId);
+
+        Integer code = user != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = user != null ? "用戶資料取得成功" : "查無此用戶";
+        return new Result(code, user, msg);
+    }
+    //@ApiOperation("查詢追隨的人的動態文章")
+    //@GetMapping("/followingDyThread")
     public void followingDyThread(HttpSession session){
 
         List dyThread =friendshipService.followingDyThread(2);

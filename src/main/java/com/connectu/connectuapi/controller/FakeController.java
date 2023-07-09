@@ -108,7 +108,7 @@ public class FakeController extends  BaseController {
     @ApiOperation("收藏產生器")
     @GetMapping("/insertFavoriteThread")
     public String insertFavoriteThread() {
-        int count = 1500;
+        int count = 30;
         int userIdStart = 1;
         int userIdEnd = 98;
         int threadIdStart = 1;
@@ -123,7 +123,7 @@ public class FakeController extends  BaseController {
     public String generateFriendship() {
         int userIdStart = 1;
         int userIdEnd = 98;
-        int friendshipCount = 2000; // 要生成的Friendship數量
+        int friendshipCount = 300; // 要生成的Friendship數量
         Set<String> existingFriendships = new HashSet<>(); // 用於檢查是否已存在相同的資料
         List<Friendship> newFriendships = new ArrayList<>(); // 用於批量新增Friendship
         Random random = new Random();

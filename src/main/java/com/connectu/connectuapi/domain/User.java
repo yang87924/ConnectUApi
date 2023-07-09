@@ -28,4 +28,5 @@ public class User  {
     private Integer HotScore;
     private Integer followingCount ;
     private Integer followedByCount ;
+    private Integer friendshipStatus;
 }
