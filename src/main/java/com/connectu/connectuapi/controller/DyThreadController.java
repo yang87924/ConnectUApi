@@ -52,7 +52,7 @@ public class DyThreadController extends BaseController{
     }
     //切換使用者按讚--------------------------------------------------------------
     //熱門文章--------------------------------------------------------------
-    @GetMapping("/hotThread")
+    @GetMapping("/hotDyThread")
     @ApiOperation("熱門文章OK")
     public Result hotUser(HttpSession session) {
         List<DyThread> dyThread = dyThreadService.hotDyhread();
