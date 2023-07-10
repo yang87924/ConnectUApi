@@ -134,6 +134,10 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
                 }
 
                 dyThread.setHashtags(dyHashtags);
+                // 判断dyThread是否为空
+                if (dyThread != null) {
+                    friendship.setDyThread(dyThread);
+                }
             }
         }
 

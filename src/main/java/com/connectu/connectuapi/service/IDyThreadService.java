@@ -27,4 +27,5 @@ public interface IDyThreadService extends MPJBaseService<DyThread> {
 //    關鍵字搜尋
     Result searchDyThreads(String keyword);
     List<DyThread> searchDyThreadsByKeyword(String keyword);
+
 }

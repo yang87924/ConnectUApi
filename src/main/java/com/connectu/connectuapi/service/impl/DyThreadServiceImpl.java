@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
@@ -42,15 +44,95 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
     private DyHashtagDao dyHashtagDao;
     @Autowired
     private IDyReplyService dyReplyService;
+
+    @Override
+    public boolean save(DyThread dyThread) {
+        // 处理前端传递的content
+        String content = dyThread.getContent();
+        List<String> hashtags = extractHashtags(content); // 提取带有#的内容作为hashtags
+        System.out.println(hashtags);
+        handleHashtag(dyThread, hashtags); // 处理hashtags逻辑
+        // 将拆分后的内容存储在content字段中
+        String processedContent = extractContent(content);
+        dyThread.setContent(processedContent);
+        dyThread.setCreatedAt(getSystemTime());
+        boolean saveResult = super.save(dyThread); // 保存dyThread对象
+
+        if (saveResult) {
+            handleHashtag(dyThread, hashtags); // 处理hashtags逻辑
+        }
+
+        return saveResult;
+    }
+
+    private List<String> extractHashtags(String content) {
+        List<String> hashtags = new ArrayList<>();
+        // 使用正则表达式提取带有#的内容作为hashtags，包括中文、英文和数字字符
+        Pattern pattern = Pattern.compile("#([\\u4e00-\\u9fa5a-zA-Z0-9]+)");
+        Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            String hashtag = "#" + matcher.group(1);
+            hashtags.add(hashtag);
+        }
+        return hashtags;
+    }
+
+
+
+    private String extractContent(String content) {
+        // 查找第一个出现的"#"
+        int hashtagIndex = content.indexOf("#");
+        if (hashtagIndex != -1) {
+            // 去除"#"之前的部分
+            content = content.substring(0, hashtagIndex).trim();
+        }
+
+        return content;
+
+    }
+
+    public void handleHashtag(DyThread dyThread, List<String> hashtags) {
+        if (hashtags != null && !hashtags.isEmpty()) {
+            List<DyHashtag> hashtagEntities = new ArrayList<>();
+            for (String hashtag : hashtags) {
+                DyHashtag dyHashtag = dyHashtagDao.selectOne(new QueryWrapper<DyHashtag>().eq("name", hashtag));
+                if (dyHashtag != null) {
+                    dyHashtag.setAmount(dyHashtag.getAmount() + 1);
+                    dyHashtagDao.updateById(dyHashtag);
+                    System.out.println("------------"+dyHashtag+"-----------");
+                } else {
+                    dyHashtag = new DyHashtag();
+                    dyHashtag.setName(hashtag);
+                    dyHashtag.setAmount(1);
+                    dyHashtagDao.insert(dyHashtag); // 保存新的DyHashtag对象到数据库
+                    System.out.println("**********"+dyHashtag+"******************+");
+                }
+                hashtagEntities.add(dyHashtag);
+
+                // 更新dyThreadHashtag关系表
+                dyThreadHashtag dyThreadHashtags = new dyThreadHashtag();
+                System.out.println("/////"+dyThread.getDyThreadId()+"////////");
+                System.out.println("/////"+dyHashtag.getDyHashtagId()+"////////");
+                dyThreadHashtags.setDyThreadId(dyThread.getDyThreadId());
+                dyThreadHashtags.setDyHashtagId(dyHashtag.getDyHashtagId());
+                dyThreadHashtagDao.insert(dyThreadHashtags);
+            }
+            dyThread.setHashtags(hashtagEntities);
+        }
+    }
+
+    @Override
     public void handleHashtags(DyThread dyThread, List<String> dyHashtags) {
         for (String dyHashtag : dyHashtags) {
             QueryWrapper<DyHashtag> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("name", dyHashtag);
             DyHashtag existingHashtag = dyHashtagDao.selectOne(queryWrapper);
             if (existingHashtag != null) {
+                System.out.println("------------"+dyHashtag+"-----------");
                 existingHashtag.setAmount(existingHashtag.getAmount() + 1);
                 dyHashtagDao.updateById(existingHashtag);
             } else {
+                System.out.println("**********"+dyHashtag+"******************+");
                 DyHashtag newDyHashtag = new DyHashtag();
                 newDyHashtag.setName(dyHashtag);
                 newDyHashtag.setAmount(1);
@@ -182,11 +264,7 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
             dyThread.setLove(love - 1);
         }
     }
-    @Override
-    public boolean save(DyThread dyThread) {
-        dyThread.setCreatedAt(getSystemTime());
-        return super.save(dyThread);
-    }
+
 
     //熱門文章
     @Override
@@ -261,6 +339,8 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
             return new ArrayList<>();
         }
     }
+
+
 
     private void loadAdditionalData(List<DyThread> dyThreads) {
         //Set<Integer> categoryIds = new HashSet<>();

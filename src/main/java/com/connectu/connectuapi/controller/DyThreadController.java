@@ -152,8 +152,9 @@ public class DyThreadController extends BaseController{
         }
         boolean flag = dyThreadService.save(dyThread);
 //        if (flag && hashtags != null && !hashtags.isEmpty()) {
-//            threadService.handleHashtags(thread, hashtags);
+           //threadService.handleHashtags(thread, hashtags);
 //        }
+
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
     }
     //移除收藏文章

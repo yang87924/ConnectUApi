@@ -20,6 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.connectu.connectuapi.service.utils.faker.generateFakeArticle;
 import static org.assertj.core.util.Lists.list;
@@ -46,14 +48,78 @@ class ConnectUApiApplicationTests {
     private UserThreadLoveDao userThreadLoveDao;
     @Autowired
     private IThreadService threadService;
-
+    @Autowired
+    private DyThreadHashtagDao dyThreadHashtagDao;
+    @Autowired
+    private DyHashtagDao dyHashtagDao;
     @Test
     void a() {
-        QueryWrapper<Thread> wrapper = new QueryWrapper<>();
-        wrapper.orderByDesc("threadId");
-        threadService.list(wrapper);
+        // 处理前端传递的content
+        String content = "濃厚的奶香味，搭配綿密的蛋糕口感，，\n" +
+                "入口即化的感覺，讓人忍不住一塊接一塊哦～\n" +
+                "一盒15入，，嚐鮮價只要180元。。\n" +
+                "#美食#布丁燒";
+        List<String> hashtags = extractHashtags(content.trim()); // 提取带有#的内容作为hashtags
+        System.out.println(hashtags);
+       // handleHashtag(dyThread, hashtags); // 处理hashtags逻辑
+
+
+        // 将拆分后的内容存储在content字段中
+        String processedContent = extractContent(content);
+      //  dyThread.setContent(processedContent);
+
+    }
+    private List<String> extractHashtags(String content) {
+        List<String> hashtags = new ArrayList<>();
+        // 使用正则表达式提取带有#的内容作为hashtags，包括中文、英文和数字字符
+        Pattern pattern = Pattern.compile("#([\\u4e00-\\u9fa5a-zA-Z0-9]+)");
+        Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            String hashtag = "#" + matcher.group(1);
+            hashtags.add(hashtag);
+        }
+        return hashtags;
+
     }
 
+
+
+    private String extractContent(String content) {
+        // 查找第一个出现的"#"
+        int hashtagIndex = content.indexOf("#");
+        if (hashtagIndex != -1) {
+            // 去除"#"之前的部分
+            content = content.substring(0, hashtagIndex).trim();
+        }
+
+        return content;
+
+    }
+    public void handleHashtag(DyThread dyThread, List<String> hashtags) {
+        if (hashtags != null && !hashtags.isEmpty()) {
+            List<DyHashtag> hashtagEntities = new ArrayList<>();
+            for (String hashtag : hashtags) {
+                DyHashtag dyHashtag = dyHashtagDao.selectOne(new QueryWrapper<DyHashtag>().eq("name", hashtag));
+                if (dyHashtag != null) {
+                    dyHashtag.setAmount(dyHashtag.getAmount() + 1);
+                    dyHashtagDao.updateById(dyHashtag);
+                } else {
+                    dyHashtag = new DyHashtag();
+                    dyHashtag.setName(hashtag);
+                    dyHashtag.setAmount(1);
+                    dyHashtagDao.insert(dyHashtag);
+                }
+                hashtagEntities.add(dyHashtag);
+
+                // 更新dyThreadHashtag关系表
+                dyThreadHashtag dyThreadHashtags = new dyThreadHashtag();
+                dyThreadHashtags.setDyThreadId(dyThread.getDyThreadId());
+                dyThreadHashtags.setDyHashtagId(dyHashtag.getDyHashtagId());
+                dyThreadHashtagDao.insert(dyThreadHashtags);
+            }
+            dyThread.setHashtags(hashtagEntities);
+        }
+    }
     //    @Autowired
 
     @Test
