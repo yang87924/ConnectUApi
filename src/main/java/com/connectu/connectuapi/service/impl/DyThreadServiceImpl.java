@@ -207,7 +207,8 @@ public class DyThreadServiceImpl extends MPJBaseServiceImpl<DyThreadDao, DyThrea
     public Result searchDyThreads(String keyword) {
         List<DyThread> search = null;
         if (keyword != null && !keyword.isEmpty()) {
-            search = searchDyThreadsByKeyword(keyword);
+            String processedKeyword = keyword.replace("#", ""); // 去掉关键字中的 "#"
+            search = searchDyThreadsByKeyword(processedKeyword);
         }
         Integer code = search != null && !search.isEmpty() ? Code.GET_OK : Code.GET_ERR;
         String msg = search != null && !search.isEmpty() ? "搜尋動態資料成功" : "搜尋動態資料失敗!請重新輸入關鍵字";
