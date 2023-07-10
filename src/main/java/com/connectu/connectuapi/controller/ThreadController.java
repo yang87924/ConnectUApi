@@ -61,6 +61,14 @@ public class ThreadController extends BaseController{
         String msg = hashtags != null ? "查詢熱門標籤成功" : "查無熱門標籤資料";
         return new Result(code, hashtags, msg);
     }
+    @ApiOperation("所有標籤")
+    @GetMapping("/AllHashtag")
+    public Result AllThreeHashtags() {
+        List<Hashtag> dyHashtags = hashtagService.list();
+        Integer code = dyHashtags != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = dyHashtags != null ? "查詢所有標籤成功" : "查無標籤資料";
+        return new Result(code, dyHashtags, msg);
+    }
     //假資料--------------------------------------------------------------
     @ApiIgnore    // 忽略这个api
     @PostMapping("/addFakeThread")
