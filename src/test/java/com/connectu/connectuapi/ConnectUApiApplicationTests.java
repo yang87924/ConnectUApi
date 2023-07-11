@@ -53,6 +53,12 @@ class ConnectUApiApplicationTests {
     @Autowired
     private DyHashtagDao dyHashtagDao;
     @Test
+    void cc(){
+        QueryWrapper wrapper=new QueryWrapper();
+        wrapper.orderByDesc("threadId");
+        List<Thread> thread = threadService.list(wrapper);
+    }
+    @Test
     void a() {
         // 处理前端传递的content
         String content = "濃厚的奶香味，搭配綿密的蛋糕口感，，\n" +

@@ -49,6 +49,54 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     @Autowired
     private UserDao userDao;
     @Override
+    public boolean deleteByThreadId(Integer threadId) {
+        QueryWrapper<Thread> threadWrapper = new QueryWrapper<>();
+        threadWrapper.ge("threadId", threadId);
+        List<Thread> threads = threadDao.selectList(threadWrapper);
+        if (threads.isEmpty()) {
+            return false;
+        }
+        for (Thread thread : threads) {
+            // Delete related records in ThreadHashtag table
+            QueryWrapper<ThreadHashtag> threadHashtagWrapper = new QueryWrapper<>();
+            threadHashtagWrapper.eq("threadId", thread.getThreadId());
+            threadHashtagDao.delete(threadHashtagWrapper);
+        }
+        // Delete records in Thread table
+        threadDao.delete(threadWrapper);
+        return true;
+    }
+
+    @Override
+    public Page<Thread> getThreadByPage(Page<Thread> page) {
+        QueryWrapper<Thread> wrapper = new QueryWrapper<>();
+        wrapper.orderByDesc("threadId");
+        Page<Thread> threadPage = this.page(page, wrapper);
+        if (threadPage.getRecords().isEmpty()) {
+            return null;
+        }
+        for (Thread thread : threadPage.getRecords()) {
+            // Fill user information
+            User user = userDao.selectById(thread.getUserId());
+            thread.setUser(user);
+            // Fill hashtag information
+            QueryWrapper<ThreadHashtag> threadHashtagWrapper = new QueryWrapper<>();
+            threadHashtagWrapper.eq("threadId", thread.getThreadId());
+            List<ThreadHashtag> threadHashtags = threadHashtagDao.selectList(threadHashtagWrapper);
+            List<Hashtag> hashtags = new ArrayList<>();
+            for (ThreadHashtag threadHashtag : threadHashtags) {
+                Hashtag hashtag = hashtagDao.selectById(threadHashtag.getHashtagId());
+                hashtags.add(hashtag);
+            }
+            thread.setHashtags(hashtags);
+            // 填充 categoryName 信息
+            Category category = categoryDao.selectById(thread.getCategoryId());
+            thread.setCategoryName(category.getCategoryName());
+        }
+        return threadPage;
+    }
+
+    @Override
     public void handleHashtags(String threadHashtags, Thread thread) {
         List<Hashtag> hashtags = new ArrayList<>();
         String[] tags = threadHashtags.split("#");

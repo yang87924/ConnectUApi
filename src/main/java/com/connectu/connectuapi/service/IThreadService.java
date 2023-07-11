@@ -36,7 +36,7 @@ public interface IThreadService extends MPJBaseService<Thread> {
 
     //查詢使用者的所有文章--------------------------------------------------------------
     List<Thread> getUserThread(Integer userId);
-
+    Page<Thread> getThreadByPage(Page<Thread> page);
     List<List<Thread>> getUserThreadForUser(List<Integer> userIds);
     //熱門文章--------------------------------------------------------------
     List<Thread> hotThread();
@@ -60,4 +60,5 @@ public interface IThreadService extends MPJBaseService<Thread> {
     IPage<Thread> listWithPagination(Page<Thread> page, Wrapper<Thread> queryWrapper);
     List<Thread> getThreadById(Integer threadId);
     void processHashtags(String hashtags, Thread thread);
+    boolean deleteByThreadId(Integer threadId);
 }

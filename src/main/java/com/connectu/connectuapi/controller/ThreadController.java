@@ -53,6 +53,36 @@ public class ThreadController extends BaseController{
     private StorageService storageService;
     @Autowired
     private IHashtagService hashtagService;
+    //刪除文章--------------------------------------------------------------
+    @DeleteMapping("/deleteByThreadId")
+    @ApiOperation("刪除指定threadId的論壇文章")
+    public Result deleteByThreadId() {
+        boolean flag = threadService.deleteByThreadId(62);
+        return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ?"指定論壇文章刪除成功":"指定論壇文章刪除失敗");
+    }
+
+    //查詢所有文章--------------------------------------------------------------
+    // 分页查询所有文章，固定每页返回4条数据
+    @GetMapping
+    @ApiOperation("分页查询所有論壇文章")
+    public Result getThreadByPage(@RequestParam(defaultValue = "1") Integer pageNum) {
+        Page<Thread> page = new Page<>(pageNum, 4);
+        page = threadService.getThreadByPage(page);
+        Integer code = page != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = page != null ? "分頁查詢論壇文章成功" : "分頁查詢論壇文章失敗";
+        return new Result(code, page, msg);
+    }
+
+    //分頁查詢--------------------------------------------------------------
+    @GetMapping("/pageThread")
+    @ApiOperation("分頁查詢所有論壇文章OK")
+    public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum) {
+        Page<Thread> page = new Page<>(pageNum, 4);
+        Page<Thread> threadPage = threadService.getThreadByPage(page);
+        Integer code = threadPage != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = threadPage != null ? "分頁查詢論壇文章成功" : "分頁查詢論壇文章失敗";
+        return new Result(code, threadPage.getRecords(), msg);
+    }
     @ApiOperation(value = "熱門標籤OK")
     @GetMapping("/HotHashtag")
     public Result getTopThreeHashtags() {
@@ -118,16 +148,9 @@ public class ThreadController extends BaseController{
 
         boolean flag = threadService.save(thread);
 
-        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
+        return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, thread, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
     }
-    //刪除文章--------------------------------------------------------------
-    @ApiImplicitParam(name = "threadId", value = "論壇文章Id")
-    @DeleteMapping("/{threadId}")
-    @ApiOperation("刪除論壇文章")
-    public Result deleteById(@PathVariable Integer threadId) {
-        boolean flag = threadService.removeById(threadId);
-        return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ?"論壇文章刪除成功":"論壇文章刪除失敗");
-    }
+
     //移除收藏文章
     @DeleteMapping("/favorite/{favoriteThreadId}")
     @ApiOperation(value = "移除收藏文章OK", notes = "移除使用者收藏的文章")
@@ -253,30 +276,7 @@ public class ThreadController extends BaseController{
     }
 
 
-    //查詢所有文章--------------------------------------------------------------
-    @GetMapping
-    @ApiOperation("查詢所有論壇文章")
-    public Result getAllThread() {
-        List<Thread> thread = threadService.list();
-        thread.sort(Comparator.comparing(Thread::getCreatedAt, Comparator.reverseOrder())); // 根據 createdAt 欄位進行遞減排序
-        Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = thread != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
-        return new Result(code, thread, msg);
 
-    }
-    //分頁查詢--------------------------------------------------------------
-    @GetMapping("/pageThread")
-    @ApiOperation("分頁查詢所有論壇文章OK")
-    public Result getAllThreadPage(@RequestParam(defaultValue = "1") Integer pageNum) {
-        Page<Thread> page = new Page<>(pageNum, 4);
-       // QueryWrapper<Thread> wrapper = new QueryWrapper<>();
-      // wrapper.orderByDesc("threadId"); // 將資料庫中的資料進行反向排序
-        IPage<Thread> threadPage = threadService.listWithPagination(page, null);
-        List<Thread> threadList = threadPage.getRecords();
-        Integer code = threadList != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = threadList != null ? "所有論壇文章資料成功" : "查無論壇文章資料";
-        return new Result(code, threadList, msg);
-    }
 
     //查詢主題文章--------------------------------------------------------------
     @ApiImplicitParam(name = "查詢主題文章", value = "論壇文章Id")

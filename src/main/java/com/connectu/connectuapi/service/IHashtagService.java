@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface IHashtagService extends MPJBaseService<Hashtag> {
     List<Hashtag> getTopThreeHashtags();
+    List<Hashtag> getHashtagsByThreadId(Integer threadId);
 }
