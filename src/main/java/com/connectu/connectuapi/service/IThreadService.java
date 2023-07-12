@@ -49,11 +49,11 @@ public interface IThreadService extends MPJBaseService<Thread> {
 
     //查詢最後一筆論壇文章--------------------------------------------------------------
     Integer getLastThreadById();
-
+    Thread getLastThreadWithDetails();
     //關鍵字搜尋--------------------------------------------------------------
     Result searchThreads(String keyword);
     List<Thread> searchThreadsByKeyword(String keyword);
-
+    void saveThreadHashtags(Thread thread);
     //void handleHashtags(Thread thread, List<String> hashtags);
     void handleHashtags(String threadHashtags, Thread thread) ;
     //分頁查詢--------------------------------------------------------------

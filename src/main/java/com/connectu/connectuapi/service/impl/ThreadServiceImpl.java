@@ -48,6 +48,43 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     private IHashtagService iHashtagService;
     @Autowired
     private UserDao userDao;
+    public void saveThreadHashtags(Thread thread) {
+        List<Hashtag> hashtags = thread.getHashtags();
+        if (hashtags != null && !hashtags.isEmpty()) {
+            for (Hashtag hashtag : hashtags) {
+                ThreadHashtag threadHashtag = new ThreadHashtag();
+                threadHashtag.setThreadId(thread.getThreadId());
+                threadHashtag.setHashtagId(hashtag.getHashtagId());
+                threadHashtagDao.insert(threadHashtag);
+            }
+        }
+    }
+    @Override
+    public Thread getLastThreadWithDetails() {
+        Thread lastThread = threadDao.selectOne(
+                new QueryWrapper<Thread>()
+                        .orderByDesc("threadId")
+                        .last("limit 1")
+        );
+
+        if (lastThread != null) {
+            // 获取对应的Hashtag数据
+            List<Hashtag> hashtags = hashtagDao.selectList(
+                    new QueryWrapper<Hashtag>()
+                            .inSql("hashtagId", "SELECT hashtagId FROM threadHashtag WHERE threadId = " + lastThread.getThreadId())
+            );
+            System.out.println(hashtags);
+            lastThread.setHashtags(hashtags);
+
+            // 获取对应的categoryName
+            Category category = categoryDao.selectById(lastThread.getCategoryId());
+            if (category != null) {
+                lastThread.setCategoryName(category.getCategoryName());
+            }
+        }
+
+        return lastThread;
+    }
     @Override
     public boolean deleteByThreadId(Integer threadId) {
         QueryWrapper<Thread> threadWrapper = new QueryWrapper<>();

@@ -145,9 +145,12 @@ public class ThreadController extends BaseController{
             thread.setPicture(paths.substring(0, paths.length() - 1));
         }
         threadService.handleHashtags(threadHashtags, thread);
-
+        // 保存Thread与Hashtag关联记录
+       // threadService.saveThreadHashtags(thread);
         boolean flag = threadService.save(thread);
-
+        if (flag){
+            threadService.saveThreadHashtags(thread);
+        }
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, thread, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
     }
 
@@ -302,8 +305,8 @@ public class ThreadController extends BaseController{
     @GetMapping("last")
     @ApiOperation("查詢最後一筆論壇文章")
     public Result getUserlastById() {
-        Integer getThreadId = threadService.getLastThreadById();
-        Thread thread = threadService.getThreadWithCategoryName(getThreadId - 1);
+        //Integer getThreadId = threadService.getLastThreadById();
+        Thread thread = threadService.getLastThreadWithDetails();
         Integer code = thread != null ? Code.GET_OK : Code.GET_ERR;
         String msg = thread != null ? "最後一筆資料取得成功" : "查無資料";
         return new Result(code, thread, msg);
