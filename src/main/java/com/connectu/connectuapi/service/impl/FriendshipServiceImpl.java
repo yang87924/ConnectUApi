@@ -38,7 +38,60 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
     private DyThreadHashtagDao dyThreadHashtagDao;
     @Autowired
     private DyHashtagDao dyHashtagDao;
+    @Override
+    public List<Friendship> getFirendShipThread(Integer userId, Page<Friendship> page) {
+        QueryWrapper<Friendship> friendshipQuery = new QueryWrapper<>();
+        friendshipQuery.eq("followingId", userId);
 
+        // 应用分页查询
+        Page<Friendship> friendshipPage = friendshipDao.selectPage(page, friendshipQuery);
+        List<Friendship> friendships = friendshipPage.getRecords();
+        List<Friendship> results = new ArrayList<>();
+
+        for (Friendship friendship : friendships) {
+            Integer followerId = friendship.getFollowerId();
+
+            User user = userDao.selectById(followerId);
+            friendship.setUser(user);
+
+            QueryWrapper<DyThread> dyThreadQuery = new QueryWrapper<>();
+            dyThreadQuery.eq("userId", followerId);
+            dyThreadQuery.last("limit 4"); // 只查询每个用户的前4条动态线程数据
+            List<DyThread> dyThreads = dyThreadDao.selectList(dyThreadQuery);
+
+            for (DyThread dyThread : dyThreads) {
+                if (dyThread != null) {
+                    friendship.setDyThread(dyThread);
+
+                    QueryWrapper<dyThreadHashtag> dyThreadHashtagQuery = new QueryWrapper<>();
+                    dyThreadHashtagQuery.eq("dyThreadId", dyThread.getDyThreadId());
+                    List<dyThreadHashtag> dyThreadHashtags = dyThreadHashtagDao.selectList(dyThreadHashtagQuery);
+
+                    List<DyHashtag> dyHashtags = new ArrayList<>();
+                    for (dyThreadHashtag dyThreadHashtag : dyThreadHashtags) {
+                        Integer dyHashtagId = dyThreadHashtag.getDyHashtagId();
+                        DyHashtag dyHashtag = dyHashtagDao.selectById(dyHashtagId);
+                        dyHashtags.add(dyHashtag);
+                    }
+
+                    dyThread.setHashtags(dyHashtags);
+
+                    results.add(friendship);
+                    // if results size reaches 4, break the loop
+                    if (results.size() >= 4) {
+                        break;
+                    }
+                }
+            }
+
+            // if results size reaches 4, break the loop
+            if (results.size() >= 4) {
+                break;
+            }
+        }
+
+        return results;
+    }
 
 
 
@@ -99,50 +152,7 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
         return friendshipDao.selectList(userWrapper);
     }
 
-    @Override
-    public List<Friendship> getFirendShipThread(Integer userId, Page<Friendship> page) {
-        QueryWrapper<Friendship> friendshipQuery = new QueryWrapper<>();
-        friendshipQuery.eq("followingId", userId);
 
-        // 应用分页查询
-        Page<Friendship> friendshipPage = friendshipDao.selectPage(page, friendshipQuery);
-        List<Friendship> friendships = friendshipPage.getRecords();
-
-        for (Friendship friendship : friendships) {
-            Integer followerId = friendship.getFollowerId();
-
-            User user = userDao.selectById(followerId);
-            friendship.setUser(user);
-
-            QueryWrapper<DyThread> dyThreadQuery = new QueryWrapper<>();
-            dyThreadQuery.eq("userId", followerId);
-            dyThreadQuery.last("limit 4"); // 只查询每个用户的前4条动态线程数据
-            List<DyThread> dyThreads = dyThreadDao.selectList(dyThreadQuery);
-
-            for (DyThread dyThread : dyThreads) {
-                friendship.setDyThread(dyThread);
-
-                QueryWrapper<dyThreadHashtag> dyThreadHashtagQuery = new QueryWrapper<>();
-                dyThreadHashtagQuery.eq("dyThreadId", dyThread.getDyThreadId());
-                List<dyThreadHashtag> dyThreadHashtags = dyThreadHashtagDao.selectList(dyThreadHashtagQuery);
-
-                List<DyHashtag> dyHashtags = new ArrayList<>();
-                for (dyThreadHashtag dyThreadHashtag : dyThreadHashtags) {
-                    Integer dyHashtagId = dyThreadHashtag.getDyHashtagId();
-                    DyHashtag dyHashtag = dyHashtagDao.selectById(dyHashtagId);
-                    dyHashtags.add(dyHashtag);
-                }
-
-                dyThread.setHashtags(dyHashtags);
-                // 判断dyThread是否为空
-                if (dyThread != null) {
-                    friendship.setDyThread(dyThread);
-                }
-            }
-        }
-
-        return friendships;
-    }
 
     @Override
     public void getFriendShipStatus(Integer followerId, Integer followingId) {
