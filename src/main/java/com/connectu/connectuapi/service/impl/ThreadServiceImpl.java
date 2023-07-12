@@ -81,6 +81,11 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
             if (category != null) {
                 lastThread.setCategoryName(category.getCategoryName());
             }
+            // 获取对应的User数据
+            User user = userDao.selectById(lastThread.getUserId());
+            if (user != null) {
+                lastThread.setUser(user);
+            }
         }
 
         return lastThread;
