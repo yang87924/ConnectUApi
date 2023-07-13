@@ -53,11 +53,27 @@ public class ThreadController extends BaseController{
     private StorageService storageService;
     @Autowired
     private IHashtagService hashtagService;
+    //查詢使用者的所有文章--------------------------------------------------------------
+    @GetMapping("/userThread/{userId}")
+    @ApiOperation("查詢使用者的所有論壇文章")
+    public Result getUserThread(@PathVariable Integer userId, HttpSession session) {
+        if (userId == 0) {
+            userId = getUserIdFromSession(session);
+        }
+        List<Thread> threads = threadService.getUserThread(userId);
+        //System.out.println(threadService.getUserThread(userId)); // 打印结果
+
+        Integer code = threads != null ? Code.GET_OK : Code.GET_ERR;
+        String msg = threads != null ? "查詢熱門文章資料成功" : "查無資料";
+        return new Result(code, threads, msg);
+    }
+
+
     //刪除文章--------------------------------------------------------------
     @DeleteMapping("/deleteByThreadId")
     @ApiOperation("刪除指定threadId的論壇文章")
     public Result deleteByThreadId() {
-        boolean flag = threadService.deleteByThreadId(62);
+        boolean flag = threadService.deleteByThreadId(3);
         return new Result(flag ? Code.DELETE_OK : Code.DELETE_ERR, flag, flag ?"指定論壇文章刪除成功":"指定論壇文章刪除失敗");
     }
 
@@ -263,21 +279,6 @@ public class ThreadController extends BaseController{
         String msg = thread != null ? "查詢熱門文章資料成功" : "查無資料";
         return new Result(code, thread, msg);
     }
-    //查詢使用者的所有文章--------------------------------------------------------------
-    @GetMapping("/userThread/{userId}")
-    @ApiOperation("查詢使用者的所有論壇文章")
-    public Result getUserThread(@PathVariable Integer userId, HttpSession session) {
-        if (userId == 0) {
-            userId = getUserIdFromSession(session);
-        }
-        List<Thread> threads = threadService.getUserThread(userId);
-        //System.out.println(threadService.getUserThread(userId)); // 打印结果
-
-        Integer code = threads != null ? Code.GET_OK : Code.GET_ERR;
-        String msg = threads != null ? "查詢熱門文章資料成功" : "查無資料";
-        return new Result(code, threads, msg);
-    }
-
 
 
 

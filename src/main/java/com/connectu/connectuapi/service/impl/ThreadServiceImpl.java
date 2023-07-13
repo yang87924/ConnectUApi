@@ -3,7 +3,10 @@ package com.connectu.connectuapi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.connectu.connectuapi.controller.util.Code;
@@ -48,6 +51,48 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
     private IHashtagService iHashtagService;
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private UserThreadLoveDao userThreadLoveDao;
+    @Autowired
+    private FavoriteThreadDao favoriteThreadDao;
+    //查詢使用者的所有文章--------------------------------------------------------------
+    @Override
+    public List<Thread> getUserThread(Integer userId) {
+        // Fetch all threads by the user
+        QueryWrapper<Thread> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId", userId);
+        queryWrapper.orderByDesc("threadId");
+        List<Thread> threads = threadDao.selectList(queryWrapper);
+
+        // For each thread, fetch and set the related data
+        for (Thread thread : threads) {
+            // Fetch and set the user
+            User user = userDao.selectById(thread.getUserId());
+            thread.setUser(user);
+
+            // Fetch and set the replies
+            QueryWrapper<Reply> replyQueryWrapper = new QueryWrapper<>();
+            replyQueryWrapper.eq("threadId", thread.getThreadId());
+            List<Reply> replies = replyDao.selectList(replyQueryWrapper);
+            thread.setReplyCount(replies.size()); // Set the reply count
+
+            // Fetch and set the hashtags
+            QueryWrapper<ThreadHashtag> threadHashtagQueryWrapper = new QueryWrapper<>();
+            threadHashtagQueryWrapper.eq("threadId", thread.getThreadId());
+            List<ThreadHashtag> threadHashtags = threadHashtagDao.selectList(threadHashtagQueryWrapper);
+            List<Hashtag> hashtags = new ArrayList<>();
+            for (ThreadHashtag threadHashtag : threadHashtags) {
+                Hashtag hashtag = hashtagDao.selectById(threadHashtag.getHashtagId());
+                hashtags.add(hashtag);
+            }
+            thread.setHashtags(hashtags);
+        }
+
+
+        return threads;
+    }
+
+
     public void saveThreadHashtags(Thread thread) {
         List<Hashtag> hashtags = thread.getHashtags();
         if (hashtags != null && !hashtags.isEmpty()) {
@@ -91,21 +136,42 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
         return lastThread;
     }
     @Override
-    public boolean deleteByThreadId(Integer threadId) {
+    public boolean deleteByThreadId(Integer userId) {
+        // 获取要删除的Thread记录
         QueryWrapper<Thread> threadWrapper = new QueryWrapper<>();
-        threadWrapper.ge("threadId", threadId);
+        threadWrapper.eq("userId", userId);
         List<Thread> threads = threadDao.selectList(threadWrapper);
         if (threads.isEmpty()) {
             return false;
         }
-        for (Thread thread : threads) {
-            // Delete related records in ThreadHashtag table
-            QueryWrapper<ThreadHashtag> threadHashtagWrapper = new QueryWrapper<>();
-            threadHashtagWrapper.eq("threadId", thread.getThreadId());
-            threadHashtagDao.delete(threadHashtagWrapper);
-        }
-        // Delete records in Thread table
+
+        // 获取要删除的Thread记录的threadId列表
+        List<Integer> threadIds = threads.stream().map(Thread::getThreadId).collect(Collectors.toList());
+        // Delete related records in UserThreadLove table
+        QueryWrapper<UserThreadLove> userThreadLoveWrapper = new QueryWrapper<>();
+        userThreadLoveWrapper.eq("threadId", threadIds);
+        userThreadLoveDao.delete(userThreadLoveWrapper);
+        // 删除FavoriteThread表中与Thread相关联的记录
+        QueryWrapper<FavoriteThread> favoriteThreadWrapper = new QueryWrapper<>();
+        favoriteThreadWrapper.eq("threadId", threadIds);
+        favoriteThreadDao.delete(favoriteThreadWrapper);
+        // 删除ThreadHashtag表中与Thread相关联的记录
+        QueryWrapper<ThreadHashtag> threadHashtagWrapper = new QueryWrapper<>();
+        threadHashtagWrapper.eq("threadId", threadIds);
+        threadHashtagDao.delete(threadHashtagWrapper);
+
+
+
+
+
+        // 删除Reply表中与Thread相关联的记录
+        QueryWrapper<Reply> replyWrapper = new QueryWrapper<>();
+        replyWrapper.in("threadId", threadIds);
+        replyDao.delete(replyWrapper);
+
+        // 删除Thread表中指定userId的记录
         threadDao.delete(threadWrapper);
+
         return true;
     }
 
@@ -190,48 +256,6 @@ public class ThreadServiceImpl extends MPJBaseServiceImpl<ThreadDao, Thread> imp
         }
         threadPage.setRecords(threads);
         return threadPage;
-    }
-
-    //查詢使用者的所有文章--------------------------------------------------------------
-    @Override
-    public List<Thread> getUserThread(Integer userId) {
-        MPJLambdaWrapper<Thread> lqw = new MPJLambdaWrapper<>();
-        lqw.eq(Thread::getUserId, userId);
-        List<Thread> Threads = threadDao.selectList(lqw);
-
-        // Fetch User info
-        List<Integer> userIds = Threads.stream().map(Thread::getUserId).collect(Collectors.toList());
-        Map<Integer, User> userMap = userDao.selectBatchIds(userIds).stream().collect(Collectors.toMap(User::getUserId, user -> user));
-
-        // Initiate an empty Map to hold DyHashtag
-        Map<Integer, Hashtag> hashtagMap = new HashMap<>();
-
-        for (Thread thread : Threads) {
-            User user = userMap.get(thread.getUserId());
-            if (user != null) {
-                thread.setUser(user);
-            }
-            thread.setReplyCount(replyService.getThreadReplyById(thread.getThreadId()).size());
-
-            // Fetch dyThreadHashtag info
-            List<ThreadHashtag> dyThreadHashtags = threadHashtagDao.selectList(new QueryWrapper<ThreadHashtag>().eq("threadId", thread.getThreadId()));
-            List<Integer> hashtagIds = dyThreadHashtags.stream().map(ThreadHashtag::getHashtagId).collect(Collectors.toList());
-
-            // Fetch DyHashtag info if not fetched already
-            if (!hashtagIds.isEmpty()) {
-                // Check and fetch only those DyHashtag not already fetched
-                List<Integer> notFetchedHashtagIds = hashtagIds.stream().filter(ids -> !hashtagMap.containsKey(ids)).collect(Collectors.toList());
-                if(!notFetchedHashtagIds.isEmpty()){
-                    List<Hashtag> hashtags = hashtagDao.selectBatchIds(notFetchedHashtagIds);
-                    hashtags.forEach(hashtag -> hashtagMap.put(hashtag.getHashtagId(), hashtag));
-                }
-
-                // Add DyHashtags to DyThread
-                List<Hashtag> hashtags = hashtagIds.stream().map(hashtagMap::get).collect(Collectors.toList());
-                thread.setHashtags(hashtags);
-            }
-        }
-        return Threads;
     }
 
 

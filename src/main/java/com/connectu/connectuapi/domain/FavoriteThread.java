@@ -18,10 +18,10 @@ public class FavoriteThread {
     @TableField(exist = false)
     private User user;
     @TableField(exist = false)
-    private DyThread dyThread;
+    private Thread dyThread;
     @TableField(exist = false)
-    private dyThreadHashtag dyThreadHashtag;
+    private ThreadHashtag dyThreadHashtag;
     @TableField(exist = false)
-    private DyHashtag dyHashtag;
+    private Hashtag dyHashtag;
 
 }
