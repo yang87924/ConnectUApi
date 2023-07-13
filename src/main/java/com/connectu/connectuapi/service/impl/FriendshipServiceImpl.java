@@ -40,28 +40,31 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
     private DyHashtagDao dyHashtagDao;
     @Override
     public List<Friendship> getFirendShipThread(Integer userId, Page<Friendship> page) {
-        QueryWrapper<Friendship> friendshipQuery = new QueryWrapper<>();
-        friendshipQuery.eq("followingId", userId);
+        QueryWrapper<Friendship> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("followerId", userId);
+        List<Friendship> friendships = friendshipDao.selectPage(page, queryWrapper).getRecords();
 
-        // 应用分页查询
-        Page<Friendship> friendshipPage = friendshipDao.selectPage(page, friendshipQuery);
-        List<Friendship> friendships = friendshipPage.getRecords();
         List<Friendship> results = new ArrayList<>();
-
         for (Friendship friendship : friendships) {
-            Integer followerId = friendship.getFollowerId();
+            Integer followingId = friendship.getFollowingId();
 
-            User user = userDao.selectById(followerId);
+            User user = userDao.selectById(followingId);
             friendship.setUser(user);
 
             QueryWrapper<DyThread> dyThreadQuery = new QueryWrapper<>();
-            dyThreadQuery.eq("userId", followerId);
-            dyThreadQuery.last("limit 4"); // 只查询每个用户的前4条动态线程数据
+            dyThreadQuery.eq("userId", followingId);
+            dyThreadQuery.orderByDesc("dyThreadId"); // 根据 dyThreadId 进行反向排序
+         //   dyThreadQuery.last("limit 4");
             List<DyThread> dyThreads = dyThreadDao.selectList(dyThreadQuery);
 
             for (DyThread dyThread : dyThreads) {
                 if (dyThread != null) {
-                    friendship.setDyThread(dyThread);
+                    Friendship newFriendship = new Friendship();
+                    newFriendship.setFriendshipId(friendship.getFriendshipId());
+                    newFriendship.setFollowerId(friendship.getFollowerId());
+                    newFriendship.setFollowingId(friendship.getFollowingId());
+                    newFriendship.setUser(friendship.getUser());
+                    newFriendship.setDyThread(dyThread);
 
                     QueryWrapper<dyThreadHashtag> dyThreadHashtagQuery = new QueryWrapper<>();
                     dyThreadHashtagQuery.eq("dyThreadId", dyThread.getDyThreadId());
@@ -76,22 +79,16 @@ public class FriendshipServiceImpl extends MPJBaseServiceImpl<FriendshipDao, Fri
 
                     dyThread.setHashtags(dyHashtags);
 
-                    results.add(friendship);
-                    // if results size reaches 4, break the loop
-                    if (results.size() >= 4) {
-                        break;
-                    }
+                    results.add(newFriendship);
                 }
-            }
-
-            // if results size reaches 4, break the loop
-            if (results.size() >= 4) {
-                break;
             }
         }
 
         return results;
     }
+
+
+
 
 
 

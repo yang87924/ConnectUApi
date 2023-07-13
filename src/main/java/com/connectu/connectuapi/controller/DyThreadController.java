@@ -157,6 +157,37 @@ public class DyThreadController extends BaseController{
 
         return new Result(flag ? Code.SAVE_OK : Code.SAVE_ERR, flag, flag ? "論壇文章新增成功" : "論壇文章新增失敗");
     }
+
+    //修改文章
+    @PutMapping("{dyThreadid}")
+    @ApiOperation("修改動態文章")
+    public Result updateById( DyThread dyThread, @PathVariable Integer dyThreadid,
+                              @ApiParam(value = "文章內容", required = true) @RequestParam String content,
+                              @ApiParam(value = "檔案", required = false)
+                                  @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                              HttpSession session
+                              )
+    {
+        String paths;
+        //dyThread.setUserId(getUserIdFromSession(session));
+        if (!files.isEmpty() && !(files.get(0).isEmpty())) {
+            paths="";
+            for (String path : storageService.uploadToS3(files, session)) {
+                paths += path + "▲";
+
+            }
+            System.out.println(paths);
+            dyThread.setPicture(paths.substring(0,paths.length()-1));
+
+        }else {
+            dyThread.setPicture(""); // 设置为空字符串或适当的空值
+        }
+        dyThread.setDyThreadId(dyThreadid);
+        dyThread.setContent(content);
+
+        boolean flag = dyThreadService.updateById(dyThread);
+        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"動態文章更新成功":"動態文章更新失敗");
+    }
     //移除收藏文章
     //移除收藏文章
     @DeleteMapping("/favorite/{favoriteDyThreadId}")
@@ -184,13 +215,6 @@ public class DyThreadController extends BaseController{
         return new Result(code, dythread, msg);
     }
 
-    //修改文章
-    @PutMapping
-    @ApiOperation("修改動態文章")
-    public Result updateById(@RequestBody DyThread dyThread) {
-        boolean flag = dyThreadService.updateById(dyThread);
-        return new Result(flag ? Code.UPDATE_OK : Code.UPDATE_ERR, flag, flag ?"動態文章更新成功":"動態文章更新失敗");
-    }
     //刪除文章
     @DeleteMapping("/{DyThreadid}")
     @ApiImplicitParam(name = "DyThreadid", value = "動態文章id")

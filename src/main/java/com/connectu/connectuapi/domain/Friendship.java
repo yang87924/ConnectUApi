@@ -20,5 +20,6 @@ public class Friendship {
     private DyThread dyThread;
     @TableField(exist = false)
     private DyHashtag dyHashtag;
+
 }
 
