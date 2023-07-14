@@ -142,7 +142,13 @@ public class ThreadController extends BaseController{
                        @ApiParam(value = "文章內容", required = true) @RequestParam String content,
                        @ApiParam(value = "文章分類 ID", required = true) @RequestParam Integer categoryId,
                        @ApiParam(value = "檔案", required = false)
-                       @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                       @RequestPart(value = "files0", required = false) List<MultipartFile> files0,
+                       @ApiParam(value = "檔案", required = false)
+                           @RequestPart(value = "files1", required = false) List<MultipartFile> files1,
+                       @ApiParam(value = "檔案", required = false)
+                           @RequestPart(value = "files2", required = false) List<MultipartFile> files2,
+                       @ApiParam(value = "檔案", required = false)
+                           @RequestPart(value = "files3", required = false) List<MultipartFile> files3,
                        @ApiParam(value = "Hashtags", required = true) @RequestParam(required = false) String threadHashtags,
                        HttpSession session) {
 
@@ -153,9 +159,9 @@ public class ThreadController extends BaseController{
             throw new ThreadColumnIsNullException();
         }
         thread.setUserId(getUserIdFromSession(session));
-        if (!(files.get(0).isEmpty())) {
+        if (!(files0.get(0).isEmpty())) {
             String paths = "";
-            for (String path : storageService.uploadToS3(files, session)) {
+            for (String path : storageService.uploadToS3(files0, session)) {
                 paths += path + "▲";
             }
             thread.setPicture(paths.substring(0, paths.length() - 1));
