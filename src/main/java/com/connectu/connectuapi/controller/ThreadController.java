@@ -166,6 +166,7 @@ public class ThreadController extends BaseController{
             }
             thread.setPicture(paths.substring(0, paths.length() - 1));
         }
+        //
         threadService.handleHashtags(threadHashtags, thread);
         // 保存Thread与Hashtag关联记录
        // threadService.saveThreadHashtags(thread);
