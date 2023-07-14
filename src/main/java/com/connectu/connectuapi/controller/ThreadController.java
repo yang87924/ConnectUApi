@@ -142,15 +142,24 @@ public class ThreadController extends BaseController{
                        @ApiParam(value = "文章內容", required = true) @RequestParam String content,
                        @ApiParam(value = "文章分類 ID", required = true) @RequestParam Integer categoryId,
                        @ApiParam(value = "檔案", required = false)
-                       @RequestPart(value = "files0", required = false) List<MultipartFile> files0,
+                       @RequestPart(value = "file0", required = false) List<MultipartFile> file1,
                        @ApiParam(value = "檔案", required = false)
-                           @RequestPart(value = "files1", required = false) List<MultipartFile> files1,
+                           @RequestPart(value = "file1", required = false) List<MultipartFile> file2,
                        @ApiParam(value = "檔案", required = false)
-                           @RequestPart(value = "files2", required = false) List<MultipartFile> files2,
+                           @RequestPart(value = "file2", required = false) List<MultipartFile> file3,
                        @ApiParam(value = "檔案", required = false)
-                           @RequestPart(value = "files3", required = false) List<MultipartFile> files3,
+                           @RequestPart(value = "file3", required = false) List<MultipartFile> file4,
                        @ApiParam(value = "Hashtags", required = true) @RequestParam(required = false) String threadHashtags,
                        HttpSession session) {
+//        System.out.println("========="+files0.get(0).getSize());
+//        System.out.println("----------"+files1.get(0).getSize());
+
+
+
+
+
+
+
 
         if (session.getAttribute("userId") == null) {
             throw new UserNotLoginException();
@@ -158,10 +167,25 @@ public class ThreadController extends BaseController{
         if (categoryId == null || title == null || title.isEmpty() || content == null || content.isEmpty()) {
             throw new ThreadColumnIsNullException();
         }
+        List<MultipartFile> files = new ArrayList<>();
+        //System.out.println(file1);
+        if (file1 != null && !file1.isEmpty()) {
+            files.addAll(file1);
+        }
+        if (file2 != null && !file2.isEmpty()) {
+            files.addAll(file2);
+        }
+        if (file3 != null && !file3.isEmpty()) {
+            files.addAll(file3);
+        }
+        if (file4 != null && !file4.isEmpty()) {
+            files.addAll(file4);
+        }
+
         thread.setUserId(getUserIdFromSession(session));
-        if (!(files0.get(0).isEmpty())) {
+        if (!(files.get(0).isEmpty())) {
             String paths = "";
-            for (String path : storageService.uploadToS3(files0, session)) {
+            for (String path : storageService.uploadToS3(files, session)) {
                 paths += path + "▲";
             }
             thread.setPicture(paths.substring(0, paths.length() - 1));
