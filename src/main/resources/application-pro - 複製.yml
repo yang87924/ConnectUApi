@@ -2,9 +2,9 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://mydbinstance2.cmcjn8qqcxqk.ap-northeast-1.rds.amazonaws.com:3306/connectU?serverTimezone=UTC
-      username: admin
-      password: GBb4ddyE1mfrBFGQA5sc
+      url:
+      username:
+      password:
 #=============================================================
   servlet:
     multipart:
@@ -31,8 +31,8 @@ mybatis-plus:
 cloud:
   aws:
     credentials:
-      access-key: AKIARXOOQM5FKQYNF442
-      secret-key: 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
+      access-key:
+      secret-key:
     region:
       static: ap-northeast-1
     stack:
@@ -51,7 +51,7 @@ server:
   ssl:
     enabled: true
     key-store: classpath:keystore.p12
-    key-store-password: connectu
+    key-store-password:
     key-store-type: PKCS12
     key-alias: tomcat
 
