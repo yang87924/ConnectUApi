@@ -31,5 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+<<<<<<< HEAD
 src/main/resources/application.yml
 application.yml
+application-pro.yml
+=======
+keystore.p12
+>>>>>>> dev
