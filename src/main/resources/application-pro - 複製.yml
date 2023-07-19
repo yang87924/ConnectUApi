@@ -1,0 +1,57 @@
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url:
+      username:
+      password:
+#=============================================================
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+
+
+
+# ========================================================================
+  #mybatis plus
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+
+
+
+#=============================================================
+
+cloud:
+  aws:
+    credentials:
+      access-key:
+      secret-key:
+    region:
+      static: ap-northeast-1
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: seeiebucket
+
+
+server:
+  servlet:
+    session:
+      timeout: 3600000
+  port: 8080
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password:
+    key-store-type: PKCS12
+    key-alias: tomcat
+

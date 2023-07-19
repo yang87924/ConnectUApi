@@ -1,0 +1,103 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url:
+      username:
+      password:
+
+##==============================================================
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+
+
+
+  # ========================================================================
+  #Swagger配置
+  # 启动报错需要修改以下mvc配置 Failed to start bean 'documentationPluginsBootstrapper'
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  # ========================================================================
+  #mybatis plus
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+  # ========================================================================
+
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: true
+  #=============================================================
+
+  #熱部屬配置
+  devtools:
+    restart:
+      # 设置开启热部署
+      enabled: true
+      # 重启目录
+      additional-paths: src/main/java
+      exclude: WEB-INF/**
+  #页面不加载缓存，修改即时生效
+  freemarker:
+    cache: false
+
+  # ========================================================================
+cloud:
+  aws:
+    credentials:
+      access-key:
+      secret-key:
+    region:
+      static: ap-northeast-1
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: seeiebucket
+
+mybatis-plus-join:
+  #是否打印 mybatis plus join banner 默认true
+  banner: true
+  # ========================================================================
+
+  #    transaction:
+  #      # 配置事务管理器
+  #      platform: org.springframework.jdbc.datasource.DataSourceTransactionManager
+  # ========================================================================
+  #spring:
+  #  datasource:
+  #    druid:
+  #      driver-class-name: com.mysql.cj.jdbc.Driver
+  #      url: jdbc:mysql://localhost:3306/iii?serverTimezone=UTC
+  #      username: root
+  #      password: root
+  # ========================================================================
+  #    transaction:
+  #      # 配置事务管理器
+  #      platform: org.springframework.jdbc.datasource.DataSourceTransactionManager
+  # ========================================================================
+  #spring:
+  #  datasource:
+  #    druid:
+  #      driver-class-name: com.mysql.cj.jdbc.Driver
+  #      url: jdbc:mysql://localhost:3306/iii?serverTimezone=UTC
+  #      username: root
+  #      password: root
+  # ========================================================================
+
+
+
+
